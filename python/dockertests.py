@@ -84,18 +84,18 @@ c = DockerManipulator(purge=False)
 
 
 
-#cont_robot={'Image':'mother:mother_ros','Command':'/tests/robot_ros.sh','Hostname':'robot'}
-#cont_console={'Image':'mother:mother_ros','Command':'/tests/console_ros.sh','Hostname':'console'}
-#test={'Name':'ROS1 10% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root netem loss 10%'}
+cont_robot={'Image':'mother:mother_ros','Command':'/tests/robot_ros.sh','Hostname':'robot'}
+cont_console={'Image':'mother:mother_ros','Command':'/tests/console_ros.sh','Hostname':'console'}
+test={'Name':'ROS1 10% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root netem loss 10%'}
 
 #cont_robot={'Image':'mother:mother_ros','Command':'terminator','Hostname':'robot'}
 #cont_console={'Image':'mother:mother_ros','Command':'terminator','Hostname':'console'}
 #test={'Name':'ROS1 10% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root netem loss 10%'}
 
 
-cont_robot={'Image':'mother:mother_ros2','Command':'/tests/robot_ros2.sh','Hostname':'robot'}
-cont_console={'Image':'mother:mother_ros2','Command':'/tests/console_ros2.sh','Hostname':'console'}
-test={'Name':'ROS2 10% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root netem loss 10%'}
+#cont_robot={'Image':'mother:mother_ros2','Command':'/tests/robot_ros2.sh','Hostname':'robot'}
+#cont_console={'Image':'mother:mother_ros2','Command':'/tests/console_ros2.sh','Hostname':'console'}
+#test={'Name':'ROS2 50% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root netem loss 50%'}
 #test={'Name':'ROS2 0% LOSS','Command':'ls'}
 
 #cont_robot={'Image':'mother:mother_ros2','Command':'terminator','Hostname':'robot'}
@@ -103,9 +103,30 @@ test={'Name':'ROS2 10% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root 
 #test={'Name':'ROS1 10% LOSS','Command':'sudo /sbin/tc qdisc replace dev {} root netem loss 10%'}
 
 
-c.test(cont_robot,cont_console,test,tcpdump=False,logs=True)
-time=c.getTimeStr()
-t=TestFile(time)
-t.plotCmdVel()
-t.plotRobotInformation()
-t.plotSave()
+containers=[
+        [{'Image':'mother:mother_rtrc','Command':'/tests/robot_rtrc.sh','Hostname':'robot'},
+            {'Image':'mother:mother_rtrc','Command':'/tests/console_rtrc.sh','Hostname':'console'}],
+        [{'Image':'mother:mother_ros','Command':'/tests/robot_ros.sh','Hostname':'robot'},
+            {'Image':'mother:mother_ros','Command':'/tests/console_ros.sh','Hostname':'console'}],
+        [{'Image':'mother:mother_ros2','Command':'/tests/robot_ros2.sh','Hostname':'robot'},
+            {'Image':'mother:mother_ros2','Command':'/tests/console_ros2.sh','Hostname':'console'}]
+        ]
+tests=[0,1,5,10,20,30,40,60,80,90]
+
+
+for cont in containers:
+    for test in tests:
+        cont_robot=cont[0]
+        cont_console=cont[1]
+        testname='Image: '+cont[0].get('Image')+' Test: '+ str(test) +' loss'
+        testcmd='sudo /sbin/tc qdisc replace dev {} root netem loss '+str(test)+ '%'
+        testdict={'Name':testname,'Command':testcmd}
+        print(str(cont_robot))
+        print(str(cont_console))
+        print(str(testdict))
+        c.test(cont_robot,cont_console,testdict,tcpdump=True,logs=True,testtime=240)
+        time=c.getTimeStr()
+        #t=TestFile(time)
+        #t.plotCmdVel()
+        #t.plotRobotInformation()
+        #t.plotSave()

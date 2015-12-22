@@ -148,7 +148,7 @@ class DockerManipulator():
         self.cli.exec_start(e)
     def getTimeStr(self):
         return self.timestr
-    def test(self,cont_robot,cont_console,test,tcpdump=False,logs=False):
+    def test(self,cont_robot,cont_console,test,tcpdump=False,logs=False,testtime=0):
         self.timestr = time.strftime("%Y%m%d-%H%M%S")
         print('Starting test "' + test.get('Name') +  '" with timestamp: "'+self.timestr+'"')
         cont_robot_id= self.startContainer(cont_robot)
@@ -160,7 +160,11 @@ class DockerManipulator():
         self.addHostToHosts(cont_robot_id,cont_console['Hostname'],cont_console_ip)
         self.addHostToHosts(cont_console_id,cont_robot['Hostname'],cont_robot_ip)
         time.sleep(2)
-        raw_input("Connect to robot and press Enter to start test..")
+        if (testtime==0):
+            raw_input("Connect to robot and press Enter to start test..")
+        else:
+            print("Test will start in 5s")
+            time.sleep(5)
         timeteststart = time.strftime("%Y%m%d-%H%M%S")
         interfaces=self.get_interfaces()
         print(interfaces)
@@ -174,7 +178,11 @@ class DockerManipulator():
               print(' '.join(tcpcmd))
               pids.append(subprocess.Popen(tcpcmd).pid)
         time.sleep(1)
-        raw_input("Running test press Enter to finish...")
+        if (testtime==0):
+            raw_input("Running test press Enter to finish...")
+        else:
+            print("Test is running for commanded "+str(testtime)+"s")
+            time.sleep(testtime)
         if tcpdump:
             #FIXME this is ugly
             cmd='sudo killall tcpdump'

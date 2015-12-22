@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from datetime import timedelta
-
+import math
 class TestFile():
     al=u'\u2190'
     at=u'\u2191'
@@ -16,20 +16,25 @@ class TestFile():
     robot_log=[]
     console_log=[]
     figures=[]
-    def __init__(self,ts):
+    def __init__(self,ts,prefix='./'):
         self.ts=ts
+        self.robot_log=[]
+        self.console_log=[]
+        self.figures=[]
+        self.prefix=prefix
         self.loadAll(ts)
 
+
     def loadAll(self,ts):
-        summary_name='summary-{}.txt'.format(ts)
-        robot_log_name='logs-{}-robot.txt'.format(ts)
-        console_log_name='logs-{}-console.txt'.format(ts)
+        summary_name=self.prefix+'summary-{}.txt'.format(ts)
+        robot_log_name=self.prefix+'logs-{}-robot.txt'.format(ts)
+        console_log_name=self.prefix+'logs-{}-console.txt'.format(ts)
         self.summary=eval(open(summary_name).read())
         print(self.summary)
         print('Test: "'+self.summary.get('Test').get('Name')+'"')
         self.starttime=datetime.strptime(self.summary.get('Teststart'),"%Y%m%d-%H%M%S")-timedelta(hours=1)
         print(str(self.starttime-timedelta(hours=1)))
-
+        print("Robot log {}, console log {}".format(len(self.robot_log),len(self.console_log)))
         f = open(robot_log_name,'r')
         for line in f.readlines():
             if len(line.split())>2 and line.split()[2]=='BENCHMARK!':
@@ -40,6 +45,9 @@ class TestFile():
             if len(line.split())>2 and line.split()[2]=='BENCHMARK!':
                 self.console_log.append(line)
         f.close()
+
+        print("Robot log {}, console log {}".format(len(self.robot_log),len(self.console_log)))
+        self.parseRobotInformation()
 
     def lineToTs(self,line):
         return datetime.strptime(line[0]+' '+line[1],'%Y-%m-%d %H:%M:%S.%f')
@@ -52,22 +60,30 @@ class TestFile():
             if sl[3]==direction and sl[4]==command:
                 pdata.append(val)
                 delta=self.lineToTs(sl)-self.starttime
-                #print(val,str(delta),delta.seconds+delta.microseconds/1000000.0,sl)
-                #ptime.append(delta.seconds+delta.microseconds/1000000.0)
-                print(val,str(delta),delta.total_seconds(),sl)
+                #print(val,str(delta),delta.total_seconds(),sl)
                 ptime.append(delta.total_seconds())
         return pdata,ptime
     def plotCmdVel(self):
         pdata_r,ptime_r = self.getData(self.robot_log,'RECEIVED','cmd_vel:',2)
         pdata_t,ptime_t = self.getData(self.console_log,'PUBLISHING','cmd_vel:',1)
         self.plotEvents(pdata_t,ptime_t,pdata_r,ptime_r,'cmd_vel, '+self.summary.get('Test').get('Name'))
+    def parseRobotInformation(self):
+        self.dataRI_DT,self.dataRI_TT = self.getData(self.robot_log,'PUBLISHING','robot_information:',2)
+        self.dataRI_DR,self.dataRI_TR = self.getData(self.console_log,'RECEIVED','robot_information:',1)
 
     def plotRobotInformation(self):
-        pdata_r,ptime_r = self.getData(self.robot_log,'PUBLISHING','robot_information:',2)
-        pdata_t,ptime_t = self.getData(self.console_log,'RECEIVED','robot_information:',1)
-        self.plotEvents(pdata_t,ptime_t,pdata_r,ptime_r,'robot_information, '+self.summary.get('Test').get('Name'),right=False)
+        self.plotEvents(self.dataRI_DT,self.dataRI_TT,self.dataRI_DR,self.dataRI_TR,'robot_information, '+self.summary.get('Test').get('Name'),right=False)
 
-
+    def getStatistics(self):
+        return {"Received":len(self.dataRI_DT),"Send":len(self.dataRI_DR)}
+    def getSummary(self):
+        return self.summary
+    def getConsoleImage(self):
+        return self.getSummary().get('Console').get('Image')
+    def getRobotImage(self):
+        return self.getSummary().get('Robot').get('Image')
+    def getTestName(self):
+        return self.getSummary().get('Test').get("Name")
 
     def plotCmdVelAndBeacon(self):
         pdata_r,ptime_r = self.getData(self.robot_log,'RECEIVED','cmd_vel:',2)
@@ -87,8 +103,14 @@ class TestFile():
         plt.xlim([0,3])
 
 
+    def getTimeDerivative(self):
 
-
+        dy = np.diff(self.dataRI_TR)
+        #print(self.dataRI_TR,dy)
+        #print({"TimeMean":np.mean(dy),"TimeStd":np.std(dy)})
+        return {"TimeMean":np.mean(dy),"TimeStd":np.std(dy)}
+    def getTimeDerivatives(self):
+        return np.diff(self.dataRI_TR)
     def plotEvents(self,pdata_t,ptime_t,pdata_r,ptime_r,title="",right=True):
         fig=plt.figure()
         ax = fig.add_subplot(111)
