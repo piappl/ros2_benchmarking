@@ -129,6 +129,15 @@ loss_tests=[0,1,5,10,20,30,40,60,80,90]
 delay_tests=[0,10,50,100,500,800,1000]
 
 if __name__ == "__main__":
-    run_loss_tests(loss_tests)
-    run_delay_tests(delay_tests)
-
+    #run_loss_tests(loss_tests)
+    #run_delay_tests(delay_tests)
+    cont= [{'Image':'mother:mother_ros2','Command':'/tests/robot_ros2.sh','Hostname':'robot'},
+            {'Image':'mother:mother_ros2','Command':'/tests/console_ros2.sh','Hostname':'console'}]
+    test=80
+    cont_robot=cont[0]
+    cont_console=cont[1]
+    testname='Image: '+cont[0].get('Image')+' Test: '+ str(test) +' loss'
+    testcmd='sudo /sbin/tc qdisc replace dev {} root netem loss '+str(test)+ '%'
+    testdict={'Name':testname,'Command':testcmd}
+    c.test(cont_robot,cont_console,testdict,tcpdump=True,logs=True,testtime=240)
+    time=c.getTimeStr()

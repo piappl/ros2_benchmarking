@@ -4,18 +4,11 @@
 
 from files import TestFile
 from files import TestFiles
-import glob,os,sys
-import numpy as np
-import matplotlib.pyplot as plt
-
-import matplotlib.mlab as mlab
-import copy
-from operator import truediv,sub
 
 
 if __name__ == "__main__":
-        test_name="second_test_beacons"
+        test_name="loss_test"
         plot_name="Network loss"
+        #test_name="delay_test"
+        #plot_name="Network delay"
         t=TestFiles(test_name,plot_name)
-
-#plt.show()

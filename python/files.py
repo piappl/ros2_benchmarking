@@ -15,6 +15,9 @@ import glob,os,sys,copy,math
 class TestFile():
     """Handles things connected to single test case (multiple files actually, but with single timestamp).
     """
+    names={'mother:mother_rtrc':'RTRC','mother:mother_ros':'ROS','mother:mother_ros2':'ROS2'}
+
+
     al=u'\u2190'
     at=u'\u2191'
     ar=u'\u2192'
@@ -22,12 +25,15 @@ class TestFile():
     robot_log=[]
     console_log=[]
     figures=[]
-    def __init__(self,ts,prefix='./',debug=False):
+    plot_name=None
+    def __init__(self,ts,prefix='./',debug=False,plot_name=None,test_name=None):
         self.ts=ts
         self.robot_log=[]
         self.console_log=[]
         self.figures=[]
         self.prefix=prefix
+        self.test_name=test_name
+        self.plot_name=plot_name
         self.loadAll(ts,debug)
 
 
@@ -57,6 +63,7 @@ class TestFile():
                 self.console_log.append(line)
         f.close()
         self.parseRobotInformation()
+        self.plotRobotInformation()
         self.cleanupRobotInformation()
 
     def cleanupRobotInformation(self):
@@ -78,13 +85,25 @@ class TestFile():
             for msg_t in self.dataRI_MT:
                 if (msg_r[6]==msg_t[6]):
                     self.dataRI.append({'transmit_ts':self.timeFromStart(msg_t),'receive_ts':self.timeFromStart(msg_r),'content':msg_r[6]})
+                    #print({'transmit_ts':self.timeFromStart(msg_t),'receive_ts':self.timeFromStart(msg_r),'content':msg_r[6]})
         #This will remove all messages that are transmitted earlier than first message received, or transmitted later
         #than last message received. This is to cleanup data.
-        first_ts=self.dataRI[0]['receive_ts']
-        last_ts=self.dataRI[-1]['receive_ts']
-        self.dataRI_TR=self.dataRI_TR[self.dataRI_TR.index(first_ts):(self.dataRI_TR.index(last_ts)+1)]
-        self.dataRI_DR=self.dataRI_DR[self.dataRI_TR.index(first_ts):(self.dataRI_TR.index(last_ts)+1)]
-        self.dataRI_MR=self.dataRI_MR[self.dataRI_TR.index(first_ts):(self.dataRI_TR.index(last_ts)+1)]
+        #Option one
+        #self.first_ts=self.dataRI[0]['transmit_ts']
+        #self.last_ts=self.dataRI[-1]['transmit_ts']
+        #first_ts_index=self.dataRI_TT.index(self.first_ts)
+        #last_ts_index=self.dataRI_TT.index(self.last_ts)
+        self.dataRI_TT=[n for n in self.dataRI_TT if n>=0 and n<=240]
+        self.dataRI_TR=[n for n in self.dataRI_TR if n>=0 and n<=240]
+        self.dataRI_DR=self.dataRI_DR[:len(self.dataRI_TR)]
+        self.dataRI_DT=self.dataRI_DT[:len(self.dataRI_TT)]
+        #print(self.ts)
+        #print("Before clean up {} {} {} {} {} {} {}".format(len(self.dataRI_TR),len(self.dataRI_DR),len(self.dataRI_MR),len(self.dataRI_TT),len(self.dataRI_DT),len(self.dataRI_MT),len(self.dataRI)))
+        #print("First {} {} last {} {}".format(self.first_ts,self.first_ts_index,last_ts,last_ts_index))
+        #self.dataCRI_TT=self.dataRI_TT[first_ts_index:(last_ts_index+1)]
+        #self.dataCRI_MT=self.dataRI_MT[first_ts_index:(last_ts_index+1)]
+        #self.dataCRI_DT=self.dataRI_DT[first_ts_index:(last_ts_index+1)]
+        #print("After  clean up {} {} {} {} {} {} {}".format(len(self.dataRI_TR),len(self.dataRI_DR),len(self.dataRI_MR),len(self.dataRI_TT),len(self.dataRI_DT),len(self.dataRI_MT),len(self.dataRI)))
 
     def timeFromStart(self,line):
         """Returns time from start for give line, where line
@@ -116,7 +135,12 @@ class TestFile():
         self.dataRI_DR,self.dataRI_TR,self.dataRI_MR = self.getData(self.console_log,'RECEIVED','robot_information:',1)
 
     def plotRobotInformation(self):
+        if self.plot_name:
+            title=self.plot_name+', Protocol: '+self.names[self.getConsoleImage()]+', Test: ' +(self.getTestName().split(' ')[-2])
+        else:
+            title='Protocol: '+self.names[self.getConsoleImage()]+', Test: ' +(self.getTestName().split(' ')[-2])
         self.plotEvents(self.dataRI_DT,self.dataRI_TT,self.dataRI_DR,self.dataRI_TR,'robot_information, '+self.summary.get('Test').get('Name'),right=False)
+
 
     def getStatistics(self):
         return {"Received":len(self.dataRI_DT),"Send":len(self.dataRI_DR)}
@@ -148,7 +172,6 @@ class TestFile():
 
 
     def getTimeDerivative(self):
-
         dy = self.getTimeDerivatives()
         return {"TimeMean":np.mean(dy),"TimeStd":np.std(dy)}
     def getTimeDerivatives(self):
@@ -156,8 +179,7 @@ class TestFile():
         for d in self.dataRI:
             drv.append(d['receive_ts']-d['transmit_ts'])
         return drv
-        #return np.diff(self.dataRI_TR)
-    def plotEvents(self,pdata_t,ptime_t,pdata_r,ptime_r,title="",right=True):
+    def plotEvents(self,pdata_t,ptime_t,pdata_r,ptime_r,title="",right=True,arrows=False):
         fig=plt.figure()
         ax = fig.add_subplot(111)
         fig.suptitle(title, fontsize=12)
@@ -166,18 +188,19 @@ class TestFile():
 
         my_xticks = ['Console','Robot']
         plt.xticks([1,2], my_xticks)
-        plt.plot(pdata_t,ptime_t,'b.',pdata_r,ptime_r,'r.')
+        plt.plot(pdata_t,ptime_t,'bo',pdata_r,ptime_r,'ro',markersize=0.5)
         plt.plot([0, 1, 2, 3],[0,0,0,0],'r-')
-        for x0, y0 in zip(pdata_t, ptime_t):
-            if right:
-                plt.text(x0, y0, self.ar, size=15, va='center', ha='center', clip_on=True)
-            else:
-                plt.text(x0, y0, self.al, size=15, va='center', ha='center', clip_on=True)
-        for x0, y0 in zip(pdata_r, ptime_r):
-            if right:
-                plt.text(x0, y0, self.ar, size=15, va='center', ha='center', clip_on=True)
-            else:
-                plt.text(x0, y0, self.al, size=15, va='center', ha='center', clip_on=True)
+        if arrows:
+            for x0, y0 in zip(pdata_t, ptime_t):
+                if right:
+                    plt.text(x0, y0, self.ar, size=15, va='center', ha='center', clip_on=True)
+                else:
+                    plt.text(x0, y0, self.al, size=15, va='center', ha='center', clip_on=True)
+            for x0, y0 in zip(pdata_r, ptime_r):
+                if right:
+                    plt.text(x0, y0, self.ar, size=15, va='center', ha='center', clip_on=True)
+                else:
+                    plt.text(x0, y0, self.al, size=15, va='center', ha='center', clip_on=True)
 
         plt.xlim([0,3])
 
@@ -186,7 +209,11 @@ class TestFile():
     def plotSave(self):
         ii=1;
         for fig in self.figures:
-            fig.savefig('figure-{}_{}.png'.format(self.ts,str(ii)),dpi=300)
+            if self.test_name:
+                title=self.test_name+'_events_' +self.names[self.getConsoleImage()]+'_' +('%05d'% int(self.getTestName().split(' ')[-2]))+".png"
+            else:
+                title='figure-{}_{}.png'.format(self.ts,str(ii))
+            fig.savefig(title,dpi=300)
             fig.clf()
             ii+=1
 
@@ -208,10 +235,11 @@ class TestFiles():
         for f in files:
             fdate=f.split('/')[-1].split('.')[0]
             fdate="-".join(fdate.split('-')[1:3])
-            t=TestFile(fdate,prefix='/'.join(f.split('/')[0:-1])+'/')
+            t=TestFile(fdate,prefix='/'.join(f.split('/')[0:-1])+'/',test_name=self.test_name,plot_name=self.plot_name)
             testname=int(t.getTestName().split(' ')[-2])
             #t.plotRobotInformation()
-            #t.plotSave()
+            #t.plotRobotInformation()
+            t.plotSave()
             datapackets[t.getConsoleImage()]['Test'].append(testname)
             datapackets[t.getConsoleImage()]['Received'].append(t.getStatistics()['Received'])
             datapackets[t.getConsoleImage()]['Send'].append(t.getStatistics()['Send'])
@@ -227,13 +255,13 @@ class TestFiles():
     def genFileName(self,test_name,test=None,protocol=None,name=None):
         """Note: inputs here are parameters, not class fields on purpose"""
         filename=test_name
-        print(test)
         if name:
             filename=filename+'_'+name
         if protocol:
             filename=filename+'_'+protocol
         if test!=None:
-            filename=filename+'_'+('%003d'% test)+'_loss'
+            filename=filename+'_'+('%05d'% test)+''
+        print(filename)
         return filename
 
 
@@ -246,7 +274,7 @@ class TestFiles():
             else:
                 plottitle+=', Protocol: '+protocol
         if test!=None:
-            plottitle+=', Test: '+('%d'% test)+' loss'
+            plottitle+=', Test: '+('%d'% test)+''
         return plottitle
 
     def plotCompareProtocols(self,data,protocols,test,test_name,plot_name):
@@ -263,7 +291,7 @@ class TestFiles():
 
         plt.legend()
         plt.xlabel("Link loss [%]")
-        plt.ylabel("Packets")
+        plt.ylabel("Ratio")
 
 
         sub=plt.subplot(132)
@@ -298,9 +326,11 @@ class TestFiles():
         sub=plt.subplot(221)
 
         scale, data_s = (list(t) for t in zip(*sorted(zip(d["Test"], d["Send"]))))
-        plt.plot(scale,data_s,'r-*',label='Send')
+        plt.plot(scale,data_s,'r-*',label='Received')
         scale, data_r = (list(t) for t in zip(*sorted(zip(d["Test"], d["Received"]))))
-        plt.plot(scale,data_r,'b-*',label='Received')
+        plt.plot(scale,data_r,'b-*',label='Send')
+        print(data_s)
+        print(data_r)
         divided=map(truediv,  data_s,data_r)
 
         plt.legend()
@@ -330,7 +360,7 @@ class TestFiles():
 
     def timeHistogram(self,data,protocol,test,test_name,plot_name):
         fig=plt.figure()
-        plt.suptitle(self.genPlotTitle('',protocol=protocol,test=test))
+        plt.suptitle(self.genPlotTitle(plot_name,protocol=protocol,test=test))
         b=np.arange(0,5.1,0.1)
         n, bins, patches = plt.hist(data, bins=b, facecolor='green', alpha=0.75)
         plt.xlim([0,5])
@@ -338,6 +368,7 @@ class TestFiles():
         plt.xlabel("Time [s]")
         plt.ylabel("Number of packets")
         fig.savefig(self.genFileName(test_name,protocol=protocol,test=test,name='histogram')+".png",dpi=300)
+
 
 
 
