@@ -3,7 +3,7 @@ FROM mother:nvidia_qt_ros
 #Get some sources in right places
 #There should be folders with canfestival, marble library and mapwidget in this directory
 ADD marblelib /src/marblelib
-ADD map /src/map
+ADD robotic-map/map /src/map
 
 #Install other mother dependencies
 RUN apt-get install -y libpopt-dev libxv-dev libspeex-dev libnl-3-dev libnl-genl-3-dev libftgl-dev freeglut3-dev libnfc-dev libftdi-dev libftdi1 mercurial cmake
