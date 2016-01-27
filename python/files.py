@@ -302,7 +302,7 @@ class TestFiles():
         plt.legend()
 
         plt.xlabel("Link loss [%]")
-        plt.ylabel("Mean of reception time derivative [s]")
+        plt.ylabel("Mean delivery time [s]")
 
         sub=plt.subplot(133)
         for protocol in protocols:
@@ -311,7 +311,7 @@ class TestFiles():
             plt.plot(scale,timestd,'-*',label=self.names[protocol])
         plt.legend()
         plt.xlabel("Link loss [%]")
-        plt.ylabel("Std of reception time derivative")
+        plt.ylabel("Standard deviation of delivery time")
 
         fig.tight_layout()
         plt.subplots_adjust(top=0.85)
@@ -347,12 +347,12 @@ class TestFiles():
         scale, timestd = (list(t) for t in zip(*sorted(zip(d["Test"], d["TimeStd"]))))
         plt.plot(scale,timemean,'y-*',label="Mean")
         plt.xlabel("Link loss [%]")
-        plt.ylabel("Mean of reception time derivative [s]")
+        plt.ylabel("Mean delivery time [s]")
 
         sub=plt.subplot(224)
         plt.plot(scale,timestd,'g-*',label="Std")
         plt.xlabel("Link loss [%]")
-        plt.ylabel("Std of reception time derivative")
+        plt.ylabel("Standard deviation of delivery time")
 
         fig.tight_layout()
         plt.subplots_adjust(top=0.85)
