@@ -290,7 +290,7 @@ class TestFiles():
             divided, = plt.plot(scale,divided,'-*',label=self.names[protocol])
 
         plt.legend()
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]") #FIXME
         plt.ylabel("Ratio")
 
 
@@ -301,7 +301,7 @@ class TestFiles():
             plt.plot(scale,timemean,'-*',label=self.names[protocol])
         plt.legend()
 
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]")
         plt.ylabel("Mean delivery time [s]")
 
         sub=plt.subplot(133)
@@ -310,7 +310,7 @@ class TestFiles():
             scale, timestd = (list(t) for t in zip(*sorted(zip(d["Test"], d["TimeStd"]))))
             plt.plot(scale,timestd,'-*',label=self.names[protocol])
         plt.legend()
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]")
         plt.ylabel("Standard deviation of delivery time")
 
         fig.tight_layout()
@@ -334,24 +334,24 @@ class TestFiles():
         divided=map(truediv,  data_s,data_r)
 
         plt.legend()
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]")
         plt.ylabel("Packets")
 
         sub=plt.subplot(222)
         divided, = plt.plot(scale,divided,'g-*',label="Radio")
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]")
         plt.ylabel("Ratio")
 
         sub=plt.subplot(223)
         scale, timemean = (list(t) for t in zip(*sorted(zip(d["Test"], d["TimeMean"]))))
         scale, timestd = (list(t) for t in zip(*sorted(zip(d["Test"], d["TimeStd"]))))
         plt.plot(scale,timemean,'y-*',label="Mean")
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]")
         plt.ylabel("Mean delivery time [s]")
 
         sub=plt.subplot(224)
         plt.plot(scale,timestd,'g-*',label="Std")
-        plt.xlabel("Link loss [%]")
+        plt.xlabel("Link delay [ms]")
         plt.ylabel("Standard deviation of delivery time")
 
         fig.tight_layout()
