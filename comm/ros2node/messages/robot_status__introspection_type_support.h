@@ -1,0 +1,12 @@
+// generated from rosidl_typesupport_introspection_c/resource/msg__introspection_type_support.h.template
+
+#ifndef ROBOT_INFORMATION_MSGS__MSG__ROBOT_STATUS__INTROSPECTION__TYPE_SUPPORT_H_
+#define ROBOT_INFORMATION_MSGS__MSG__ROBOT_STATUS__INTROSPECTION__TYPE_SUPPORT_H_
+
+#include <rosidl_generator_c/message_type_support.h>
+
+#include "robot_information_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h"
+
+static rosidl_message_type_support_t robot_information_msgs__msg__rosidl_typesupport_introspection_c__RobotStatus_message_type_support_handle;
+
+#endif  // ROBOT_INFORMATION_MSGS__MSG__ROBOT_STATUS__INTROSPECTION__TYPE_SUPPORT_H_
