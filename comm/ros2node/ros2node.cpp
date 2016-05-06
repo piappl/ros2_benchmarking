@@ -358,12 +358,12 @@ namespace roscommunication
             RobotControl control = content.value<RobotControl>();
             robot_information_msgs::msg::RobotControl c;
 
-            c.emergency_active = control.id; //TODO
+            c.emergency_active = control.field2;
             c.drive_reversed = control.field1;
-            c.turtle = control.field2;
+            c.turtle = control.id; //TODO
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<robot_information_msgs::msg::RobotControl> >(mPublishers.value(n));
 
-            debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u", c.emergency_active);
+            debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u", c.turtle);
             pub->publish(c);
         }
 
@@ -387,11 +387,12 @@ namespace roscommunication
             s.battery = status.field1;
             s.battery_charging = status.field2;
             s.brake_active = status.field3;
-            s.emergency_active = status.id; //TODO
+            s.emergency_active = status.field5;
             s.drive_reversed = status.field4;
-            s.turtle_factor = status.field5;
+            s.turtle_factor = status.id; //TODO
 
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<robot_information_msgs::msg::RobotStatus> >(mPublishers.value(n));
+            debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u", s.turtle_factor);
             pub->publish(s);
         }
 

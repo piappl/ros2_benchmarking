@@ -38,8 +38,8 @@ namespace roscommunication
 
         communication::RobotControl control;
         control.field1 = msg->drive_reversed;
-        control.id = msg->emergency_active; //TODO
-        control.field2 = msg->turtle;
+        control.field2 = msg->emergency_active;
+        control.id = msg->turtle; //TODO
         return QVariant::fromValue(control);
     }
 
@@ -53,8 +53,8 @@ namespace roscommunication
         status.field2 = msg->battery;
         status.field3 = msg->battery_charging;
         status.field4 = msg->drive_reversed;
-        status.id = msg->emergency_active; //TODO
-        status.field5 = msg->turtle_factor;
+        status.field5 = msg->emergency_active;
+        status.id = msg->turtle_factor; //TODO
         return QVariant::fromValue(status);
     }
 
