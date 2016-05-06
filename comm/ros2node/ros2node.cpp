@@ -410,7 +410,7 @@ namespace roscommunication
                 auto pub = mNode->create_publisher<T>(RosTopics::fullTopic(n, "_").toStdString(),
                                                       Ros2QoSProfile::getProfile(n));
                 mPublishers.insert(n, pub);
-                debug(LOG_WARNING, "Ros2Publisher", "--advertised--, %u", (uint)(mPublishers.value(n)->get_queue_size()));
+                //debug(LOG_WARNING, "Ros2Publisher", "--advertised--, %u", (uint)(mPublishers.value(n)->get_queue_size()));
             }
         }
 
