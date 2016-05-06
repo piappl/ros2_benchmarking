@@ -6,12 +6,12 @@ using namespace roscommunication;
 Ros1Participant::Ros1Participant(NodeHandlePtr handle)
     : mNodeHandle(handle), mMasterUp(false)
 {
-    debug(LOG_WARNING, "Ros1Participant", "Creation");
+    //debug(LOG_WARNING, "Ros1Participant", "Creation");
 }
 
 Ros1Participant::~Ros1Participant()
 {
-    debug(LOG_WARNING, "Ros1Participant", "Destruction");
+    //debug(LOG_WARNING, "Ros1Participant", "Destruction");
 }
 
 bool Ros1Participant::isNodeOperating() const

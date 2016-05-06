@@ -3,12 +3,13 @@
 
 #include <QString>
 #include <common/messagetypes.h>
+#include <common/rosnodeinterface.h>
 
 namespace roscommunication
 {
     class Ros2NodeImpl;
 
-    class Ros2Node
+    class Ros2Node : public RosNodeInterface
     {
     public:
         Ros2Node(QString name);

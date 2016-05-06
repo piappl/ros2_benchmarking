@@ -3,17 +3,19 @@
 
 #include <QString>
 #include <common/messagetypes.h>
+#include <common/rosnodeinterface.h>
 
 namespace roscommunication
 {
     class Ros1NodeImpl;
 
-    class Ros1Node
+    class Ros1Node : public RosNodeInterface
     {
     public:
         Ros1Node(QString name);
         ~Ros1Node();
 
+        void start() {}
         void advertise(communication::MessageType notification);
         void subscribe(communication::MessageType n, bool sub = true);
 

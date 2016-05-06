@@ -58,7 +58,7 @@ namespace roscommunication
 
         void processMessage(const typename T::SharedPtr msg)
         {
-           debug(LOG_WARNING, "Ros2node", "process message %d starts", messageType());
+           //debug(LOG_WARNING, "Ros2node", "process message %d starts", messageType());
            if (isStopped())
            {   //TODO - upgrade. For now, just don't process
                return;
@@ -87,7 +87,7 @@ namespace roscommunication
 
             mSubscription = mNode->create_subscription<T>
                     (fullTopicName.toStdString(), callback, Ros2QoSProfile::getProfile(messageType()));
-            debug(LOG_WARNING, "Ros2SubscriptionListener", "Subscribed");
+            //debug(LOG_WARNING, "Ros2SubscriptionListener", "Subscribed");
         }
     };
 
@@ -117,9 +117,9 @@ namespace roscommunication
     protected:
         void run()
         {
-            debug(LOG_WARNING, "Ros2ListenerThread", "Spin");
+            //debug(LOG_WARNING, "Ros2ListenerThread", "Spin");
             spin();
-            debug(LOG_WARNING, "Ros2ListenerThread", "Spin PAST");
+            //debug(LOG_WARNING, "Ros2ListenerThread", "Spin PAST");
         }
 
     private:
@@ -130,7 +130,7 @@ namespace roscommunication
 
         Ros2SubscriptionListenerInterfacePtr constructListener(communication::MessageType n)
         {
-            debug(LOG_WARNING, "Ros2Subscriber", "constructing listener %d", n);
+            //debug(LOG_WARNING, "Ros2Subscriber", "constructing listener %d", n);
 
             Ros2SubscriptionListenerInterfacePtr listenerPtr;
             switch (n)
@@ -151,7 +151,7 @@ namespace roscommunication
                 debug(LOG_ERROR, "Ros2Subscriber", "Invalid type");
                 break;
             }
-            debug(LOG_WARNING, "Ros2Subscriber", "constructed");
+            //debug(LOG_WARNING, "Ros2Subscriber", "constructed");
             connect(listenerPtr.data(), SIGNAL(messageReceived(communication::MessageType,QVariant)),
                     this, SIGNAL(messageReceived(communication::MessageType,QVariant)));
 
@@ -179,6 +179,11 @@ namespace roscommunication
                     this, SIGNAL(messageReceived(communication::MessageType,QVariant)));
         }
 
+        ~Ros2Subscriber()
+        {
+            //TODO - properly terminate the listener thread (set sth. that stops spin)
+        }
+
         void start()
         {
             startListening();
@@ -195,7 +200,7 @@ namespace roscommunication
 
             if (!mNode)
             {
-                debug(LOG_WARNING, "Ros2Subscriber", "Adding planned subscription");
+                //debug(LOG_WARNING, "Ros2Subscriber", "Adding planned subscription");
                 addPlannedSubscribe(n);
                 return;
             }
@@ -204,7 +209,7 @@ namespace roscommunication
                 removePlannedSubscribe(n);
             }
 
-            debug(LOG_WARNING, "Ros2Node", "Subscribe to %d", n);
+            //debug(LOG_WARNING, "Ros2Node", "Subscribe to %d", n);
             mListener.subscribe(n);
         }
 
@@ -255,7 +260,7 @@ namespace roscommunication
     class Ros2Publisher
     {
     public:
-        Ros2Publisher(rclcpp::Node::SharedPtr node) : mNode(node) {}
+        Ros2Publisher(rclcpp::Node::SharedPtr node) : mNode(node), mStarted(false) {}
 
         void advertise(MessageType n)
         {
@@ -275,9 +280,17 @@ namespace roscommunication
             }
         }
 
+        void start()
+        {
+            mStarted = true;
+        }
+
         void publishByteMessage(QVariant content)
         {
-            debug(LOG_DEBUG, "Ros2Publisher", "publish testMessage");
+            if (!mStarted)
+                return;
+
+            //debug(LOG_DEBUG, "Ros2Publisher", "publish testMessage");
 
             if (!mNode)
             {
@@ -302,7 +315,10 @@ namespace roscommunication
 
         void publishCmdVel(QVariant content)
         {
-            debug(LOG_DEBUG, "Ros2Publisher", "publish cmdVel");
+            if (!mStarted)
+                return;
+
+            //debug(LOG_DEBUG, "Ros2Publisher", "publish cmdVel");
 
             if (!mNode)
             {
@@ -327,7 +343,10 @@ namespace roscommunication
 
         void publishRobotControl(QVariant content)
         {
-            debug(LOG_DEBUG, "Ros2Publisher", "publish robotControl");
+            if (!mStarted)
+                return;
+
+            //debug(LOG_DEBUG, "Ros2Publisher", "publish robotControl");
 
             if (!mNode)
             {
@@ -350,7 +369,10 @@ namespace roscommunication
 
         void publishRobotStatus(QVariant content)
         {
-            debug(LOG_WARNING, "Ros2Publisher", "publish robot status");
+            if (!mStarted)
+                return;
+
+            //debug(LOG_WARNING, "Ros2Publisher", "publish robot status");
 
             if (!mNode)
             {
@@ -392,6 +414,7 @@ namespace roscommunication
         }
 
         rclcpp::Node::SharedPtr mNode;
+        bool mStarted;
         QMap<MessageType, rclcpp::publisher::PublisherBase::SharedPtr> mPublishers;
     };
 
@@ -434,6 +457,7 @@ namespace roscommunication
         void start()
         {
             mSubscriber.start();
+            mPublisher.start();
         }
 
         void advertise(MessageType n)
@@ -480,7 +504,7 @@ Ros2Node::Ros2Node(QString name) : d(new Ros2NodeImpl(name))
 
 Ros2Node::~Ros2Node()
 {
-    debug(LOG_WARNING, "RosNode2", "destruction");
+    //debug(LOG_WARNING, "RosNode2", "destruction");
     delete d;
 }
 

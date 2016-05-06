@@ -67,7 +67,7 @@ namespace roscommunication
 
         ~Ros1NodeImpl()
         {
-            debug(LOG_WARNING, "Destruction", "of Ros1Impl");
+            //debug(LOG_WARNING, "Destruction", "of Ros1Impl");
             mMasterChecker.quit();
             mMasterChecker.wait();
         }
@@ -122,7 +122,7 @@ Ros1Node::Ros1Node(QString name) : d(new Ros1NodeImpl(name))
 
 Ros1Node::~Ros1Node()
 {
-    debug(LOG_WARNING, "RosNode", "destruction");
+    //debug(LOG_WARNING, "RosNode", "destruction");
     delete d;
 }
 

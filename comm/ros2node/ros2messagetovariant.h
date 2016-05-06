@@ -47,6 +47,7 @@ namespace roscommunication
     QVariant ros2MessageToVariant<robot_information_msgs::msg::RobotStatus::SharedPtr>(
             robot_information_msgs::msg::RobotStatus::SharedPtr msg)
     {
+        debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%u", msg->emergency_active);
         communication::RobotStatus status;
         status.field1 = msg->brake_active;
         status.field2 = msg->battery;
