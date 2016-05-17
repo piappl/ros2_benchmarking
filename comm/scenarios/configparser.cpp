@@ -15,17 +15,20 @@ namespace
     const int kStartDelay = 2000;
     const int kTestingTime = 20000;
     const int kQuitDelay = 5000;
+    const int kByteMessageSize = 1000;
 
     const QString kDefaultQoS = "default";
 }
 
 ConfigParser::ConfigParser(QString filename)
-    : mSettings(filename, QSettings::IniFormat)
+    : mSettings(filename, QSettings::IniFormat),
+      mByteMessageSize(kByteMessageSize)
 {   //TODO - does not check for argument sanity
     parseTimersSection();
     parsePublish();
     parseSubscribe();
     parseQoS();
+    parseOther();
 }
 
 void ConfigParser::parseTimersSection()
@@ -89,6 +92,12 @@ void ConfigParser::parseQoS()
     mQoS[MessageTypeBytes] = mSettings.value("QoS/bytes", kDefaultQoS).toString();
 }
 
+void ConfigParser::parseOther()
+{
+    bool ok; //TODO add check
+    mSettings.value("other/bytemessagesize", kByteMessageSize).toInt(&ok);
+}
+
 QString ConfigParser::getQoS(communication::MessageType t) const
 {
     return mQoS.value(t, kDefaultQoS);
@@ -107,4 +116,9 @@ QList<communication::MessageType> ConfigParser::publishes() const
 int ConfigParser::timerInterval(TimerType t) const
 {
     return mTimersIntervals.value(t);
+}
+
+int ConfigParser::byteMessageSize() const
+{
+    return mByteMessageSize;
 }

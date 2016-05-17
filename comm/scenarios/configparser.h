@@ -16,18 +16,21 @@ public:
     QList<communication::MessageType> subscribes() const;
     QList<communication::MessageType> publishes() const;
     int timerInterval(TimerType t) const;
+    int byteMessageSize() const;
 
 private:
     void parseTimersSection();
     void parsePublish();
     void parseSubscribe();
     void parseQoS();
+    void parseOther();
 
     QSettings mSettings;
     QMap<TimerType, int> mTimersIntervals;
     QMap<communication::MessageType, QString> mQoS;
     QList<communication::MessageType> mSubscribe;
     QList<communication::MessageType> mPublish;
+    int mByteMessageSize;
 };
 
 #endif //CONFIGPARSER_H

@@ -134,9 +134,5 @@ void TestRunner::publishRobotStatus()
 
 void TestRunner::publishBytes()
 {
-    static int i = 900;
-    const int maxSize = 1100;
-    int size = i;
-    i = (i + 1) % maxSize;
-    mNode->publishByteMessage(size);
+    mNode->publishByteMessage(mConfig.byteMessageSize());
 }
