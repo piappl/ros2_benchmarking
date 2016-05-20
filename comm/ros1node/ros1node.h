@@ -3,13 +3,13 @@
 
 #include <QString>
 #include <common/messagetypes.h>
-#include <common/rosnodeinterface.h>
+#include <common/nodeinterface.h>
 
 namespace roscommunication
 {
     class Ros1NodeImpl;
 
-    class Ros1Node : public RosNodeInterface
+    class Ros1Node : public communication::NodeInterface
     {
     public:
         Ros1Node(QString name);
@@ -17,13 +17,15 @@ namespace roscommunication
 
         void start() {}
         void advertise(communication::MessageType notification);
-        void subscribe(communication::MessageType n, bool sub = true);
+        void subscribe(communication::MessageType t);
+        void unsubscribe(communication::MessageType t);
 
         void publishCmdVel(communication::MoveBase cmdVel);
         void publishRobotStatus(communication::RobotStatus status);
         void publishRobotControl(communication::RobotControl control);
         void publishByteMessage(int size);
 
+    private:
         Ros1NodeImpl *d;
     };
 }

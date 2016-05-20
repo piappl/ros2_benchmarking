@@ -62,7 +62,7 @@ namespace roscommunication
     QVariant ros2MessageToVariant<std_msgs::msg::ByteMultiArray::SharedPtr>(
             std_msgs::msg::ByteMultiArray::SharedPtr msg)
     {   //TODO
-        debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=00, size=%d", msg->data.size());
+        debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=00, size=%lu", msg->data.size());
         return QVariant::fromValue(msg->data.size());
     }
 }

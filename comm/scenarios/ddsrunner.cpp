@@ -1,8 +1,8 @@
 #include "nodestarter.h"
-#include <ros2node/ros2nodefactory.h>
+#include <ddsnode/ddsnodefactory.h>
 
 int main(int argc, char *argv[])
 {
-    NodeFactoryInterfacePtr factory(new Ros2NodeFactory());
+    NodeFactoryInterfacePtr factory(new DDSNodeFactory());
     return nodestarter::startNode(argc, argv, factory);
 }

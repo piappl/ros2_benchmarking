@@ -1,12 +1,11 @@
 #include <common/logging.h>
 #include "testrunner.h"
 
-using namespace roscommunication;
 using namespace communication;
 
 //TODO - refactor this
 
-TestRunner::TestRunner(QString configFile, RosNodeInterfacePtr node)
+TestRunner::TestRunner(QString configFile, NodeInterfacePtr node)
     : mConfig(configFile), mNode(node)
 {
     debug(LOG_BENCHMARK, "TestRunner", "Initializing, test will start after delay");
@@ -56,13 +55,21 @@ void TestRunner::advertise()
     }
 }
 
-void TestRunner::subscribe(bool subscribe)
+void TestRunner::subscribe()
 {
     foreach (MessageType t, mConfig.subscribes())
     {
-        mNode->subscribe(t, subscribe);
+        mNode->subscribe(t);
     }
     mNode->start();
+}
+
+void TestRunner::unsubscribe()
+{
+    foreach (MessageType t, mConfig.subscribes())
+    {
+        mNode->unsubscribe(t);
+    }
 }
 
 void TestRunner::startTest()
@@ -90,7 +97,7 @@ void TestRunner::startTest()
 void TestRunner::finishTest()
 {
     debug(LOG_BENCHMARK, "TestRunner", "Test finished, will close after delay");
-    subscribe(false);
+    unsubscribe();
     mCmdVelTimer.stop();
     mRobotControlTimer.stop();
     mRobotStatusTimer.stop();

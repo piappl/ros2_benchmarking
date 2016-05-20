@@ -92,9 +92,14 @@ namespace roscommunication
             mPublisher.publishByteMessage(size);
         }
 
-        void subscribe(MessageType n, bool sub = true)
+        void subscribe(MessageType n)
         {
-            mSubscriber.subscribe(n, sub);
+            mSubscriber.subscribe(n, true);
+        }
+
+        void unsubscribe(MessageType n)
+        {
+            mSubscriber.subscribe(n, false);
         }
 
         void advertise(MessageType n)
@@ -132,6 +137,8 @@ void Ros1Node::publishRobotControl(RobotControl control) { return d->publishRobo
 void Ros1Node::publishByteMessage(int size) { return d->publishByteMessage(size); }
 
 void Ros1Node::advertise(MessageType n) { d->advertise(n); }
-void Ros1Node::subscribe(MessageType n, bool subscribe) { return d->subscribe(n, subscribe); }
+
+void Ros1Node::subscribe(MessageType n) { return d->subscribe(n); }
+void Ros1Node::unsubscribe(MessageType n) { return d->unsubscribe(n); }
 
 #include "ros1node.moc"

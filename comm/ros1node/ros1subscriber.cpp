@@ -1,5 +1,5 @@
 #include <common/logging.h>
-#include <common/rostopics.h>
+#include <common/topics.h>
 
 #include "ros1subscriber.h"
 #include "ros1node.h"
@@ -62,7 +62,7 @@ QString Ros1Subscriber::commonSubscribe(MessageType n, bool sub)
      if (processSubscribeRequest(n, sub))
         return QString();
 
-    QString fullTopic = RosTopics::fullTopic(n);
+    QString fullTopic = Topics::fullTopic(n);
     debug(LOG_WARNING, "Ros1Subscriber", "subscribing for %s", qPrintable(fullTopic));
     return fullTopic;
 }

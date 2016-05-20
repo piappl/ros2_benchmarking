@@ -5,7 +5,7 @@
 #include <std_msgs/String.h>
 
 #include <common/logging.h>
-#include <common/rostopics.h>
+#include <common/topics.h>
 #include <common/communicationutils.h>
 #include "ros1messages.h"
 #include "ros1publisher.h"
@@ -47,7 +47,7 @@ QString Ros1Publisher::commonAdvertise(MessageType n)
         return QString();
     }
 
-    QString fullTopic = RosTopics::fullTopic(n);
+    QString fullTopic = Topics::fullTopic(n);
     return fullTopic;
 }
 
@@ -142,6 +142,7 @@ void Ros1Publisher::publishByteMessage(int size)
     }
     std_msgs::ByteMultiArray msg;
     CommunicationUtils::fillRandomVector(size, msg.data);
-    CommunicationUtils::dumpToHex(msg.data.data(), msg.data.size(), "PUBLISHING");
+    //CommunicationUtils::dumpToHex(msg.data.data(), msg.data.size(), "PUBLISHING");
+    debug(LOG_BENCHMARK, "PUBLISHING byte_message", "id=00, size=%lu", size);
     mPublishers.value(MessageTypeBytes)->publish(msg);
 }

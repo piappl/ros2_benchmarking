@@ -8,17 +8,13 @@ set(SOURCES
 set(HEADERS
     communicationutils.h
     logging.h
-    rosnodeinterface.h)
-
-set(INSTALL_HEADERS
-    logging.h
-    communicationutils.h
+    nodeinterface.h
     messagetypes.h
-    rostopics.h
-    rosnodeinterface.h)
+    topics.h
+    nodefactoryinterface.h)
 
 add_library(common SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(common Qt5::Core)
-INSTALL(FILES ${INSTALL_HEADERS} DESTINATION /include/common)
+INSTALL(FILES ${HEADERS} DESTINATION /include/common)
 INSTALL_TARGETS(/lib RUNTIME_DIRECTORY /lib common)
 

@@ -1,14 +1,14 @@
 #include <QObject>
 #include <QTimer>
 
-#include <common/rosnodeinterface.h>
+#include <common/nodeinterface.h>
 #include "configparser.h"
 
 class TestRunner : public QObject
 {
     Q_OBJECT
 public:
-    TestRunner(QString configFile, roscommunication::RosNodeInterfacePtr node);
+    TestRunner(QString configFile, communication::NodeInterfacePtr node);
 
 signals:
     void quit();
@@ -25,9 +25,10 @@ private slots:
 private:
     void initTimers();
     void advertise();
-    void subscribe(bool subsribe = true);
+    void subscribe();
+    void unsubscribe();
 
-    roscommunication::RosNodeInterfacePtr mNode;
+    communication::NodeInterfacePtr mNode;
     ConfigParser mConfig;
 
     QTimer mCmdVelTimer;

@@ -13,10 +13,12 @@ set(HEADERS
     ros2messages.h
     ros2messagetovariant.h
     ros2subscriptionlistenerinterface.h
-    ros2qosprofile.h)
+    ros2qosprofile.h
+    ros2nodefactory.h)
 
 set(INSTALL_HEADERS
-    ros2node.h)
+    ros2node.h
+    ros2nodefactory.h)
 
 add_library(ros2node SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(ros2node common rclcpp__rmw_opensplice_cpp rmw rmw_opensplice_cpp rosidl_typesupport_opensplice_cpp

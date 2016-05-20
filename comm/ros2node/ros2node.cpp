@@ -12,7 +12,7 @@
 #include <common/logging.h>
 #include <common/messagetypes.h>
 #include <common/communicationutils.h>
-#include <common/rostopics.h>
+#include <common/topics.h>
 #include "ros2node.h"
 #include "ros2messages.h"
 #include "ros2messagetovariant.h"
@@ -81,7 +81,7 @@ namespace roscommunication
                 this->processMessage(msg);
               };
 
-            QString fullTopicName = RosTopics::fullTopic(messageType(), "_");
+            QString fullTopicName = Topics::fullTopic(messageType(), "_");
 
             debug(LOG_WARNING, "Ros2SubscriptionListener", "Subscribe |%s| mNode %lld",
                   qPrintable(fullTopicName), (qint64)mNode.get());
@@ -190,15 +190,8 @@ namespace roscommunication
             startListening();
         }
 
-        void subscribe(communication::MessageType n, bool subscribe = true)
+        void subscribe(communication::MessageType n)
         {
-            //TODO (if !subscribe)
-            if (!subscribe)
-            {
-                debug(LOG_ERROR, "Ros2Subscriber", "Unsubscribe: not implemented (yet)!");
-                return;
-            }
-
             if (!mNode)
             {
                 //debug(LOG_WARNING, "Ros2Subscriber", "Adding planned subscription");
@@ -212,6 +205,12 @@ namespace roscommunication
 
             //debug(LOG_WARNING, "Ros2Node", "Subscribe to %d", n);
             mListener.subscribe(n);
+        }
+
+        void unsubscribe(communication::MessageType n)
+        {
+            //TODO - implement
+            debug(LOG_ERROR, "Ros2Subscriber", "Unsubscribe: not implemented (yet)!");
         }
 
     private:
@@ -311,7 +310,7 @@ namespace roscommunication
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<std_msgs::msg::ByteMultiArray> >(mPublishers.value(n));
             std_msgs::msg::ByteMultiArray msg;
             CommunicationUtils::fillRandomVector(size, msg.data);
-            debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=%d, size=%d", count++, msg.data.size());
+            debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=%d, size=%lu", count++, msg.data.size());
             pub->publish(msg);
         }
 
@@ -407,9 +406,9 @@ namespace roscommunication
 
             if (!mPublishers.contains(n))
             {
-                debug(LOG_WARNING, "Ros2Publisher", "advertising %d on %s", n, qPrintable(RosTopics::fullTopic(n, "_")));
+                debug(LOG_WARNING, "Ros2Publisher", "advertising %d on %s", n, qPrintable(Topics::fullTopic(n, "_")));
 
-                auto pub = mNode->create_publisher<T>(RosTopics::fullTopic(n, "_").toStdString(),
+                auto pub = mNode->create_publisher<T>(Topics::fullTopic(n, "_").toStdString(),
                                                       Ros2QoSProfile::getProfile(n));
                 mPublishers.insert(n, pub);
                 //debug(LOG_WARNING, "Ros2Publisher", "--advertised--, %u", (uint)(mPublishers.value(n)->get_queue_size()));
@@ -468,9 +467,14 @@ namespace roscommunication
             mPublisher.advertise(n);
         }
 
-        void subscribe(MessageType n, bool subscribe)
+        void subscribe(MessageType n)
         {
-            mSubscriber.subscribe(n, subscribe);
+            mSubscriber.subscribe(n);
+        }
+
+        void unsubscribe(MessageType n)
+        {
+            mSubscriber.unsubscribe(n);
         }
 
         void publishCmdVel(MoveBase mobileBase)
@@ -518,7 +522,9 @@ void Ros2Node::publishRobotStatus(RobotStatus status) { return d->publishRobotSt
 void Ros2Node::publishRobotControl(RobotControl control) { return d->publishRobotControl(control); }
 void Ros2Node::publishByteMessage(int size) { return d->publishByteMessage(size); }
 
-void Ros2Node::subscribe(MessageType n, bool subscribe) { return d->subscribe(n, subscribe); }
+void Ros2Node::subscribe(MessageType n) { return d->subscribe(n); }
+void Ros2Node::unsubscribe(MessageType n) { return d->unsubscribe(n); }
+
 void Ros2Node::advertise(MessageType n) { d->advertise(n); }
 
 #include "ros2node.moc"

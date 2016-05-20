@@ -7,9 +7,9 @@
 #include "messagetypes.h"
 #include "logging.h"
 
-namespace roscommunication
+namespace communication
 {
-    class RosTopics
+    class Topics
     {
         private:
             static QString join() { return "/"; }
