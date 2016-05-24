@@ -7,10 +7,6 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
 find_package(Qt5Core REQUIRED)
 set(CMAKE_AUTOMOC TRUE)
 
-#TOD
-set(COMM_ROS ON)
-set(COMM_ROS2 ON)
-
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -19,14 +15,16 @@ use_cxx11()
 
 add_subdirectory(common)
 if(COMM_ROS2)
-  set(ROS2_PREFIX $ENV{HOME}/ros2_ws/install) #TODO
+  set(ROS2_PREFIX /ros2_ws/install) #TODO
   include_directories(${ROS2_PREFIX}/include)
   include_directories(${ROS2_PREFIX}/include/rosidl_typesupport_opensplice_cpp/impl)
   link_directories(${ROS2_PREFIX}/lib)
   add_subdirectory(ros2node)
-endif()
-if(COMM_ROS)
+elseif(COMM_ROS)
+  include_directories(/opt/ros/jade/include)
   link_directories(/opt/ros/jade/lib) #TODO
   add_subdirectory(ros1node)
+else()
+    message(FATAL_ERROR "Select ROS version, e.g: cmake -DCOMM_ROS=true ..")
 endif()
 add_subdirectory(scenarios)

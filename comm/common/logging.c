@@ -76,7 +76,7 @@ void debug(unsigned level, char const *facility, const char *format, ...)
 		buffer[len++] = '\n';
 		write_log(buffer, len);
 	} else
-		write_log(too_long, sizeof(too_long));
+		write_log(too_long, strlen(too_long));
 }
 
 // expects 3 * len bytes of memory at 'buffer'

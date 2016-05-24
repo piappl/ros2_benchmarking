@@ -1,0 +1,7 @@
+To install dependencies and build containers run (~2h):
+
+    sudo ./python/run.py --build-all
+
+To get more help on running tests:
+
+    sudo ./python/run.py --help

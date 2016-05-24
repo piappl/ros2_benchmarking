@@ -1,1 +1,10 @@
 comm-build/
+data
+graphs
+logs
+tcpdump
+results/
+python/*.pyc
+python/__pycache__
+.*.swp
+ros2_psor_messages/

@@ -61,6 +61,7 @@ namespace roscommunication
            //debug(LOG_WARNING, "Ros2node", "process message %d starts", messageType());
            if (isStopped())
            {   //TODO - upgrade. For now, just don't process
+               debug(LOG_WARNING, "Ros2SubscriptionListener", "Listener is stopped");
                return;
            }
 
@@ -287,6 +288,7 @@ namespace roscommunication
 
         void publishByteMessage(QVariant content)
         {
+            static int count = 0;
             if (!mStarted)
                 return;
 
@@ -309,7 +311,7 @@ namespace roscommunication
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<std_msgs::msg::ByteMultiArray> >(mPublishers.value(n));
             std_msgs::msg::ByteMultiArray msg;
             CommunicationUtils::fillRandomVector(size, msg.data);
-            CommunicationUtils::dumpToHex((const int8_t*)msg.data.data(), msg.data.size(), "PUBLISHING");
+            debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=%d, size=%d", count++, msg.data.size());
             pub->publish(msg);
         }
 
