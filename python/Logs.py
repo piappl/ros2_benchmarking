@@ -46,7 +46,7 @@ class Logs:
                         first = line["Datetime"]
             for line in log['Console']:
                 if (line["Published"] and line['Command'] == 'cmd_vel'):
-                    if line["Datetime"] > first:
+                    if received == 0 or line["Datetime"] > first:
                         sent += 1
             fh.write('{} {}\n'.format(log['Value'], sent - received))
 

@@ -1,7 +1,7 @@
 set term png
 set output output
 set title title
-set offset 0, 0, 1, 0
+set offset graph 0, 0, 0.1, 0
 set yr [0:]
 set ylabel "Delay [s]"
 set xlabel "Impairment value"
