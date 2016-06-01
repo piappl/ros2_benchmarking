@@ -15,9 +15,6 @@ then
     exit 1
 fi
 
-dpkg -s python3-docker 2>/dev/null | grep -q "Status: install ok installed" || apt-get install -y python3-docker
-dpkg -s docker.io 2>/dev/null | grep -q "Status: install ok installed" || apt-get install -y docker.io
-
 . scripts/networks.sh
 
 if [ 1 -eq `docker network ls -f name=ros1 | wc -l` ]

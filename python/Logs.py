@@ -63,4 +63,5 @@ class Logs:
                 if (line["Received"] and line['Command'] == 'cmd_vel'):
                     received = line["Datetime"]
                     break
-            fh.write('{} {}\n'.format(log['Value'], (received - published).total_seconds()))
+            if received != None and published != None:
+                fh.write('{} {}\n'.format(log['Value'], (received - published).total_seconds()))

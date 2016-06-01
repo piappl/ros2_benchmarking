@@ -1,4 +1,9 @@
-To install dependencies and build containers run (~2h):
+Install dependencies:
+
+    Ubuntu: apt-get install python3-docker docker.io tcpdump
+    Arch:   pacman -S python-docker-py docker tcpdump gnuplot
+
+Then build all containers (~2h):
 
     sudo ./python/run.py --build-all
 
