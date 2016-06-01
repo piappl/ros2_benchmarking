@@ -2,6 +2,7 @@
 #define NODEFACTORYINTERFACE_H
 
 #include <common/nodeinterface.h>
+#include <common/settings.h>
 
 //TODO - node factory might not be needed, if makeNode impl. are trivials and deps on includes with ctor
 //for nodes are acceptable for library users
@@ -16,7 +17,7 @@ public:
         NodeTypeDDS
     };
 
-    virtual communication::NodeInterfacePtr makeNode(QString nodeName) = 0;
+    virtual communication::NodeInterfacePtr makeNode(communication::Settings s) = 0;
 };
 typedef QSharedPointer<NodeFactoryInterface> NodeFactoryInterfacePtr;
 

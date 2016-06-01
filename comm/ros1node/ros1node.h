@@ -4,6 +4,7 @@
 #include <QString>
 #include <common/messagetypes.h>
 #include <common/nodeinterface.h>
+#include <common/settings.h>
 
 namespace roscommunication
 {
@@ -12,7 +13,7 @@ namespace roscommunication
     class Ros1Node : public communication::NodeInterface
     {
     public:
-        Ros1Node(QString name);
+        Ros1Node(communication::Settings settings);
         ~Ros1Node();
 
         void start() {}

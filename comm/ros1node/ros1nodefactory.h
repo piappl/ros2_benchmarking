@@ -8,9 +8,9 @@
 class Ros1NodeFactory : public NodeFactoryInterface
 {
 public:
-    communication::NodeInterfacePtr makeNode(QString nodeName)
+    communication::NodeInterfacePtr makeNode(communication::Settings s)
     {
-        return communication::NodeInterfacePtr(new roscommunication::Ros1Node(nodeName));
+        return communication::NodeInterfacePtr(new roscommunication::Ros1Node(s));
     }
 };
 typedef QSharedPointer<Ros1NodeFactory> Ros1NodeFactoryPtr;

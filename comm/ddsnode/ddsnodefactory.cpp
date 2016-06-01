@@ -4,14 +4,13 @@
 
 using namespace communication;
 
-NodeInterfacePtr DDSNodeFactory::makeNode(QString idString)
+NodeInterfacePtr DDSNodeFactory::makeNode(communication::Settings s)
 {
-    bool ok;
-    int id = idString.toInt(&ok);
-    if (!ok)
+    int id = s.domainID;
+    if (id != 0)
     {
-        debug(LOG_ERROR, "DDSNodeFactory", "Invalid ID - must be an integer!");
+        debug(LOG_ERROR, "DDSNodeFactory", "Only default domain id supported for now (id=0)");
         exit(1);
     }
-    return NodeInterfacePtr(new ddscommunication::DDSNode(id));
+    return NodeInterfacePtr(new ddscommunication::DDSNode(s));
 }

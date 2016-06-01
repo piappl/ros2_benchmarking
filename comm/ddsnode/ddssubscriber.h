@@ -2,6 +2,7 @@
 #define DDSSUBSCRIBER_H
 
 #include <common/messagetypes.h>
+#include <common/qosprofiles.h>
 #include "ddsinclude.h"
 #include "ddstopics.h"
 
@@ -43,7 +44,8 @@ namespace ddscommunication
     class DDSSubscriber
     {
         public:
-            DDSSubscriber(const Participant& participant, const DDSTopics &topics);
+            DDSSubscriber(const Participant& participant,
+                          const DDSTopics &topics, communication::QoSSettings qos);
             void subscribe(communication::MessageType t);
             void unsubscribe(communication::MessageType t);
         private:

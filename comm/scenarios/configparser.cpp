@@ -16,19 +16,55 @@ namespace
     const int kTestingTime = 20000;
     const int kQuitDelay = 5000;
     const int kByteMessageSize = 1000;
+    const int kDomainID = 0;
 
     const QString kDefaultQoS = "default";
+    const QString kDefaultNodeName = "node";
+
+    QoSSetting qosDict(QString qosstring)
+    {
+        QoSSetting setting;
+        if (qosstring == "sensor")
+        {
+            setting.profile = QoSProfileSensor;
+        }
+        else if (qosstring == "alarm")
+        {
+            setting.profile = QoSProfileAlarm;
+        }
+        else if (qosstring == "control")
+        {
+            setting.profile = QoSProfileControl;
+        }
+        else if (qosstring == "status")
+        {
+            setting.profile = QoSProfileStatus;
+        }
+        else
+        {
+            setting.profile = QoSProfileDefault;
+        }
+        return setting;
+    }
 }
 
 ConfigParser::ConfigParser(QString filename)
     : mSettings(filename, QSettings::IniFormat),
       mByteMessageSize(kByteMessageSize)
 {   //TODO - does not check for argument sanity
+    parseIDsSection();
     parseTimersSection();
     parsePublish();
     parseSubscribe();
     parseQoS();
     parseOther();
+}
+
+void ConfigParser::parseIDsSection()
+{
+    bool ok;    //add type checking!
+    mNodeConfig.domainID = mSettings.value("ids/domainid", kDomainID).toInt(&ok);
+    mNodeConfig.nodeName = mSettings.value("ids/nodename", kDefaultNodeName).toString();
 }
 
 void ConfigParser::parseTimersSection()
@@ -86,10 +122,10 @@ void ConfigParser::parseSubscribe()
 
 void ConfigParser::parseQoS()
 {
-    mQoS[MessageTypeCmdVel] = mSettings.value("QoS/cmdVel", kDefaultQoS).toString();
-    mQoS[MessageTypeRobotControl] = mSettings.value("QoS/robotcontrol", kDefaultQoS).toString();
-    mQoS[MessageTypeRobotStatus] = mSettings.value("QoS/robotstatus", kDefaultQoS).toString();
-    mQoS[MessageTypeBytes] = mSettings.value("QoS/bytes", kDefaultQoS).toString();
+    mNodeConfig.qos[MessageTypeCmdVel] = qosDict(mSettings.value("QoS/cmdvel", kDefaultQoS).toString());
+    mNodeConfig.qos[MessageTypeRobotControl] = qosDict(mSettings.value("QoS/robotcontrol", kDefaultQoS).toString());
+    mNodeConfig.qos[MessageTypeRobotStatus] = qosDict(mSettings.value("QoS/robotstatus", kDefaultQoS).toString());
+    mNodeConfig.qos[MessageTypeBytes] = qosDict(mSettings.value("QoS/bytes", kDefaultQoS).toString());
 }
 
 void ConfigParser::parseOther()
@@ -98,9 +134,9 @@ void ConfigParser::parseOther()
     mSettings.value("other/bytemessagesize", kByteMessageSize).toInt(&ok);
 }
 
-QString ConfigParser::getQoS(communication::MessageType t) const
+Settings ConfigParser::nodeConfig() const
 {
-    return mQoS.value(t, kDefaultQoS);
+    return mNodeConfig;
 }
 
 QList<communication::MessageType> ConfigParser::subscribes() const

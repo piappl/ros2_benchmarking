@@ -5,8 +5,8 @@ using namespace communication;
 
 //TODO - refactor this
 
-TestRunner::TestRunner(QString configFile, NodeInterfacePtr node)
-    : mConfig(configFile), mNode(node)
+TestRunner::TestRunner(ConfigParser *p, NodeInterfacePtr node)
+    : mConfig(p), mNode(node)
 {
     debug(LOG_BENCHMARK, "TestRunner", "Initializing, test will start after delay");
 
@@ -17,14 +17,14 @@ TestRunner::TestRunner(QString configFile, NodeInterfacePtr node)
 
 void TestRunner::initTimers()
 {
-    mStartDelayTimer.setInterval(mConfig.timerInterval(TimerStartDelay));
-    mQuitDelayTimer.setInterval(mConfig.timerInterval(TimerQuitDelay));
-    mTestTimer.setInterval(mConfig.timerInterval(TimerTestingTime));
+    mStartDelayTimer.setInterval(mConfig->timerInterval(TimerStartDelay));
+    mQuitDelayTimer.setInterval(mConfig->timerInterval(TimerQuitDelay));
+    mTestTimer.setInterval(mConfig->timerInterval(TimerTestingTime));
 
-    mCmdVelTimer.setInterval(mConfig.timerInterval(TimerCmdVel));
-    mRobotControlTimer.setInterval(mConfig.timerInterval(TimerRobotControl));
-    mRobotStatusTimer.setInterval(mConfig.timerInterval(TimerRobotStatus));
-    mBytesTimer.setInterval(mConfig.timerInterval(TimerBytes));
+    mCmdVelTimer.setInterval(mConfig->timerInterval(TimerCmdVel));
+    mRobotControlTimer.setInterval(mConfig->timerInterval(TimerRobotControl));
+    mRobotStatusTimer.setInterval(mConfig->timerInterval(TimerRobotStatus));
+    mBytesTimer.setInterval(mConfig->timerInterval(TimerBytes));
 
     mStartDelayTimer.setSingleShot(true);
     mQuitDelayTimer.setSingleShot(true);
@@ -49,7 +49,7 @@ void TestRunner::initTimers()
 
 void TestRunner::advertise()
 {
-    foreach (MessageType t, mConfig.publishes())
+    foreach (MessageType t, mConfig->publishes())
     {
         mNode->advertise(t);
     }
@@ -57,7 +57,7 @@ void TestRunner::advertise()
 
 void TestRunner::subscribe()
 {
-    foreach (MessageType t, mConfig.subscribes())
+    foreach (MessageType t, mConfig->subscribes())
     {
         mNode->subscribe(t);
     }
@@ -66,7 +66,7 @@ void TestRunner::subscribe()
 
 void TestRunner::unsubscribe()
 {
-    foreach (MessageType t, mConfig.subscribes())
+    foreach (MessageType t, mConfig->subscribes())
     {
         mNode->unsubscribe(t);
     }
@@ -75,19 +75,19 @@ void TestRunner::unsubscribe()
 void TestRunner::startTest()
 {
     debug(LOG_BENCHMARK, "TestRunner", "Starting test");
-    if (mConfig.publishes().contains(MessageTypeCmdVel))
+    if (mConfig->publishes().contains(MessageTypeCmdVel))
     {
         mCmdVelTimer.start();
     }
-    if (mConfig.publishes().contains(MessageTypeRobotControl))
+    if (mConfig->publishes().contains(MessageTypeRobotControl))
     {
         mRobotControlTimer.start();
     }
-    if (mConfig.publishes().contains(MessageTypeRobotStatus))
+    if (mConfig->publishes().contains(MessageTypeRobotStatus))
     {
         mRobotStatusTimer.start();
     }
-    if (mConfig.publishes().contains(MessageTypeBytes))
+    if (mConfig->publishes().contains(MessageTypeBytes))
     {
         mBytesTimer.start();
     }
@@ -141,5 +141,5 @@ void TestRunner::publishRobotStatus()
 
 void TestRunner::publishBytes()
 {
-    mNode->publishByteMessage(mConfig.byteMessageSize());
+    mNode->publishByteMessage(mConfig->byteMessageSize());
 }

@@ -3,6 +3,7 @@
 #include <common/logging.h>
 #include "testrunner.h"
 #include "nodestarter.h"
+#include "configparser.h"
 
 //Note - move to a simpler version with template instead of factory if nodes ctor deps acceptable
 //in runners: startNode<T>, make_shared
@@ -10,16 +11,14 @@ namespace nodestarter
 {
     int startNode(int argc, char *argv[], NodeFactoryInterfacePtr factory)
     {
-        if (argc != 3)
+        if (argc != 2)
         {
-            debug(LOG_ERROR, "startNode", "Usage: %s <node name or id> <configfilename>. \
-                  node names or ids must differ from each other in running nodes", argv[0]);
+            debug(LOG_ERROR, "startNode", "Usage: %s <configfilename>", argv[0]);
             return -1;
         }
 
         QCoreApplication a(argc, argv);
-        QString nodeName(argv[1]);
-        QString configFile(argv[2]);
+        QString configFile(argv[1]);
 
         QFileInfo check_file(configFile);
         // check if file exists and if yes: Is it really a file and no directory?
@@ -29,11 +28,12 @@ namespace nodestarter
             return -1;
         }
 
-        debug(LOG_BENCHMARK, "startNode", "Initializing test of %s with node name %s and config %s",
-              argv[0], qPrintable(nodeName), qPrintable(configFile));
+        debug(LOG_BENCHMARK, "startNode", "Initializing test of %s with config %s",
+              argv[0], qPrintable(configFile));
 
-        communication::NodeInterfacePtr node = factory->makeNode(nodeName);
-        TestRunner runner(configFile, node);
+        ConfigParser p(configFile);
+        communication::NodeInterfacePtr node = factory->makeNode(p.nodeConfig());
+        TestRunner runner(&p, node);
         QObject::connect(&runner, SIGNAL(quit()), &a, SLOT(quit()));
 
         a.exec();

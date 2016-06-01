@@ -1,16 +1,18 @@
 #include "ddspublisher.h"
+#include "ddsqos.h"
 #include <common/communicationutils.h>
 #include <common/logging.h>
 
 using namespace ddscommunication;
 using namespace communication;
 
-DDSPublisher::DDSPublisher(const Participant& participant, const DDSTopics &topics)
+DDSPublisher::DDSPublisher(const Participant& participant,
+                           const DDSTopics &topics, communication::QoSSettings qos)
     : mPublisher(participant),
-      mCmdVelWriter(mPublisher, topics.topicCmdVel()),
-      mBytesWriter(mPublisher, topics.topicBytes()),
-      mControlWriter(mPublisher, topics.topicControl()),
-      mStatusWriter(mPublisher, topics.topicStatus())
+      mCmdVelWriter(mPublisher, topics.topicCmdVel(), getQoS(qos.value(MessageTypeCmdVel))),
+      mBytesWriter(mPublisher, topics.topicBytes(), getQoS(qos.value(MessageTypeBytes))),
+      mControlWriter(mPublisher, topics.topicControl(), getQoS(qos.value(MessageTypeRobotControl))),
+      mStatusWriter(mPublisher, topics.topicStatus(), getQoS(qos.value(MessageTypeRobotStatus)))
 {   //TODO - don't register writers that are not going to publish ?
 }
 

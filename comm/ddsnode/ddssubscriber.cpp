@@ -74,13 +74,14 @@ void BytesListener::on_liveliness_changed(dds::sub::DataReader<BytesDDSType>& dr
 }
 
 
-DDSSubscriber::DDSSubscriber(const Participant &participant, const DDSTopics &topics)
+DDSSubscriber::DDSSubscriber(const Participant &participant,
+                             const DDSTopics &topics, communication::QoSSettings qos)
     : mSubsciber(participant),
       mCmdVelReader(mSubsciber, topics.topicCmdVel()),
       mBytesReader(mSubsciber, topics.topicBytes()),
       mControlReader(mSubsciber, topics.topicControl()),
       mStatusReader(mSubsciber, topics.topicStatus())
-{
+{   //TODO - set reader QoS in init list
     debug(LOG_WARNING, "DDSSubscriber", "ctor");
 }
 

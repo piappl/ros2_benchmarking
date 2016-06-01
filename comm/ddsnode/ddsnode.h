@@ -4,6 +4,7 @@
 #include <QSharedPointer>
 #include <common/messagetypes.h>
 #include <common/nodeinterface.h>
+#include <common/settings.h>
 #include "ddsinclude.h"
 #include "ddspublisher.h"
 #include "ddssubscriber.h"
@@ -15,7 +16,7 @@ namespace ddscommunication
     class DDSNode : public communication::NodeInterface
     {
     public:
-        DDSNode(int domainID);
+        DDSNode(communication::Settings settings);
         void start() {} //TODO
 
         void advertise(communication::MessageType type);

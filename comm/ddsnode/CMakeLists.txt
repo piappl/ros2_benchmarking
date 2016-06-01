@@ -47,7 +47,8 @@ set(SOURCES
     ddsnode.cpp
     ddssubscriber.cpp
     ddstopics.cpp
-    ddsnodefactory.cpp)
+    ddsnodefactory.cpp
+    ddsqos.cpp)
 
 set(HEADERS
     ddsinclude.h

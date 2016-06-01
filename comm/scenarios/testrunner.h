@@ -8,7 +8,7 @@ class TestRunner : public QObject
 {
     Q_OBJECT
 public:
-    TestRunner(QString configFile, communication::NodeInterfacePtr node);
+    TestRunner(ConfigParser *p, communication::NodeInterfacePtr node);
 
 signals:
     void quit();
@@ -29,7 +29,7 @@ private:
     void unsubscribe();
 
     communication::NodeInterfacePtr mNode;
-    ConfigParser mConfig;
+    ConfigParser *mConfig;
 
     QTimer mCmdVelTimer;
     QTimer mRobotControlTimer;

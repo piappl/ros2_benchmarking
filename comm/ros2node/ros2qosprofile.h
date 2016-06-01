@@ -3,14 +3,14 @@
 
 #include <rmw/qos_profiles.h>
 #include <common/messagetypes.h>
+#include <common/qosprofiles.h>
 
 namespace roscommunication
 {
     class Ros2QoSProfile
     {
     public:
-        //TODO - receiver vs subscriber QoS
-        static rmw_qos_profile_t getProfile(communication::MessageType n);
+        static rmw_qos_profile_t getProfile(communication::QoSProfile qos);
     };
 }
 

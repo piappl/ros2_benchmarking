@@ -11,7 +11,9 @@ set(HEADERS
     nodeinterface.h
     messagetypes.h
     topics.h
-    nodefactoryinterface.h)
+    nodefactoryinterface.h
+    qosprofiles.h
+    settings.h)
 
 add_library(common SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(common Qt5::Core)

@@ -50,10 +50,12 @@ namespace roscommunication
     class Ros2SubscriptionListener : public Ros2SubscriptionListenerInterface
     {
     public:
-        Ros2SubscriptionListener(communication::MessageType type, rclcpp::Node::SharedPtr node)
+        Ros2SubscriptionListener(communication::MessageType type,
+                                 rclcpp::Node::SharedPtr node,
+                                 QoSSetting qos)
             : Ros2SubscriptionListenerInterface(type), mNode(node)
         {
-            subscribe();
+            subscribe(qos);
         }
 
         void processMessage(const typename T::SharedPtr msg)
@@ -73,7 +75,7 @@ namespace roscommunication
         rclcpp::Node::SharedPtr mNode;
         typename rclcpp::subscription::Subscription<T>::SharedPtr mSubscription;
 
-        void subscribe()
+        void subscribe(QoSSetting qos)
         {
             auto callback =
               [this](const typename T::SharedPtr msg) -> void
@@ -87,7 +89,7 @@ namespace roscommunication
                   qPrintable(fullTopicName), (qint64)mNode.get());
 
             mSubscription = mNode->create_subscription<T>
-                    (fullTopicName.toStdString(), callback, Ros2QoSProfile::getProfile(messageType()));
+                    (fullTopicName.toStdString(), callback, Ros2QoSProfile::getProfile(qos.profile));
             //debug(LOG_WARNING, "Ros2SubscriptionListener", "Subscribed");
         }
     };
@@ -104,12 +106,12 @@ namespace roscommunication
         {
         }
 
-        void subscribe(communication::MessageType n)
+        void subscribe(communication::MessageType n, QoSSetting s)
         {
             //debug(LOG_WARNING, "Ros2ListenerThread", "subscribe attempt to %d", n);
             if (!mListeners.contains(n))
             {
-                Ros2SubscriptionListenerInterfacePtr construct = constructListener(n);
+                Ros2SubscriptionListenerInterfacePtr construct = constructListener(n, s);
                 mListeners.insert(n, construct);
                 //debug(LOG_WARNING, "Ros2ListenerThread", "subscribed to %d", n);
             }
@@ -129,7 +131,7 @@ namespace roscommunication
             rclcpp::spin(mNode);
         }
 
-        Ros2SubscriptionListenerInterfacePtr constructListener(communication::MessageType n)
+        Ros2SubscriptionListenerInterfacePtr constructListener(communication::MessageType n, QoSSetting qos)
         {
             //debug(LOG_WARNING, "Ros2Subscriber", "constructing listener %d", n);
 
@@ -137,16 +139,16 @@ namespace roscommunication
             switch (n)
             {
             case MessageTypeCmdVel:
-                listenerPtr.reset(new Ros2SubscriptionListener<geometry_msgs::msg::Transform>(n, mNode));
+                listenerPtr.reset(new Ros2SubscriptionListener<geometry_msgs::msg::Transform>(n, mNode, qos));
                 break;
             case MessageTypeRobotControl:
-                listenerPtr.reset(new Ros2SubscriptionListener<robot_information_msgs::msg::RobotControl>(n, mNode));
+                listenerPtr.reset(new Ros2SubscriptionListener<robot_information_msgs::msg::RobotControl>(n, mNode, qos));
                 break;
             case MessageTypeRobotStatus:
-                listenerPtr.reset(new Ros2SubscriptionListener<robot_information_msgs::msg::RobotStatus>(n, mNode));
+                listenerPtr.reset(new Ros2SubscriptionListener<robot_information_msgs::msg::RobotStatus>(n, mNode, qos));
                 break;
             case MessageTypeBytes:
-                listenerPtr.reset(new Ros2SubscriptionListener<std_msgs::msg::ByteMultiArray>(n, mNode));
+                listenerPtr.reset(new Ros2SubscriptionListener<std_msgs::msg::ByteMultiArray>(n, mNode, qos));
                 break;
             default:
                 debug(LOG_ERROR, "Ros2Subscriber", "Invalid type");
@@ -174,7 +176,8 @@ namespace roscommunication
         void messageReceived(communication::MessageType n, QVariant content);
 
     public:
-        Ros2Subscriber(rclcpp::Node::SharedPtr node) : mNode(node), mListener(node)
+        Ros2Subscriber(rclcpp::Node::SharedPtr node, QoSSettings s)
+            : mNode(node), mListener(node), mQoS(s)
         {
             connect(&mListener, SIGNAL(messageReceived(communication::MessageType,QVariant)),
                     this, SIGNAL(messageReceived(communication::MessageType,QVariant)));
@@ -204,7 +207,7 @@ namespace roscommunication
             }
 
             //debug(LOG_WARNING, "Ros2Node", "Subscribe to %d", n);
-            mListener.subscribe(n);
+            mListener.subscribe(n, mQoS.value(n));
         }
 
         void unsubscribe(communication::MessageType n)
@@ -224,7 +227,7 @@ namespace roscommunication
 
         void addPlannedSubscribe(communication::MessageType n)
         {
-           mPlannedSubscriptions.insert(n);
+            mPlannedSubscriptions.insert(n);
         }
 
         void removePlannedSubscribe(communication::MessageType n)
@@ -242,7 +245,7 @@ namespace roscommunication
 
             foreach (communication::MessageType n, mPlannedSubscriptions)
             {
-                mListener.subscribe(n);
+                mListener.subscribe(n, mQoS.value(n));
             }
             startListener();
         }
@@ -250,6 +253,7 @@ namespace roscommunication
         QSet<communication::MessageType> mPlannedSubscriptions;
         rclcpp::Node::SharedPtr mNode;
         Ros2ListenerThread mListener;
+        QoSSettings mQoS;
     };
     typedef QSharedPointer<Ros2Subscriber> Ros2SubscriberPtr;
 
@@ -260,7 +264,8 @@ namespace roscommunication
     class Ros2Publisher
     {
     public:
-        Ros2Publisher(rclcpp::Node::SharedPtr node) : mNode(node), mStarted(false) {}
+        Ros2Publisher(rclcpp::Node::SharedPtr node, QoSSettings settings)
+            : mQoS(settings), mNode(node), mStarted(false) {}
 
         void advertise(MessageType n)
         {
@@ -409,7 +414,7 @@ namespace roscommunication
                 debug(LOG_WARNING, "Ros2Publisher", "advertising %d on %s", n, qPrintable(Topics::fullTopic(n, "_")));
 
                 auto pub = mNode->create_publisher<T>(Topics::fullTopic(n, "_").toStdString(),
-                                                      Ros2QoSProfile::getProfile(n));
+                                                      Ros2QoSProfile::getProfile(mQoS.value(n).profile));
                 mPublishers.insert(n, pub);
                 //debug(LOG_WARNING, "Ros2Publisher", "--advertised--, %u", (uint)(mPublishers.value(n)->get_queue_size()));
             }
@@ -418,6 +423,7 @@ namespace roscommunication
         rclcpp::Node::SharedPtr mNode;
         bool mStarted;
         QMap<MessageType, rclcpp::publisher::PublisherBase::SharedPtr> mPublishers;
+        QoSSettings mQoS;
     };
 
 /*--------------------ROS2NodeImpl----------------------*/
@@ -442,12 +448,12 @@ namespace roscommunication
         void messageReceived(communication::MessageType n, QVariant content);
 
     public:
-        Ros2NodeImpl(QString name) :
-            mInitializer(name),
-            mName(name),
-            mNode(getNode(name)),
-            mSubscriber(mNode),
-            mPublisher(mNode)
+        Ros2NodeImpl(Settings s) :
+            mInitializer(s.nodeName),
+            mName(s.nodeName),
+            mNode(getNode(s.nodeName)),
+            mSubscriber(mNode, s.qos),
+            mPublisher(mNode, s.qos)
         {
             if (!mInitializer.initialized())
                 return; //TODO - nothing to do
@@ -505,7 +511,7 @@ using namespace roscommunication;
 /*--------------------ROS2Node----------------------*/
 
 
-Ros2Node::Ros2Node(QString name) : d(new Ros2NodeImpl(name))
+Ros2Node::Ros2Node(Settings s) : d(new Ros2NodeImpl(s))
 {
 }
 

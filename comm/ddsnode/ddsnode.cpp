@@ -4,11 +4,11 @@
 using namespace ddscommunication;
 using namespace communication;
 
-DDSNode::DDSNode(int domainID)
-    : mDomainParticipant(domainID),
+DDSNode::DDSNode(Settings settings)
+    : mDomainParticipant(settings.domainID),
       mTopics(mDomainParticipant),
-      mPublisher(mDomainParticipant, mTopics),
-      mSubscriber(mDomainParticipant, mTopics)
+      mPublisher(mDomainParticipant, mTopics, settings.qos),
+      mSubscriber(mDomainParticipant, mTopics, settings.qos)
 {
 }
 

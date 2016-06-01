@@ -49,8 +49,8 @@ namespace roscommunication
         }
 
     public:
-        Ros1NodeImpl(QString name) :
-            mInitializer(name),
+        Ros1NodeImpl(Settings settings) :
+            mInitializer(settings.nodeName),
             mPublisher(mNodeHandle),
             mSubscriber(mNodeHandle)
         {
@@ -121,7 +121,7 @@ namespace roscommunication
 
 using namespace roscommunication;
 
-Ros1Node::Ros1Node(QString name) : d(new Ros1NodeImpl(name))
+Ros1Node::Ros1Node(Settings settings) : d(new Ros1NodeImpl(settings))
 {
 }
 

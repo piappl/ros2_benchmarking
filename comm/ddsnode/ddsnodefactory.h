@@ -6,7 +6,7 @@
 class DDSNodeFactory : public NodeFactoryInterface
 {
 public:
-    communication::NodeInterfacePtr makeNode(QString idString);
+    communication::NodeInterfacePtr makeNode(communication::Settings s);
 };
 typedef QSharedPointer<DDSNodeFactory> DDSNodeFactoryPtr;
 
