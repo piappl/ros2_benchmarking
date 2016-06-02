@@ -2,7 +2,9 @@ import docker, time, os, sys, pybrctl, datetime, subprocess
 from Logs import Logs
 from Plotter import Plotter
 
+
 class TestRunner:
+    containers = [ "ros1", "ros1node", "ros2", "ros2node", "opensplice", "opensplicenode" ]
     workers = []
 
     def __init__(self):
@@ -15,8 +17,8 @@ class TestRunner:
 
     def clean(self):
         self.kill()
-        for name in [ 'test:ros1', 'test:ros1node', 'test:ros2', 'test:ros2node' ]:
-            containers = self.docker.containers(filters = { 'ancestor': name })
+        for name in self.containers:
+            containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
             for container in containers:
                 self.docker.stop(container)
                 self.docker.wait(container)

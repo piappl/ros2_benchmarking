@@ -27,9 +27,11 @@ then
     docker network create --subnet=$net_ros2 ros2
 fi
 
-if [ 1 -ne `docker images test:$1 | wc -l` ]
+if [ 1 -eq `docker network ls -f name=opensplice | wc -l` ]
 then
-    docker rmi test:$1
+    docker network create --subnet=$net_opensplice opensplice
 fi
+
+./scripts/remove_container.sh $1
 
 docker build -t test:$1 -f docker/$1/Dockerfile .

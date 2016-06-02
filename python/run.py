@@ -16,7 +16,7 @@ if __name__ == "__main__":
     testing.add_argument("--skip-ros2", action='store_true', help="skip ros2 tests")
     tools = parser.add_argument_group('tools', '')
     tools.add_argument("--build-all", action='store_true', help ="build all images")
-    tools.add_argument("--build", help = "delete an existing image and build a new one", choices = ["ros1", "ros1node", "ros2", "ros2node"])
+    tools.add_argument("--build", help = "delete an existing image and build a new one", choices = TestRunner.containers)
     tools.add_argument("--replot", action='store_true', help ="plot again current results")
     if not os.geteuid() == 0:
         sys.exit("Only root can run this script")
@@ -27,7 +27,9 @@ if __name__ == "__main__":
         if args.build:
             subprocess.call("./scripts/build_container.sh {}".format(args.build), shell = True)
         elif args.build_all:
-            for name in [ 'ros1', 'ros1node', 'ros2', 'ros2node' ]:
+            for name in reversed(TestRunner.containers):
+                subprocess.call("./scripts/remove_container.sh {}".format(name), shell = True)
+            for name in TestRunner.containers:
                 subprocess.call("./scripts/build_container.sh {}".format(name), shell = True)
         elif args.replot:
             subprocess.call("sh ./graphs/replot.sh", shell = True)

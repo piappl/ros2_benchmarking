@@ -1,0 +1,10 @@
+--- ./src/api/dcps/isocpp/DCPS_ISO_Cpp.mpc  2016-06-02 13:54:55.163861477 +0200
++++ ./src/api/dcps/isocpp/DCPS_ISO_Cpp.mpc  2016-06-02 13:41:28.515861477 +0200
+@@ -2,4 +2,7 @@
+ // $Id:$
+ 
+ project (Build*lib) : build_ospl_dcpsisocpp {
++   specific {
++       compile_flags += -std=c++11
++   }
+ }

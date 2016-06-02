@@ -1,0 +1,11 @@
+--- ./dds/core/detail/macros.hpp	2016-06-02 13:56:52.419861477 +0200
++++ ./dds/core/detail/macros.hpp	2016-06-02 10:38:18.315861477 +0200
+@@ -23,6 +23,8 @@
+ #include <boost/static_assert.hpp>
+ #include <string.h>
+ 
++#define OSPL_USE_CXX11 1
++
+ // == Constants
+ #define OMG_DDS_DEFAULT_STATE_BIT_COUNT_DETAIL (size_t)16
+ #define OMG_DDS_DEFAULT_STATUS_COUNT_DETAIL    (size_t)16
