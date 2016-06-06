@@ -7,4 +7,5 @@ results/
 python/*.pyc
 python/__pycache__
 .*.swp
+comm/CMakeLists.txt.*
 ros2_psor_messages/

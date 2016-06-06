@@ -85,8 +85,8 @@ namespace roscommunication
 
             QString fullTopicName = Topics::fullTopic(messageType(), "_");
 
-            debug(LOG_WARNING, "Ros2SubscriptionListener", "Subscribe |%s| mNode %lld",
-                  qPrintable(fullTopicName), (qint64)mNode.get());
+            debug(LOG_WARNING, "Ros2SubscriptionListener", "Subscribe |%s| mNode %lld QoS[%s]",
+                  qPrintable(fullTopicName), (qint64)mNode.get(), Ros2QoSProfile::profileDescription(qos.profile).data());
 
             mSubscription = mNode->create_subscription<T>
                     (fullTopicName.toStdString(), callback, Ros2QoSProfile::getProfile(qos.profile));
@@ -411,7 +411,7 @@ namespace roscommunication
 
             if (!mPublishers.contains(n))
             {
-                debug(LOG_WARNING, "Ros2Publisher", "advertising %d on %s", n, qPrintable(Topics::fullTopic(n, "_")));
+                debug(LOG_WARNING, "Ros2Publisher", "advertising %d on %s QoS[%s]", n, qPrintable(Topics::fullTopic(n, "_")), Ros2QoSProfile::profileDescription(mQoS.value(n).profile).data());
 
                 auto pub = mNode->create_publisher<T>(Topics::fullTopic(n, "_").toStdString(),
                                                       Ros2QoSProfile::getProfile(mQoS.value(n).profile));

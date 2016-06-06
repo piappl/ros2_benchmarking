@@ -9,10 +9,10 @@ using namespace communication;
 DDSPublisher::DDSPublisher(const Participant& participant,
                            const DDSTopics &topics, communication::QoSSettings qos)
     : mPublisher(participant),
-      mCmdVelWriter(mPublisher, topics.topicCmdVel(), getQoS(qos.value(MessageTypeCmdVel))),
-      mBytesWriter(mPublisher, topics.topicBytes(), getQoS(qos.value(MessageTypeBytes))),
-      mControlWriter(mPublisher, topics.topicControl(), getQoS(qos.value(MessageTypeRobotControl))),
-      mStatusWriter(mPublisher, topics.topicStatus(), getQoS(qos.value(MessageTypeRobotStatus)))
+      mCmdVelWriter(mPublisher, topics.topicCmdVel(), getWriterQoS(qos.value(MessageTypeCmdVel))),
+      mBytesWriter(mPublisher, topics.topicBytes(), getWriterQoS(qos.value(MessageTypeBytes))),
+      mControlWriter(mPublisher, topics.topicControl(), getWriterQoS(qos.value(MessageTypeRobotControl))),
+      mStatusWriter(mPublisher, topics.topicStatus(), getWriterQoS(qos.value(MessageTypeRobotStatus)))
 {   //TODO - don't register writers that are not going to publish ?
 }
 

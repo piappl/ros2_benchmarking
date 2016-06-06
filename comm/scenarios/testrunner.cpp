@@ -97,7 +97,6 @@ void TestRunner::startTest()
 void TestRunner::finishTest()
 {
     debug(LOG_BENCHMARK, "TestRunner", "Test finished, will close after delay");
-    unsubscribe();
     mCmdVelTimer.stop();
     mRobotControlTimer.stop();
     mRobotStatusTimer.stop();

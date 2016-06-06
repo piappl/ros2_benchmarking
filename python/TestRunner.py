@@ -159,6 +159,8 @@ class TestRunner:
                 self.ros1(tid, tc)
             elif comm == "ros2":
                 self.ros2(tid, tc)
+            elif comm == "opensplice":
+                self.opensplice(tid, tc)
             os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
             os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
             robot = log.parse("logs/{}-robot.txt".format(tid))
@@ -196,6 +198,19 @@ class TestRunner:
         robot_id = subprocess.Popen("./scripts/start_ros2_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         console_id = subprocess.Popen("./scripts/start_ros2_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         interfaces = self.interfaces("ros2", 2)
+        for interface in interfaces:
+            self.tc(interface, tc)
+            self.tcpdump(interface, tid)
+        self.wait(console_id)
+        self.wait(robot_id)
+        self.kill()
+        self.docker.remove_container(console_id)
+        self.docker.remove_container(robot_id)
+
+    def opensplice(self, tid, tc):
+        robot_id = subprocess.Popen("./scripts/start_opensplice_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        console_id = subprocess.Popen("./scripts/start_opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        interfaces = self.interfaces("opensplice", 2)
         for interface in interfaces:
             self.tc(interface, tc)
             self.tcpdump(interface, tid)

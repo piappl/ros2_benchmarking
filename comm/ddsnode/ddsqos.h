@@ -5,11 +5,10 @@
 #include <common/messagetypes.h>
 #include "ddsinclude.h"
 
-//TODO - this is just a stub. Implement it here (also for reader etc.)
-
 namespace ddscommunication
 {
-    dds::pub::qos::DataWriterQos getQoS(communication::QoSSetting s);
+    dds::pub::qos::DataWriterQos getWriterQoS(communication::QoSSetting s);
+    dds::sub::qos::DataReaderQos getReaderQoS(communication::QoSSetting s);
 }
 
 #endif //DDSQOS_H

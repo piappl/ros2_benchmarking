@@ -12,15 +12,13 @@ if __name__ == "__main__":
     testing.add_argument("--duplication", type=int, nargs='+', help="run duplication tests for given values [%%]")
     testing.add_argument("--corruption", type=int, nargs='+', help="run corruption tests for given values [%%]")
     testing.add_argument("--reorder", type=int, nargs='+', help="run reorder tests for given values [%%]")
-    testing.add_argument("--skip-ros1", action='store_true', help="skip ros1 tests")
-    testing.add_argument("--skip-ros2", action='store_true', help="skip ros2 tests")
+    testing.add_argument("--test", choices=[ 'ros1', 'ros2', 'opensplice' ], nargs='+', help="Transport layer to be tested")
     tools = parser.add_argument_group('tools', '')
     tools.add_argument("--build-all", action='store_true', help ="build all images")
-    tools.add_argument("--build", help = "delete an existing image and build a new one", choices = TestRunner.containers)
+    tools.add_argument("--build", help="delete an existing image and build a new one", choices=TestRunner.containers)
     tools.add_argument("--replot", action='store_true', help ="plot again current results")
-    if not os.geteuid() == 0:
-        sys.exit("Only root can run this script")
-    elif len(sys.argv) == 1:
+    tools.add_argument("--qtcreator", choices=[ 'ros1', 'ros2', 'opensplice' ], help="Run QT Creator in the development environment")
+    if len(sys.argv) == 1:
         parser.print_help()
     else:
         args = parser.parse_args()
@@ -33,15 +31,14 @@ if __name__ == "__main__":
                 subprocess.call("./scripts/build_container.sh {}".format(name), shell = True)
         elif args.replot:
             subprocess.call("sh ./graphs/replot.sh", shell = True)
+        elif args.qtcreator:
+            subprocess.call("./scripts/qtcreator.sh {}".format(args.qtcreator), shell = True)
         else:
+            if not os.geteuid() == 0:
+                sys.exit("Only root can run tests")
             runner = TestRunner()
             runner.clean()
-            comms = []
-            if not args.skip_ros1:
-                comms.append("ros1")
-            if not args.skip_ros2:
-                comms.append("ros2")
-            for comm in comms:
+            for comm in args.test:
                 if args.limit:
                     runner.limit(comm, args.limit)
                 if args.duplication:

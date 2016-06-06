@@ -21,7 +21,7 @@ set(INSTALL_HEADERS
     ros2nodefactory.h)
 
 add_library(ros2node SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(ros2node common rclcpp__rmw_opensplice_cpp rmw rmw_opensplice_cpp rosidl_typesupport_opensplice_cpp
+target_link_libraries(ros2node common rcl rclcpp__rmw_opensplice_cpp rmw rmw_opensplice_cpp rosidl_typesupport_opensplice_cpp
                                std_msgs__rosidl_typesupport_opensplice_cpp
                                geometry_msgs__rosidl_typesupport_opensplice_cpp
                                robot_information_msgs__rosidl_typesupport_opensplice_cpp)

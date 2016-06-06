@@ -11,6 +11,7 @@ namespace roscommunication
     {
     public:
         static rmw_qos_profile_t getProfile(communication::QoSProfile qos);
+        static std::string profileDescription(communication::QoSProfile qos);
     };
 }
 
