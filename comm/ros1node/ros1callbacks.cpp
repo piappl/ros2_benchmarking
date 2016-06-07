@@ -8,7 +8,7 @@ using namespace communication;
 void Ros1Callbacks::bytesCallback(const std_msgs::ByteMultiArray::ConstPtr &msg)
 {
     //CommunicationUtils::dumpToHex(msg->data.data(), msg->data.size(), "RECEIVED");
-    debug(LOG_BENCHMARK, "RECEIVED bytes_message", "id=00, size=%lu", msg->data.size());
+    debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=00, size=%lu", msg->data.size());
     emit callbackProcessed(MessageTypeBytes);
 }
 

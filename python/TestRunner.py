@@ -1,10 +1,11 @@
-import docker, time, os, sys, pybrctl, datetime, subprocess
+import docker, time, os, sys, pybrctl, subprocess
 from Logs import Logs
 from Plotter import Plotter
 
 
 class TestRunner:
-    containers = [ "ros1", "ros1node", "ros2", "ros2node", "opensplice", "opensplicenode" ]
+    images = [ "ros1", "ros1node", "ros2", "ros2node", "opensplice", "opensplicenode" ]
+    commands = [ "cmd_vel", "robot_control", "robot_status", "byte_msg" ]
     workers = []
 
     def __init__(self):
@@ -17,7 +18,7 @@ class TestRunner:
 
     def clean(self):
         self.kill()
-        for name in self.containers:
+        for name in self.images:
             containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
             for container in containers:
                 self.docker.stop(container)
@@ -62,26 +63,31 @@ class TestRunner:
         except:
             raise RuntimeError('Failed to set "{}" at interface {}: {}'.format(param, interface, sys.exc_info()[0]))
 
-    def plotLostPackets(self, tid, title, logs):
+    def plotLostPackets(self, tid, prefix, logs):
         if len(logs) > 1:
             log = Logs()
             plotter = Plotter()
-            log.extractLostPackets('data/{}-lost-packets.dat'.format(tid), logs)
-            plotter.lostPackets(tid, title)
+            for cmd in self.commands:
+                title = prefix + "[" + cmd + "]";
+                log.extractLostPackets('data/{}-{}-lost-packets.dat'.format(tid, cmd), cmd, logs)
+                plotter.lostPackets(tid, cmd, title)
 
     def plotLostPacketsEstablished(self, tid, title, logs):
         if len(logs) > 1:
             log = Logs()
             plotter = Plotter()
-            log.extractLostPacketsEstablished('data/{}-lost-packets-established.dat'.format(tid), logs)
-            plotter.lostPacketsEstablished(tid, title)
+            for cmd in self.commands:
+                log.extractLostPacketsEstablished('data/{}-lost-packets-established.dat'.format(tid), logs)
+                plotter.lostPacketsEstablished(tid, title)
 
-    def plotFirstReceived(self, tid, title, logs):
+    def plotFirstReceived(self, tid, prefix, logs):
         if len(logs) > 1:
             log = Logs()
             plotter = Plotter()
-            log.extractFirstReceived('data/{}-first-received.dat'.format(tid), logs)
-            plotter.firstReceived(tid, title)
+            for cmd in self.commands:
+                title = prefix + "[" + cmd + "]";
+                log.extractFirstReceived('data/{}-{}-first-received.dat'.format(tid, cmd), cmd, logs)
+                plotter.firstReceived(tid, cmd, title)
 
     def corruption(self, comm, corruptions):
         logs = []
@@ -92,7 +98,7 @@ class TestRunner:
             logs += self.run(comm, tid, title, corruption, tc)
         self.plotLostPackets("{}-corruption".format(comm), "Lost packets as a function of corrupted packets [%]", logs)
         self.plotFirstReceived("{}-corruption".format(comm), "First packet received as a function of corrupted packets [%]", logs)
-        self.plotLostPacketsEstablished("{}-corruption".format(comm), "Lost packets after establishing a connection as a function of corrupted packages [%]", logs)
+        #self.plotLostPacketsEstablished("{}-corruption".format(comm), "Lost packets after establishing a connection as a function of corrupted packages [%]", logs)
 
     def reorder(self, comm, reorders):
         logs = []
@@ -103,7 +109,7 @@ class TestRunner:
             logs += self.run(comm, tid, title, reorder, tc)
         self.plotLostPackets("{}-reorder".format(comm), "Lost packets as a function of reordered packets [%]", logs)
         self.plotFirstReceived("{}-reorder".format(comm), "First packet received as a function of reordered packets [%]", logs)
-        self.plotLostPacketsEstablished("{}-reorder".format(comm), "Lost packets after establishing a connection as a function of reordered packages [%]", logs)
+        #self.plotLostPacketsEstablished("{}-reorder".format(comm), "Lost packets after establishing a connection as a function of reordered packages [%]", logs)
 
     def duplication(self, comm, dups):
         logs = []
@@ -114,7 +120,7 @@ class TestRunner:
             logs += self.run(comm, tid, title, dup, tc)
         self.plotLostPackets("{}-duplication".format(comm), "Lost packets as a function of duplicated packets [%]", logs)
         self.plotFirstReceived("{}-duplication".format(comm), "First packet received as a function of duplicated packets [%]", logs)
-        self.plotLostPacketsEstablished("{}-duplication".format(comm), "Lost packets after establishing a connection as a function of duplicated packages [%]", logs)
+        #self.plotLostPacketsEstablished("{}-duplication".format(comm), "Lost packets after establishing a connection as a function of duplicated packages [%]", logs)
 
     def limit(self, comm, limits):
         logs = []
@@ -125,7 +131,7 @@ class TestRunner:
             logs += self.run(comm, tid, title, limit, tc)
         self.plotLostPackets("{}-limit".format(comm), "Lost packets as a function of throughput impairment [kbit]", logs)
         self.plotFirstReceived("{}-limit".format(comm), "First packet received as a function of throughput impairment [kbit]", logs)
-        self.plotLostPacketsEstablished("{}-limit".format(comm), "Lost packets after establishing a connection as a function of throughput impairment [kbit]", logs)
+        #self.plotLostPacketsEstablished("{}-limit".format(comm), "Lost packets after establishing a connection as a function of throughput impairment [kbit]", logs)
 
     def loss(self, comm, losses):
         logs = []
@@ -136,7 +142,7 @@ class TestRunner:
             logs += self.run(comm, tid, title, loss, tc)
         self.plotLostPackets("{}-loss".format(comm), "Lost packets as a function of loss impairment [%]", logs)
         self.plotFirstReceived("{}-loss".format(comm), "First packet received as a function of loss impairment [%]", logs)
-        self.plotLostPacketsEstablished("{}-loss".format(comm), "Lost packets after establishing a connection as a function of loss impairment [%]", logs)
+        #self.plotLostPacketsEstablished("{}-loss".format(comm), "Lost packets after establishing a connection as a function of loss impairment [%]", logs)
 
     def delay(self, comm, delays):
         logs = []
@@ -147,14 +153,13 @@ class TestRunner:
             logs += self.run(comm, tid, title, delay, tc)
         self.plotLostPackets("{}-delay".format(comm), "Lost packets as a function of delay impairment [ms]", logs)
         self.plotFirstReceived("{}-delay".format(comm), "First packet received as a function of delay impairment [%]", logs)
-        self.plotLostPacketsEstablished("{}-delay".format(comm), "Lost packets after establishing a connection as a function of delay impairment [%]", logs)
+        #self.plotLostPacketsEstablished("{}-delay".format(comm), "Lost packets after establishing a connection as a function of delay impairment [%]", logs)
 
-    def run(self, comm, tid, title, value, tc):
+    def run(self, comm, tid, prefix, value, tc):
         print("Running test: {}".format(tid))
         try:
             log = Logs()
             plotter = Plotter()
-            teststart = datetime.datetime.now()
             if comm== "ros1":
                 self.ros1(tid, tc)
             elif comm == "ros2":
@@ -165,11 +170,13 @@ class TestRunner:
             os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
             robot = log.parse("logs/{}-robot.txt".format(tid))
             console = log.parse("logs/{}-console.txt".format(tid))
-            log.extractCmdVel('data/{}-published.dat'.format(tid), "Published", console, teststart)
-            log.extractCmdVel('data/{}-received.dat'.format(tid), "Received", robot, teststart)
-            plotter.compareTimes(tid, title)
-            plotter.publishedHistogram(tid, title)
-            plotter.receivedHistogram(tid, title)
+            for cmd in self.commands:
+                title = prefix + "[" + cmd + "]";
+                log.extractCommand('data/{}-{}-pub.dat'.format(tid, cmd), cmd, "Published", console + robot)
+                log.extractCommand('data/{}-{}-rec.dat'.format(tid, cmd), cmd, "Received", console + robot)
+                plotter.compareTimes(tid, cmd, title)
+                plotter.publishedHistogram(tid, cmd, title)
+                plotter.receivedHistogram(tid, cmd, title)
             return [ { 'Console': console, 'Robot': robot, 'Value': value } ]
         except Exception as e:
             print('Test {} failed: {}'.format(tid, str(e)))

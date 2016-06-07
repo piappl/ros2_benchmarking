@@ -18,6 +18,7 @@ if(COMM_ROS2)
   set(ROS2_PREFIX /ros2_ws/install) #TODO
   include_directories(${ROS2_PREFIX}/include)
   include_directories(${ROS2_PREFIX}/include/rosidl_typesupport_opensplice_cpp/impl)
+  include_directories(${ROS2_PREFIX}/include/rosidl_typesupport_opensplice_c/impl)
   link_directories(${ROS2_PREFIX}/lib)
   add_subdirectory(ros2node)
 elseif(COMM_ROS)

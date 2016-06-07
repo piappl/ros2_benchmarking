@@ -1,6 +1,11 @@
 import re, datetime
 
 class Logs:
+    teststart = None
+
+    def __init__(self):
+        self.teststart = datetime.datetime.now()
+
     def parse(self, filename):
         log = []
         f = open(filename, 'r')
@@ -14,23 +19,23 @@ class Logs:
                log.append(data);
         return log
 
-    def extractCmdVel(self, filename, direction, log, teststart):
-        fh = open(filename, "w")
+    def extractCommand(self, filename, command, direction, log):
+        fh = open(filename, "a")
         for line in log:
-            if (line[direction] and line['Command'] == 'cmd_vel'):
-                fh.write("{}\n".format((line['Datetime'] - teststart).total_seconds()))
+            if (line[direction] and line['Command'] == command):
+                fh.write("{}\n".format((line['Datetime'] - self.teststart).total_seconds()))
 
-    def extractLostPackets(self, filename, logs):
+    def extractLostPackets(self, filename, cmd, logs):
         fh = open(filename, "w")
         for log in logs:
             sent = 0
             received = 0
-            for line in log['Console']:
-                if (line["Published"] and line['Command'] == 'cmd_vel'):
-                    sent += 1
-            for line in log['Robot']:
-                if (line["Received"] and line['Command'] == 'cmd_vel'):
-                    received += 1
+            for line in log['Console'] + log['Robot']:
+                if line['Command'] == cmd:
+                    if line["Published"]:
+                        sent += 1
+                    elif line["Received"]:
+                        received += 1
             fh.write('{} {} {}\n'.format(log['Value'], received, sent))
 
     def extractLostPacketsEstablished(self, filename, logs):
@@ -50,18 +55,16 @@ class Logs:
                         sent += 1
             fh.write('{} {}\n'.format(log['Value'], sent - received))
 
-    def extractFirstReceived(self, filename, logs):
+    def extractFirstReceived(self, filename, cmd, logs):
         fh = open(filename, "w")
         for log in logs:
             published = None
             received = None
-            for line in log['Console']:
-                if (line["Published"] and line['Command'] == 'cmd_vel'):
-                    published = line["Datetime"]
-                    break
-            for line in log['Robot']:
-                if (line["Received"] and line['Command'] == 'cmd_vel'):
-                    received = line["Datetime"]
-                    break
+            for line in log['Console'] + log['Robot']:
+                if line['Command'] == cmd:
+                    if line["Published"]:
+                        published = line["Datetime"]
+                    elif line["Received"]:
+                        received = line["Datetime"]
             if received != None and published != None:
                 fh.write('{} {}\n'.format(log['Value'], (received - published).total_seconds()))

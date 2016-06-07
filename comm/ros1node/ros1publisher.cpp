@@ -143,6 +143,6 @@ void Ros1Publisher::publishByteMessage(int size)
     std_msgs::ByteMultiArray msg;
     CommunicationUtils::fillRandomVector(size, msg.data);
     //CommunicationUtils::dumpToHex(msg.data.data(), msg.data.size(), "PUBLISHING");
-    debug(LOG_BENCHMARK, "PUBLISHING byte_message", "id=00, size=%lu", size);
+    debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=00, size=%lu", size);
     mPublishers.value(MessageTypeBytes)->publish(msg);
 }
