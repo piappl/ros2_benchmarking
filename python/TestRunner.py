@@ -16,17 +16,15 @@ class TestRunner:
             subprocess.call("mkdir -p {}/{}".format(directory, subdir), shell = True)
             subprocess.call("ln -s {}/{} {}".format(directory, subdir, subdir), shell = True)
 
-    def clean(self):
-        self.kill()
-        for name in self.images:
-            remove(name)
-
-    def remove(self, name):
+    def remove_containers(self, name):
         containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
         for container in containers:
             self.docker.stop(container)
             self.docker.wait(container)
             self.docker.remove_container(container)
+
+    def remove_nodes(self, name):
+        self.remove_containers(name + "node")
 
     def wait(self, container, timeout = 360):
         try:
@@ -183,7 +181,8 @@ class TestRunner:
             return [ { 'Console': console, 'Robot': robot, 'Value': value } ]
         except Exception as e:
             print('Test {} failed: {}'.format(tid, str(e)))
-            self.clean()
+            self.kill()
+            self.remove_nodes(comm)
             return []
 
     def ros1(self, tid, tc):

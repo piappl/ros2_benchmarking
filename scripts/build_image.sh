@@ -32,6 +32,6 @@ then
     docker network create --subnet=$net_opensplice opensplice
 fi
 
-./scripts/remove_container.sh $1
+./scripts/remove_image.sh $1
 
 docker build -t test:$1 -f docker/$1/Dockerfile .

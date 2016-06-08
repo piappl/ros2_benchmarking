@@ -27,19 +27,20 @@ if __name__ == "__main__":
         if args.build:
             for image in args.build:
                 runner.remove(image)
-                subprocess.call("./scripts/build_container.sh {}".format(image), shell = True)
+                subprocess.call("./scripts/build_image.sh {}".format(image), shell = True)
         elif args.build_all:
-            runner.clean()
-            for name in reversed(TestRunner.images):
-                subprocess.call("./scripts/remove_container.sh {}".format(name), shell = True)
-            for name in TestRunner.images:
-                subprocess.call("./scripts/build_container.sh {}".format(name), shell = True)
+            for name in reversed(runner.images):
+                runner.remove_containers(name)
+                subprocess.call("./scripts/remove_image.sh {}".format(name), shell = True)
+            for name in runner.images:
+                subprocess.call("./scripts/build_image.sh {}".format(name), shell = True)
         elif args.replot:
             subprocess.call("sh ./graphs/replot.sh", shell = True)
         elif args.qtcreator:
             subprocess.call("./scripts/qtcreator.sh {}".format(args.qtcreator), shell = True)
         elif args.clean:
-            runner.clean()
+            for name in runner.images:
+                runner.remove_containers(name)
         else:
             if not os.geteuid() == 0:
                 sys.exit("Only root can run tests")
@@ -56,4 +57,5 @@ if __name__ == "__main__":
                     runner.loss(comm, args.loss)
                 if args.delay:
                     runner.delay(comm, args.delay)
-            runner.clean()
+                runner.kill()
+                runner.remove_nodes(comm)
