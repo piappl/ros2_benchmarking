@@ -19,11 +19,14 @@ class TestRunner:
     def clean(self):
         self.kill()
         for name in self.images:
-            containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
-            for container in containers:
-                self.docker.stop(container)
-                self.docker.wait(container)
-                self.docker.remove_container(container)
+            remove(name)
+
+    def remove(self, name):
+        containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
+        for container in containers:
+            self.docker.stop(container)
+            self.docker.wait(container)
+            self.docker.remove_container(container)
 
     def wait(self, container, timeout = 360):
         try:

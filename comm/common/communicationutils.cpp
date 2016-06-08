@@ -30,11 +30,10 @@ QString CommunicationUtils::randomString(int length)
     return randomString;
 }
 
-void CommunicationUtils::dumpToHex(const int8_t *v, int size, QString context)
+void CommunicationUtils::dumpToHex(const int8_t *v, int size, QString /*context*/)
 {
     QByteArray array((const char *)v, size);
     QString hexString(array.toHex());
-    debug(LOG_BENCHMARK, "Handling byte_msg", "%s, content=%s",
-          qPrintable(context), qPrintable(hexString));
+    debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=0, content=%s", qPrintable(hexString));
 }
 

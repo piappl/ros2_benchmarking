@@ -25,8 +25,8 @@ if __name__ == "__main__":
         args = parser.parse_args()
         runner = TestRunner()
         if args.build:
-            runner.clean()
             for image in args.build:
+                runner.remove(image)
                 subprocess.call("./scripts/build_container.sh {}".format(image), shell = True)
         elif args.build_all:
             runner.clean()
