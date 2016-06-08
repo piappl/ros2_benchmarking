@@ -26,7 +26,7 @@ if __name__ == "__main__":
         runner = TestRunner()
         if args.build:
             for image in args.build:
-                runner.remove(image)
+                runner.remove_containers(image)
                 subprocess.call("./scripts/build_image.sh {}".format(image), shell = True)
         elif args.build_all:
             for name in reversed(runner.images):
