@@ -35,3 +35,10 @@ The project has additional value of providing an example implementation of a sim
 
 The authors of the project are @adamdbrw, @haueck and @ursereg.
 
+## Roadmap 
+
+- Standardize and generate messages between node implementations.
+- Add node for FastRTPS
+- For higher packet drop rates, manipulate hearbeat parameter and make sure connection is negotiated before measuring
+
+
