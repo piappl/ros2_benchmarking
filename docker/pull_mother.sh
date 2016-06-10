@@ -1,9 +1,0 @@
-cd mother_rtrc/mother
-git pull
-cd ../..
-cd mother_ros/mother
-git pull
-cd ../..
-cd mother_ros2/mother
-git pull
-cd ../../

@@ -1,4 +1,4 @@
-import docker, time, os, sys, pybrctl, subprocess
+import docker, time, os, sys, subprocess, re
 from Logs import Logs
 from Plotter import Plotter
 
@@ -43,8 +43,12 @@ class TestRunner:
         interfaces = []
         try:
             bridge = 'br-' + str(self.docker.networks(names=[network])[0].get('Id')[:12])
-            brctl = pybrctl.BridgeController()
-            interfaces = brctl.getbr(bridge).getifs()
+            brctl = subprocess.Popen("brctl show {}".format(bridge), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+            result = re.search("{}\s+(?P<id>\S+)\s+(?P<stp>\S+)\s+(?P<ifs>.+)".format(bridge), brctl, re.S)
+            if result:
+                results = re.findall("\S+", result.group("ifs"))
+                for interface in results:
+                    interfaces.append(interface)
         except Exception as e:
             raise RuntimeError("Unable to find bridge for network {}: {}".format(network, str(e)))
         if len(interfaces) != expected:

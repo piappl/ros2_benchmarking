@@ -1,14 +1,14 @@
-Install dependencies:
+1. Install dependencies:
 
-    Ubuntu: apt-get install python3-docker docker.io tcpdump
+    Ubuntu: apt-get install python3-docker docker.io tcpdump gnuplot
     Arch:   pacman -S python-docker-py docker tcpdump gnuplot
 
-Add a user to the docker group.
+2. Add your user to the docker group.
 
-Then build all containers (~2h):
+3. Build all containers (2h+):
 
     ./python/run.py --build-all
 
-To get more help on running tests:
+4. Get more help on running tests:
 
     ./python/run.py --help
