@@ -6,15 +6,6 @@ then
     exit 1
 fi
 
-if [ ! -e ros2_psor_messages ]
-then
-    echo "Clone ros2_psor_messages project to the current directory:"
-    echo ""
-    echo "git clone ssh://$USER@10.0.9.90:29418/ros2_psor_messages"
-    echo ""
-    exit 1
-fi
-
 . scripts/networks.sh
 
 if [ 1 -eq `docker network ls -f name=ros1 | wc -l` ]
