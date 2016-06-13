@@ -77,30 +77,32 @@ class TestRunner:
             tid = "{}-corruption-{:02d}".format(comm, corruption)
             tc = "netem corrupt {}%".format(corruption)
             title = "Corruption {}% ({})".format(corruption, comm.upper())
-            self.run(comm, tid, tc, title, loss, skip, logs)
-            logs += self.parse(tid, title, corruption)
+            self.run(comm, tid, tc, title, corruption, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
                 logs.extractLostPackets('data/{}-corruption-{}-lost-packets.dat'.format(comm, cmd), cmd)
                 plotter.lostPackets("{}-corruption-{}-lost-packets".format(comm, cmd), "Lost packets as a function of corrupted packets [%] ({})".format(cmd))
                 logs.extractFirstReceived('data/{}-corruption-{}-first-received.dat'.format(comm, cmd), cmd)
                 plotter.firstReceived("{}-corruption-{}-first-received".format(comm, cmd), "First packet received as a function of corrupted packets [%] ({})".format(cmd))
+                logs.extractThroughput('data/{}-corruption-{}-throughput.dat'.format(comm, cmd), cmd)
+                plotter.throughput("{}-corruption-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
-    def corruption(self, comm, corruptions, skip):
+    def reoder(self, comm, reorders, skip):
         logs = Logs()
         plotter = Plotter()
         for corruption in corruptions:
             tid = "{}-corruption-{:02d}".format(comm, corruption)
             tc = "netem reorder {}% delay 25ms".format(reorder)
             title = "Reorders {}% ({})".format(reorder, comm.upper())
-            self.run(comm, tid, tc, title, loss, skip, logs)
-            logs += self.parse(tid, title, reorder)
+            self.run(comm, tid, tc, title, reorder, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
                 logs.extractLostPackets('data/{}-reorder-{}-lost-packets.dat'.format(comm, cmd), cmd)
                 plotter.lostPackets("{}-reorder-{}-lost-packets".format(comm, cmd), "Lost packets as a function of reordered packets [%] ({})".format(cmd))
                 logs.extractFirstReceived('data/{}-reorder-{}-first-received.dat'.format(comm, cmd), cmd)
                 plotter.firstReceived("{}-reorder-{}-first-received".format(comm, cmd), "First packet received as a function of reordered packets [%] ({})".format(cmd))
+                logs.extractThroughput('data/{}-reoder-{}-throughput.dat'.format(comm, cmd), cmd)
+                plotter.throughput("{}-reoder-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
     def duplication(self, comm, dups, skip):
         logs = Logs()
@@ -109,14 +111,15 @@ class TestRunner:
             tid = "{}-duplication-{:02d}".format(comm, dup)
             tc = "netem duplicate {}%".format(dup)
             title = "Duplication {}% ({})".format(dup, comm.upper())
-            self.run(comm, tid, tc, title, loss, skip, logs)
-            logs += self.parse(tid, title, dup)
+            self.run(comm, tid, tc, title, dup, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
                 logs.extractLostPackets('data/{}-duplication-{}-lost-packets.dat'.format(comm, cmd), cmd)
                 plotter.lostPackets("{}-duplication-{}-lost-packets".format(comm, cmd), "Lost packets as a function of duplicated packets [%] ({})".format(cmd))
                 logs.extractFirstReceived('data/{}-duplication-{}-first-received.dat'.format(comm, cmd), cmd)
                 plotter.firstReceived("{}-duplication-{}-first-received".format(comm, cmd), "First packet received as a function of duplicated packets [%] ({})".format(cmd))
+                logs.extractThroughput('data/{}-duplication-{}-throughput.dat'.format(comm, cmd), cmd)
+                plotter.throughput("{}-duplication-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
     def limit(self, comm, limits, skip):
         logs = Logs()
@@ -125,14 +128,15 @@ class TestRunner:
             tid = "{}-limit-{:04d}kbit".format(comm, limit)
             tc = "tbf rate {}kbit burst 10kbit latency 100ms".format(limit)
             title = "Limit {}kbit ({})".format(limit, comm.upper())
-            self.run(comm, tid, tc, title, loss, skip, logs)
-            logs += self.parse(tid, title, limit)
+            self.run(comm, tid, tc, title, limit, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
                 logs.extractLostPackets('data/{}-limit-{}-lost-packets.dat'.format(comm, cmd), cmd)
                 plotter.lostPackets("{}-limit-{}-lost-packets".format(comm, cmd), "Lost packets as a function of throughput impairment [kbit] ({})".format(cmd))
                 logs.extractFirstReceived('data/{}-limit-{}-first-received.dat'.format(comm, cmd), cmd)
                 plotter.firstReceived("{}-limit-{}-first-received".format(comm, cmd), "First packet received as a function of throughput impairment [kbit] ({})".format(cmd))
+                logs.extractThroughput('data/{}-limit-{}-throughput.dat'.format(comm, cmd), cmd)
+                plotter.throughput("{}-limit-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
     def loss(self, comm, losses, skip):
         logs = Logs()
@@ -165,6 +169,8 @@ class TestRunner:
                 plotter.lostPackets("{}-delay-{}-lost-packets".format(comm, cmd), "Lost packets as a function of delay impairment [ms] ({})".format(cmd))
                 logs.extractFirstReceived('data/{}-delay-{}-first-received.dat'.format(comm, cmd), cmd)
                 plotter.firstReceived("{}-delay-{}-lost-packets".format(comm, cmd), "First packet received as a function of delay impairment [ms] ({})".format(cmd))
+                logs.extractThroughput('data/{}-delay-{}-throughput.dat'.format(comm, cmd), cmd)
+                plotter.throughput("{}-delay-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
     def run(self, comm, tid, tc, prefix, value, skip, logs):
         plotter = Plotter()
