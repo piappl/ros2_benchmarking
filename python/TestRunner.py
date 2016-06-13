@@ -87,7 +87,7 @@ class TestRunner:
                 logs.extractThroughput('data/{}-corruption-{}-throughput.dat'.format(comm, cmd), cmd)
                 plotter.throughput("{}-corruption-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
-    def reoder(self, comm, reorders, skip):
+    def reorder(self, comm, reorders, skip):
         logs = Logs()
         plotter = Plotter()
         for corruption in corruptions:
@@ -101,8 +101,8 @@ class TestRunner:
                 plotter.lostPackets("{}-reorder-{}-lost-packets".format(comm, cmd), "Lost packets as a function of reordered packets [%] ({})".format(cmd))
                 logs.extractFirstReceived('data/{}-reorder-{}-first-received.dat'.format(comm, cmd), cmd)
                 plotter.firstReceived("{}-reorder-{}-first-received".format(comm, cmd), "First packet received as a function of reordered packets [%] ({})".format(cmd))
-                logs.extractThroughput('data/{}-reoder-{}-throughput.dat'.format(comm, cmd), cmd)
-                plotter.throughput("{}-reoder-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
+                logs.extractThroughput('data/{}-reorder-{}-throughput.dat'.format(comm, cmd), cmd)
+                plotter.throughput("{}-reorder-{}-throughput".format(comm, cmd), "Throughput [bytes/second] ({})".format(cmd))
 
     def duplication(self, comm, dups, skip):
         logs = Logs()

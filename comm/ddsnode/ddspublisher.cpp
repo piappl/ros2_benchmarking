@@ -19,7 +19,7 @@ DDSPublisher::DDSPublisher(const Participant& participant,
 void DDSPublisher::publishCmdVel(communication::MoveBase base)
 {
     MoveBaseDDSType vel(base.id, base.x, base.y, base.z);
-    debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%u", base.id);
+    debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%u, size=%lu", base.id, sizeof(communication::MoveBase));
     mCmdVelWriter.write(vel);
 }
 
@@ -35,14 +35,14 @@ void DDSPublisher::publishByteMessage(int size)
 void DDSPublisher::publishRobotControl(RobotControl c)
 {
     RobotControlDDSType message(c.id, c.field1, c.field2, c.field3, c.field4, c.field5, c.field6, c.field7);
-    debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u", message.id());
+    debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u, size=%lu", message.id(), sizeof(RobotControl));
     mControlWriter.write(message);
 }
 
 void DDSPublisher::publishRobotStatus(RobotStatus c)
 {
     RobotStatusDDSType message(c.id, c.field1, c.field2, c.field3, c.field4, c.field5, c.field6, c.field7);
-    debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u", message.id());
+    debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u, size=%lu", message.id(), sizeof(RobotStatus));
     mStatusWriter.write(message);
 }
 

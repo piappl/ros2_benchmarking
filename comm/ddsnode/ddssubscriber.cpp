@@ -13,7 +13,7 @@ void CmdVelListener::on_data_available(dds::sub::DataReader<MoveBaseDDSType>& dr
     std::for_each(samples.begin(),
           samples.end(),
           [](const dds::sub::Sample<MoveBaseDDSType>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, x=%d, y=%d", s.data().id(), s.data().x(), s.data().y());
+            debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, size=%lu, x=%d, y=%d", s.data().id(), sizeof(s.data()), s.data().x(), s.data().y());
           });
 }
 
@@ -29,7 +29,7 @@ void RobotControlListener::on_data_available(dds::sub::DataReader<RobotControlDD
     std::for_each(samples.begin(),
           samples.end(),
           [](const dds::sub::Sample<RobotControlDDSType>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%d", s.data().id());
+            debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%d, size=%lu", s.data().id(), sizeof(s.data()));
           });
 }
 
@@ -46,7 +46,7 @@ void RobotStatusListener::on_data_available(dds::sub::DataReader<RobotStatusDDST
           samples.end(),
           [](const dds::sub::Sample<RobotStatusDDSType>& s) {
             std::cout << s.data().id() << std::endl;
-            debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%d", s.data().id());
+            debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%d, size=%lu", s.data().id(), sizeof(s.data()));
           });
 }
 
@@ -62,7 +62,7 @@ void BytesListener::on_data_available(dds::sub::DataReader<BytesDDSType>& dr)
     std::for_each(samples.begin(),
           samples.end(),
           [](const dds::sub::Sample<BytesDDSType>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=%d", s.data().id());
+            debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=%d, size=%lu",s.data().id(), sizeof(s.data()));
           });
 }
 

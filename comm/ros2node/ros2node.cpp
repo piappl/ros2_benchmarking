@@ -340,8 +340,8 @@ namespace roscommunication
             cmdVel.rotation.z = mobileBase.z;
             cmdVel.translation.z = mobileBase.id;
 
-            debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%d, x=%lf, turn=%lf",
-                  mobileBase.id, cmdVel.translation.x, cmdVel.rotation.z);
+            debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%d, size=%lu, x=%lf, turn=%lf",
+                  mobileBase.id, sizeof(geometry_msgs::msg::Transform), cmdVel.translation.x, cmdVel.rotation.z);
 
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<geometry_msgs::msg::Transform> >(mPublishers.value(n));
             pub->publish(cmdVel);
@@ -369,7 +369,7 @@ namespace roscommunication
             c.turtle = control.id; //TODO
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<robot_information_msgs::msg::RobotControl> >(mPublishers.value(n));
 
-            debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u", c.turtle);
+            debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u, size=%lu", c.turtle, sizeof(robot_information_msgs::msg::RobotControl));
             pub->publish(c);
         }
 
@@ -398,7 +398,7 @@ namespace roscommunication
             s.turtle_factor = status.id; //TODO
 
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<robot_information_msgs::msg::RobotStatus> >(mPublishers.value(n));
-            debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u", s.turtle_factor);
+            debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u, size=%lu", s.turtle_factor, sizeof(robot_information_msgs::msg::RobotStatus));
             pub->publish(s);
         }
 

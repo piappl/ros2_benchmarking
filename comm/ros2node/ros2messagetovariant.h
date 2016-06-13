@@ -20,8 +20,8 @@ namespace roscommunication
     QVariant ros2MessageToVariant<geometry_msgs::msg::Transform::SharedPtr>(
             geometry_msgs::msg::Transform::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, x=%lf, turn=%lf",
-              (int)msg->translation.z, msg->translation.x, msg->rotation.z);
+        debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, size=%lu, x=%lf, turn=%lf",
+              (int)msg->translation.z, sizeof(geometry_msgs::msg::Transform), msg->translation.x, msg->rotation.z);
 
         communication::MoveBase command;
         command.x = msg->translation.x;
@@ -34,7 +34,7 @@ namespace roscommunication
     QVariant ros2MessageToVariant<robot_information_msgs::msg::RobotControl::SharedPtr>(
             robot_information_msgs::msg::RobotControl::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%u", msg->emergency_active);
+        debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%u, size=%lu", msg->emergency_active, sizeof(robot_information_msgs::msg::RobotControl));
 
         communication::RobotControl control;
         control.field1 = msg->drive_reversed;
@@ -47,7 +47,7 @@ namespace roscommunication
     QVariant ros2MessageToVariant<robot_information_msgs::msg::RobotStatus::SharedPtr>(
             robot_information_msgs::msg::RobotStatus::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%u", msg->emergency_active);
+        debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%u, size=%lu", msg->emergency_active, sizeof(robot_information_msgs::msg::RobotStatus));
         communication::RobotStatus status;
         status.field1 = msg->brake_active;
         status.field2 = msg->battery;
