@@ -89,8 +89,8 @@ void Ros1Publisher::publishCmdVel(MoveBase mobileBase)
     cmdVel.angular.z = mobileBase.z;
     cmdVel.linear.z = mobileBase.id;
 
-    debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%d, x=%lf, turn=%lf, no pubs %d, no general %d",
-          mobileBase.id, cmdVel.linear.x, cmdVel.angular.z, noPub, noFailed+noPub);
+    debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%d, size=%u, x=%lf, turn=%lf, no pubs %d, no general %d",
+          mobileBase.id, ros::serialization::serializationLength(cmdVel), cmdVel.linear.x, cmdVel.angular.z, noPub, noFailed+noPub);
     mPublishers.value(MessageTypeCmdVel)->publish(cmdVel);
 }
 
@@ -108,7 +108,7 @@ void Ros1Publisher::publishRobotStatus(RobotStatus status)
     s.emergency_active = status.id; //TODO
     s.drive_reversed = status.field4;
     s.turtle_factor = status.field5;
-    debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u", s.emergency_active);
+    debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u, size=%u", s.emergency_active, ros::serialization::serializationLength(s));
     mPublishers.value(MessageTypeRobotStatus)->publish(s);
 }
 
@@ -123,7 +123,7 @@ void Ros1Publisher::publishRobotControl(RobotControl control)
     c.emergency_active = control.id;
     c.drive_reversed = control.field1;
     c.turtle = control.field2;
-    debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u", c.emergency_active);
+    debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u, size=%u", c.emergency_active, ros::serialization::serializationLength(c));
     mPublishers.value(MessageTypeRobotControl)->publish(c);
 }
 
@@ -143,6 +143,6 @@ void Ros1Publisher::publishByteMessage(int size)
     std_msgs::ByteMultiArray msg;
     CommunicationUtils::fillRandomVector(size, msg.data);
     //CommunicationUtils::dumpToHex(msg.data.data(), msg.data.size(), "PUBLISHING");
-    debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=00, size=%lu", size);
+    debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=00, size=%u", ros::serialization::serializationLength(msg));
     mPublishers.value(MessageTypeBytes)->publish(msg);
 }

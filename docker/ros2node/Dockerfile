@@ -1,6 +1,6 @@
 FROM test:ros2
 
-ENV top /r5cop_benchmarking
+ENV top /ros2_benchmarking
 ENV comm $top/comm
 
 RUN mkdir $top

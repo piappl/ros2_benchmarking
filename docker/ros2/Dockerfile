@@ -27,5 +27,5 @@ RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE
-ADD ros2_psor_messages /ros2_ws/src/ros2/common_interfaces/robot_information_msgs
+ADD comm/ros2node/msgs /ros2_ws/src/ros2/common_interfaces/robot_information_msgs
 RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install

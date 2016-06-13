@@ -1,6 +1,6 @@
 FROM test:opensplice
 
-ENV top /r5cop_benchmarking
+ENV top /ros2_benchmarking
 ENV comm $top/comm
 ENV qt5cmake /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/cmake
 

@@ -8,10 +8,10 @@ class Plotter:
         params.append("output='graphs/{}-{}.png'".format(tid, cmd))
         self.call('compare-times.plt', params)
 
-    def lostPackets(self, tid, cmd, title):
+    def lostPackets(self, filename, title):
         params = [ "title='{}'".format(title) ]
-        params.append("input='data/{}-{}-lost-packets.dat'".format(tid, cmd))
-        params.append("output='graphs/{}-{}-lost-packets.png'".format(tid, cmd))
+        params.append("input='data/{}.dat'".format(filename))
+        params.append("output='graphs/{}.png'".format(filename))
         self.call('lost-packets.plt', params)
 
     def lostPacketsEstablished(self, tid, title):
@@ -36,11 +36,17 @@ class Plotter:
         params.append("legend='Packets received by robot'")
         self.call('histogram.plt', params)
 
-    def firstReceived(self, tid, cmd, title):
+    def firstReceived(self, filename, title):
         params = [ "title='{}'".format(title) ]
-        params.append("input='data/{}-{}-first-received.dat'".format(tid, cmd))
-        params.append("output='graphs/{}-{}-first-received.png'".format(tid, cmd))
+        params.append("input='data/{}.dat'".format(filename))
+        params.append("output='graphs/{}.png'".format(filename))
         self.call('first-received.plt', params)
+
+    def throughput(self, filename, title):
+        params = [ "title='{}'".format(title) ]
+        params.append("input='data/{}.dat'".format(filename))
+        params.append("output='graphs/{}.png'".format(filename))
+        self.call('throughput.plt', params)
 
     def call(self, script, params):
         command = 'gnuplot -e "{}" gnuplot/{}'.format("; ".join(params), script)
