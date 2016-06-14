@@ -90,8 +90,8 @@ class TestRunner:
     def reorder(self, comm, reorders, skip):
         logs = Logs()
         plotter = Plotter()
-        for corruption in corruptions:
-            tid = "{}-corruption-{:02d}".format(comm, corruption)
+        for reorder in reorders:
+            tid = "{}-reorder-{:02d}".format(comm, reorder)
             tc = "netem reorder {}% delay 25ms".format(reorder)
             title = "Reorders {}% ({})".format(reorder, comm.upper())
             self.run(comm, tid, tc, title, reorder, skip, logs)
