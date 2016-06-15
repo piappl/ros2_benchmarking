@@ -14,10 +14,9 @@ signals:
     void quit();
 
 private slots:
-    void publishCmdVel();
     void publishRobotControl();
-    void publishRobotStatus();
-    void publishBytes();
+    void publishRobotAlarm();
+    void publishRobotSensor();
 
     void startTest();
     void finishTest();
@@ -31,10 +30,9 @@ private:
     communication::NodeInterfacePtr mNode;
     ConfigParser *mConfig;
 
-    QTimer mCmdVelTimer;
+    QTimer mRobotAlarmTimer;
     QTimer mRobotControlTimer;
-    QTimer mRobotStatusTimer;
-    QTimer mBytesTimer;
+    QTimer mRobotSensorTimer;
     QTimer mStartDelayTimer;
     QTimer mTestTimer;
     QTimer mQuitDelayTimer;

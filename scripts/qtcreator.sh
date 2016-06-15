@@ -3,7 +3,7 @@
 case "$1" in
     opensplice) cmd="source \$release && source \$envs && qtcreator /ros2_benchmarking/comm/CMakeLists.txt" ;;
     ros1) cmd="qtcreator /ros2_benchmarking/comm/CMakeLists.txt" ;;
-    ros2) cmd="qtcreator /ros2_benchmarking/comm/CMakeLists.txt" ;;
+    ros2) cmd="source \$LOCAL_SETUP && qtcreator /ros2_benchmarking/comm/CMakeLists.txt" ;;
     *) echo "Unknown container: $1" && exit 1
 esac
 

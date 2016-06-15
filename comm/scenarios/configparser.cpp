@@ -8,10 +8,9 @@ using namespace communication;
 
 namespace
 {   //defaults in ms
-    const int kCmdVelInterval = 250;
-    const int kRobotControlInterval = 500;
-    const int kBytesInterval = 100;
-    const int kRobotStatusInterval = 300;
+    const int kRobotControlInterval = 250;
+    const int kRobotAlarmInterval = 500;
+    const int kRobotSensorInterval = 100;
     const int kStartDelay = 2000;
     const int kTestingTime = 20000;
     const int kQuitDelay = 5000;
@@ -35,10 +34,6 @@ namespace
         else if (qosstring == "control")
         {
             setting.profile = QoSProfileControl;
-        }
-        else if (qosstring == "status")
-        {
-            setting.profile = QoSProfileStatus;
         }
         else
         {
@@ -73,59 +68,48 @@ void ConfigParser::parseTimersSection()
     mTimersIntervals[TimerStartDelay] = mSettings.value("timers/startdelay", kStartDelay).toInt(&ok);
     mTimersIntervals[TimerQuitDelay] = mSettings.value("timers/quitdelay", kQuitDelay).toInt(&ok);
     mTimersIntervals[TimerTestingTime] = mSettings.value("timers/testingtime", kTestingTime).toInt(&ok);
-
-    mTimersIntervals[TimerCmdVel] = mSettings.value("timers/cmdvel", kCmdVelInterval).toInt(&ok);
-    mTimersIntervals[TimerRobotControl] = mSettings.value("timers/robotcontrol", kRobotControlInterval).toInt(&ok);
-    mTimersIntervals[TimerRobotStatus] = mSettings.value("timers/robotstatus", kRobotStatusInterval).toInt(&ok);
-    mTimersIntervals[TimerBytes] = mSettings.value("timers/bytes", kBytesInterval).toInt(&ok);
+    mTimersIntervals[TimerRobotControl] = mSettings.value("timers/control", kRobotControlInterval).toInt(&ok);
+    mTimersIntervals[TimerRobotAlarm] = mSettings.value("timers/alarm", kRobotAlarmInterval).toInt(&ok);
+    mTimersIntervals[TimerRobotSensor] = mSettings.value("timers/sensor", kRobotSensorInterval).toInt(&ok);
 }
 
 void ConfigParser::parsePublish()
 {   //TODO - refactor, smart
-    if (1 == mSettings.value("publish/cmdvel", 0))
-    {
-        mPublish.append(MessageTypeCmdVel);
-    }
-    if (1 == mSettings.value("publish/robotcontrol", 0))
+    if (1 == mSettings.value("publish/control", 0))
     {
         mPublish.append(MessageTypeRobotControl);
     }
-    if (1 == mSettings.value("publish/robotstatus", 0))
+    if (1 == mSettings.value("publish/alarm", 0))
     {
-        mPublish.append(MessageTypeRobotStatus);
+        mPublish.append(MessageTypeRobotAlarm);
     }
-    if (1 == mSettings.value("publish/bytes", 0))
+    if (1 == mSettings.value("publish/sensor", 0))
     {
-        mPublish.append(MessageTypeBytes);
+        mPublish.append(MessageTypeRobotSensor);
     }
 }
 
 void ConfigParser::parseSubscribe()
 {   //TODO - common with above
-    if (1 == mSettings.value("subscribe/cmdvel", 0))
-    {
-        mSubscribe.append(MessageTypeCmdVel);
-    }
-    if (1 == mSettings.value("subscribe/robotcontrol", 0))
+    if (1 == mSettings.value("subscribe/control", 0))
     {
         mSubscribe.append(MessageTypeRobotControl);
     }
-    if (1 == mSettings.value("subscribe/robotstatus", 0))
+    if (1 == mSettings.value("subscribe/alarm", 0))
     {
-        mSubscribe.append(MessageTypeRobotStatus);
+        mSubscribe.append(MessageTypeRobotAlarm);
     }
-    if (1 == mSettings.value("subscribe/bytes", 0))
+    if (1 == mSettings.value("subscribe/sensor", 0))
     {
-        mSubscribe.append(MessageTypeBytes);
+        mSubscribe.append(MessageTypeRobotSensor);
     }
 }
 
 void ConfigParser::parseQoS()
 {
-    mNodeConfig.qos[MessageTypeCmdVel] = qosDict(mSettings.value("QoS/cmdvel", kDefaultQoS).toString());
-    mNodeConfig.qos[MessageTypeRobotControl] = qosDict(mSettings.value("QoS/robotcontrol", kDefaultQoS).toString());
-    mNodeConfig.qos[MessageTypeRobotStatus] = qosDict(mSettings.value("QoS/robotstatus", kDefaultQoS).toString());
-    mNodeConfig.qos[MessageTypeBytes] = qosDict(mSettings.value("QoS/bytes", kDefaultQoS).toString());
+    mNodeConfig.qos[MessageTypeRobotControl] = qosDict(mSettings.value("QoS/control", kDefaultQoS).toString());
+    mNodeConfig.qos[MessageTypeRobotAlarm] = qosDict(mSettings.value("QoS/alarm", kDefaultQoS).toString());
+    mNodeConfig.qos[MessageTypeRobotSensor] = qosDict(mSettings.value("QoS/sensor", kDefaultQoS).toString());
 }
 
 void ConfigParser::parseOther()

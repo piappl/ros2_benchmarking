@@ -21,10 +21,9 @@ namespace roscommunication
         void subscribe(communication::MessageType t);
         void unsubscribe(communication::MessageType t);
 
-        void publishCmdVel(communication::MoveBase cmdVel);
-        void publishRobotStatus(communication::RobotStatus status);
         void publishRobotControl(communication::RobotControl control);
-        void publishByteMessage(int size);
+        void publishRobotAlarm(communication::RobotAlarm alarm);
+        void publishRobotSensor(communication::RobotSensor sensor);
 
     private:
         Ros1NodeImpl *d;

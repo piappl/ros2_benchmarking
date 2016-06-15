@@ -5,7 +5,7 @@
 #include <common/messagetypes.h>
 #include "ddsinclude.h"
 
-namespace ddscommunication
+namespace communication
 {
     dds::pub::qos::DataWriterQos getWriterQoS(communication::QoSSetting s);
     dds::sub::qos::DataReaderQos getReaderQoS(communication::QoSSetting s);

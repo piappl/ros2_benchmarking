@@ -11,7 +11,7 @@
 #include "ddstopics.h"
 
 //TODO - prototype version - refactor
-namespace ddscommunication
+namespace communication
 {
     class DDSNode : public communication::NodeInterface
     {
@@ -23,10 +23,9 @@ namespace ddscommunication
         void subscribe(communication::MessageType type);
         void unsubscribe(communication::MessageType type);
 
-        void publishCmdVel(communication::MoveBase cmdVel);
-        void publishRobotStatus(communication::RobotStatus status);
         void publishRobotControl(communication::RobotControl control);
-        void publishByteMessage(int size);
+        void publishRobotAlarm(communication::RobotAlarm alarm);
+        void publishRobotSensor(communication::RobotSensor alarm);
 
     private:
         Participant mDomainParticipant;

@@ -5,31 +5,20 @@
 using namespace roscommunication;
 using namespace communication;
 
-void Ros1Callbacks::bytesCallback(const std_msgs::ByteMultiArray::ConstPtr &msg)
+void Ros1Callbacks::robotSensorCallback(const messages::RobotSensor::ConstPtr &msg)
 {
-    //CommunicationUtils::dumpToHex(msg->data.data(), msg->data.size(), "RECEIVED");
-    debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=00, size=%u", ros::serialization::serializationLength(*msg));
-    emit callbackProcessed(MessageTypeBytes);
+    debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu", msg->id, msg->data.size());
+    emit callbackProcessed(MessageTypeRobotSensor);
 }
 
-void Ros1Callbacks::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
+void Ros1Callbacks::robotControlCallback(const messages::RobotControl::ConstPtr& msg)
 {
-    static int recNo = 0;
-    recNo++;
-    debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, size=%u, x=%lf, turn=%lf, received no %d",
-          (int)msg->linear.z, ros::serialization::serializationLength(*msg), msg->linear.x, msg->angular.z, recNo);
-
-    emit callbackProcessed(MessageTypeCmdVel);
-}
-
-void Ros1Callbacks::robotStatusCallback(const piap::RobotStatus::ConstPtr &msg)
-{
-    debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%u, size=%u", msg->emergency_active, ros::serialization::serializationLength(*msg));
-    emit callbackProcessed(MessageTypeRobotStatus);
-}
-
-void Ros1Callbacks::robotControlCallback(const piap::RobotControl::ConstPtr &msg)
-{
-    debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%u, size=%u", msg->emergency_active, ros::serialization::serializationLength(*msg));
+    debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu, x=%d, y=%d, z=%d", (int)msg->id, sizeof(communication::RobotControl), msg->x, msg->y,  msg->z);
     emit callbackProcessed(MessageTypeRobotControl);
+}
+
+void Ros1Callbacks::robotAlarmCallback(const messages::RobotAlarm::ConstPtr &msg)
+{
+    debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%u, size=%lu", msg->id, sizeof(communication::RobotAlarm));
+    emit callbackProcessed(MessageTypeRobotAlarm);
 }

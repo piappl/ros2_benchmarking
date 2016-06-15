@@ -17,53 +17,36 @@ namespace roscommunication
     }
 
     template <>
-    QVariant ros2MessageToVariant<geometry_msgs::msg::Transform::SharedPtr>(
-            geometry_msgs::msg::Transform::SharedPtr msg)
+    QVariant ros2MessageToVariant<messages::msg::RobotControl::SharedPtr>(messages::msg::RobotControl::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, size=%lu, x=%lf, turn=%lf",
-              (int)msg->translation.z, sizeof(geometry_msgs::msg::Transform), msg->translation.x, msg->rotation.z);
-
-        communication::MoveBase command;
-        command.x = msg->translation.x;
-        command.z = msg->rotation.z;
-        command.id = msg->translation.z;
-        return QVariant::fromValue(command);
-    }
-
-    template <>
-    QVariant ros2MessageToVariant<robot_information_msgs::msg::RobotControl::SharedPtr>(
-            robot_information_msgs::msg::RobotControl::SharedPtr msg)
-    {
-        debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%u, size=%lu", msg->emergency_active, sizeof(robot_information_msgs::msg::RobotControl));
-
+        debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", msg->id, sizeof(messages::msg::RobotControl));
         communication::RobotControl control;
-        control.field1 = msg->drive_reversed;
-        control.field2 = msg->emergency_active;
-        control.id = msg->turtle; //TODO
+        control.id = msg->id;
+        control.x = msg->x;
+        control.y = msg->y;
+        control.z = msg->z;
         return QVariant::fromValue(control);
     }
 
     template <>
-    QVariant ros2MessageToVariant<robot_information_msgs::msg::RobotStatus::SharedPtr>(
-            robot_information_msgs::msg::RobotStatus::SharedPtr msg)
+    QVariant ros2MessageToVariant<messages::msg::RobotAlarm::SharedPtr>(messages::msg::RobotAlarm::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%u, size=%lu", msg->emergency_active, sizeof(robot_information_msgs::msg::RobotStatus));
-        communication::RobotStatus status;
-        status.field1 = msg->brake_active;
-        status.field2 = msg->battery;
-        status.field3 = msg->battery_charging;
-        status.field4 = msg->drive_reversed;
-        status.field5 = msg->emergency_active;
-        status.id = msg->turtle_factor; //TODO
-        return QVariant::fromValue(status);
+        debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%u, size=%lu", msg->id, sizeof(messages::msg::RobotAlarm));
+        communication::RobotAlarm alarm;
+        alarm.id = msg->id;
+        alarm.alarm1 = msg->alarm1;
+        alarm.alarm2 = msg->alarm2;
+        return QVariant::fromValue(alarm);
     }
 
     template <>
-    QVariant ros2MessageToVariant<std_msgs::msg::ByteMultiArray::SharedPtr>(
-            std_msgs::msg::ByteMultiArray::SharedPtr msg)
-    {   //TODO
-        debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=00, size=%lu", msg->data.size());
-        return QVariant::fromValue(msg->data.size());
+    QVariant ros2MessageToVariant<messages::msg::RobotSensor::SharedPtr>(messages::msg::RobotSensor::SharedPtr msg)
+    {
+        debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu", msg->id, msg->data.size());
+        communication::RobotSensor sensor;
+        sensor.id = msg->id;
+        sensor.data = msg->data;
+        return QVariant::fromValue(sensor);
     }
 }
 #endif // ROS2MESSAGETOVARIANT_H

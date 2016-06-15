@@ -6,10 +6,9 @@ enum TimerType
     TimerStartDelay,
     TimerQuitDelay,
     TimerTestingTime,
-    TimerCmdVel,
     TimerRobotControl,
-    TimerRobotStatus,
-    TimerBytes
+    TimerRobotAlarm,
+    TimerRobotSensor
 };
 
 #endif //TIMERSENUM_H

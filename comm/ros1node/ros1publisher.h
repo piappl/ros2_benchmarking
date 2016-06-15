@@ -18,10 +18,9 @@ namespace roscommunication
         Ros1Publisher(NodeHandlePtr node);
         void advertise(communication::MessageType type);
 
-        void publishCmdVel(communication::MoveBase);
-        void publishRobotStatus(communication::RobotStatus status);
         void publishRobotControl(communication::RobotControl control);
-        void publishByteMessage(int size);
+        void publishRobotAlarm(communication::RobotAlarm alarm);
+        void publishRobotSensor(communication::RobotSensor);
 
     private:     
         template <typename T>

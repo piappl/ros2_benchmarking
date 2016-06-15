@@ -5,7 +5,7 @@
 using namespace communication;
 using namespace dds::core;
 
-namespace ddscommunication
+namespace communication
 {
     dds::pub::qos::DataWriterQos getWriterQoS(communication::QoSSetting s)
     {
@@ -35,7 +35,6 @@ namespace ddscommunication
                 qos << policy::Durability::Volatile();
                 qos << policy::History::KeepLast(10);
                 break;
-            case QoSProfileStatus:
             case QoSProfileSensor:
                 debug(LOG_WARNING, "QoS", "Setting QosProfileStatus|Sensor");
                 qos << policy::Reliability::BestEffort();

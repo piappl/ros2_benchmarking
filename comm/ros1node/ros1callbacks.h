@@ -21,15 +21,13 @@ namespace roscommunication
         }
 
     private:
-        void processCallback(const geometry_msgs::Twist::ConstPtr& msg) { cmdVelCallback(msg); }
-        void processCallback(const std_msgs::ByteMultiArray::ConstPtr& msg) { bytesCallback(msg); }
-        void processCallback(const piap::RobotControl::ConstPtr& msg) { robotControlCallback(msg); }
-        void processCallback(const piap::RobotStatus::ConstPtr& msg) { robotStatusCallback(msg); }
+        void processCallback(const messages::RobotControl::ConstPtr& msg) { robotControlCallback(msg); }
+        void processCallback(const messages::RobotSensor::ConstPtr& msg) { robotSensorCallback(msg); }
+        void processCallback(const messages::RobotAlarm::ConstPtr& msg) { robotAlarmCallback(msg); }
 
-        void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
-        void robotControlCallback(const piap::RobotControl::ConstPtr& msg);
-        void robotStatusCallback(const piap::RobotStatus::ConstPtr& msg);
-        void bytesCallback(const std_msgs::ByteMultiArray::ConstPtr& msg);
+        void robotControlCallback(const messages::RobotControl::ConstPtr& msg);
+        void robotAlarmCallback(const messages::RobotAlarm::ConstPtr& msg);
+        void robotSensorCallback(const messages::RobotSensor::ConstPtr& msg);
     };
 }
 

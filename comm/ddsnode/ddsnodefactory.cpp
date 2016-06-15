@@ -12,5 +12,5 @@ NodeInterfacePtr DDSNodeFactory::makeNode(communication::Settings s)
         debug(LOG_ERROR, "DDSNodeFactory", "Only default domain id supported for now (id=0)");
         exit(1);
     }
-    return NodeInterfacePtr(new ddscommunication::DDSNode(s));
+    return NodeInterfacePtr(new DDSNode(s));
 }

@@ -6,7 +6,7 @@
 #include "ddsinclude.h"
 #include "ddstopics.h"
 
-namespace ddscommunication
+namespace communication
 {
     class DDSPublisher
     {
@@ -14,19 +14,17 @@ namespace ddscommunication
             DDSPublisher(const Participant& participant,
                          const DDSTopics &topics, communication::QoSSettings qos);
             void advertise(communication::MessageType type);
-            void publishCmdVel(communication::MoveBase);
-            void publishRobotStatus(communication::RobotStatus status);
             void publishRobotControl(communication::RobotControl control);
-            void publishByteMessage(int size);
+            void publishRobotAlarm(communication::RobotAlarm alarm);
+            void publishRobotSensor(communication::RobotSensor sensor);
 
         private:
             Publisher mPublisher;
 
             //TODO - generalize?
-            Writer<MoveBaseDDSType> mCmdVelWriter;
-            Writer<BytesDDSType> mBytesWriter;
-            Writer<RobotControlDDSType> mControlWriter;
-            Writer<RobotStatusDDSType> mStatusWriter;
+            Writer<messages::RobotControl> mRobotControlWriter;
+            Writer<messages::RobotSensor> mRobotSensorWriter;
+            Writer<messages::RobotAlarm> mRobotAlarmWriter;
     };
 }
 #endif //DDSPUBLISHER_H

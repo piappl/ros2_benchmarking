@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robot_information_msgs</name>
+  <name>messages</name>
   <version>0.0.0</version>
   <description>Simple messages for testing</description>
   <maintainer email="adabrowski@piap.pl">Adam Dabrowski</maintainer>

@@ -4,7 +4,7 @@
 #include <QSharedPointer>
 #include "gen/RobotMessages_DCPS.hpp"
 
-namespace ddscommunication
+namespace communication
 {
     typedef dds::domain::DomainParticipant Participant;
 

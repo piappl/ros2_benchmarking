@@ -49,8 +49,6 @@ rmw_qos_profile_t Ros2QoSProfile::getProfile(QoSProfile p)
             return rmw_qos_profile_sensor;
         case QoSProfileControl:
             return rmw_qos_profile_control;
-        case QoSProfileStatus:
-            return rmw_qos_profile_status;
         default:
             debug(LOG_ERROR, "Ros2QoSProfile", "Profile unspecified for type, falling to default");
             return rmw_qos_profile_default;

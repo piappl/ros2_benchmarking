@@ -7,13 +7,12 @@ namespace communication
 {
     enum MessageType
     {
-        MessageTypeCmdVel,
-        MessageTypeBytes,
         MessageTypeRobotControl,
-        MessageTypeRobotStatus
+        MessageTypeRobotSensor,
+        MessageTypeRobotAlarm
     };
 
-    struct MoveBase
+    struct RobotControl
     {
         int id;
         int x;
@@ -21,25 +20,22 @@ namespace communication
         int z;
     };
 
-    struct RobotControl
+    struct RobotAlarm
     {
         int id;
-        int field1;
-        int field2;
-        int field3;
-        int field4;
-        int field5;
-        int field6;
-        int field7;
+        int alarm1;
+        int alarm2;
     };
 
-    struct RobotStatus : RobotControl
+    struct RobotSensor
     {
+        int id;
+        std::string data;
     };
 }
 
-Q_DECLARE_METATYPE(communication::MoveBase)
 Q_DECLARE_METATYPE(communication::RobotControl)
-Q_DECLARE_METATYPE(communication::RobotStatus)
+Q_DECLARE_METATYPE(communication::RobotAlarm)
+Q_DECLARE_METATYPE(communication::RobotSensor)
 
 #endif //MESSAGETYPES_H

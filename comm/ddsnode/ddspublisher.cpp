@@ -3,47 +3,36 @@
 #include <common/communicationutils.h>
 #include <common/logging.h>
 
-using namespace ddscommunication;
 using namespace communication;
 
 DDSPublisher::DDSPublisher(const Participant& participant,
                            const DDSTopics &topics, communication::QoSSettings qos)
     : mPublisher(participant),
-      mCmdVelWriter(mPublisher, topics.topicCmdVel(), getWriterQoS(qos.value(MessageTypeCmdVel))),
-      mBytesWriter(mPublisher, topics.topicBytes(), getWriterQoS(qos.value(MessageTypeBytes))),
-      mControlWriter(mPublisher, topics.topicControl(), getWriterQoS(qos.value(MessageTypeRobotControl))),
-      mStatusWriter(mPublisher, topics.topicStatus(), getWriterQoS(qos.value(MessageTypeRobotStatus)))
+      mRobotControlWriter(mPublisher, topics.topicRobotControl(), getWriterQoS(qos.value(MessageTypeRobotControl))),
+      mRobotSensorWriter(mPublisher, topics.topicRobotSensor(), getWriterQoS(qos.value(MessageTypeRobotSensor))),
+      mRobotAlarmWriter(mPublisher, topics.topicRobotAlarm(), getWriterQoS(qos.value(MessageTypeRobotAlarm)))
 {   //TODO - don't register writers that are not going to publish ?
 }
 
-void DDSPublisher::publishCmdVel(communication::MoveBase base)
+void DDSPublisher::publishRobotControl(communication::RobotControl control)
 {
-    MoveBaseDDSType vel(base.id, base.x, base.y, base.z);
-    debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%u, size=%lu", base.id, sizeof(communication::MoveBase));
-    mCmdVelWriter.write(vel);
+    messages::RobotControl message(control.id, control.x, control.y, control.z);
+    debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", message.id(), sizeof(communication::RobotControl));
+    mRobotControlWriter.write(message);
 }
 
-void DDSPublisher::publishByteMessage(int size)
+void DDSPublisher::publishRobotSensor(communication::RobotSensor sensor)
 {
-    int id = size; //TODO
-    QString generated = CommunicationUtils::randomString();
-    BytesDDSType message(id, generated.toStdString());
-    CommunicationUtils::dumpToHex((int8_t*)generated.toLocal8Bit().data(), generated.size(), "PUBLISHING");
-    mBytesWriter.write(message);
+    messages::RobotSensor message(sensor.id, sensor.data);
+    debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", message.id(), message.data().size());
+    mRobotSensorWriter.write(message);
 }
 
-void DDSPublisher::publishRobotControl(RobotControl c)
+void DDSPublisher::publishRobotAlarm(RobotAlarm alarm)
 {
-    RobotControlDDSType message(c.id, c.field1, c.field2, c.field3, c.field4, c.field5, c.field6, c.field7);
-    debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u, size=%lu", message.id(), sizeof(RobotControl));
-    mControlWriter.write(message);
-}
-
-void DDSPublisher::publishRobotStatus(RobotStatus c)
-{
-    RobotStatusDDSType message(c.id, c.field1, c.field2, c.field3, c.field4, c.field5, c.field6, c.field7);
-    debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u, size=%lu", message.id(), sizeof(RobotStatus));
-    mStatusWriter.write(message);
+    messages::RobotAlarm message(alarm.id, alarm.alarm1, alarm.alarm2);
+    debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%d, size=%lu", message.id(), sizeof(communication::RobotAlarm));
+    mRobotAlarmWriter.write(message);
 }
 
 void DDSPublisher::advertise(communication::MessageType type)

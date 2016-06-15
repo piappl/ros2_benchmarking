@@ -6,37 +6,29 @@
 #include "ddsinclude.h"
 #include "ddstopics.h"
 
-namespace ddscommunication
+namespace communication
 {   //TODO - refactor
-    class CmdVelListener : public dds::sub::NoOpDataReaderListener<MoveBaseDDSType>
+    class RobotControlListener : public dds::sub::NoOpDataReaderListener<messages::RobotControl>
     {
     public:
-        virtual void on_data_available(dds::sub::DataReader<MoveBaseDDSType>& dr);
-        virtual void on_liveliness_changed(dds::sub::DataReader<MoveBaseDDSType>& dr,
+        virtual void on_data_available(dds::sub::DataReader<messages::RobotControl>& dr);
+        virtual void on_liveliness_changed(dds::sub::DataReader<messages::RobotControl>& dr,
                   const dds::core::status::LivelinessChangedStatus& status);
     };
 
-    class RobotControlListener : public dds::sub::NoOpDataReaderListener<RobotControlDDSType>
+    class RobotAlarmListener : public dds::sub::NoOpDataReaderListener<messages::RobotAlarm>
     {
     public:
-        virtual void on_data_available(dds::sub::DataReader<RobotControlDDSType>& dr);
-        virtual void on_liveliness_changed(dds::sub::DataReader<RobotControlDDSType>& dr,
+        virtual void on_data_available(dds::sub::DataReader<messages::RobotAlarm>& dr);
+        virtual void on_liveliness_changed(dds::sub::DataReader<messages::RobotAlarm>& dr,
                   const dds::core::status::LivelinessChangedStatus& status);
     };
 
-    class RobotStatusListener : public dds::sub::NoOpDataReaderListener<RobotStatusDDSType>
+    class RobotSensorListener : public dds::sub::NoOpDataReaderListener<messages::RobotSensor>
     {
     public:
-        virtual void on_data_available(dds::sub::DataReader<RobotStatusDDSType>& dr);
-        virtual void on_liveliness_changed(dds::sub::DataReader<RobotStatusDDSType>& dr,
-                  const dds::core::status::LivelinessChangedStatus& status);
-    };
-
-    class BytesListener : public dds::sub::NoOpDataReaderListener<BytesDDSType>
-    {
-    public:
-        virtual void on_data_available(dds::sub::DataReader<BytesDDSType>& dr);
-        virtual void on_liveliness_changed(dds::sub::DataReader<BytesDDSType>& dr,
+        virtual void on_data_available(dds::sub::DataReader<messages::RobotSensor>& dr);
+        virtual void on_liveliness_changed(dds::sub::DataReader<messages::RobotSensor>& dr,
                   const dds::core::status::LivelinessChangedStatus& status);
     };
 
@@ -52,15 +44,13 @@ namespace ddscommunication
             Subscriber mSubsciber;
 
             //TODO - generalize (?)
-            Reader<MoveBaseDDSType> mCmdVelReader;
-            Reader<BytesDDSType> mBytesReader;
-            Reader<RobotControlDDSType> mControlReader;
-            Reader<RobotStatusDDSType> mStatusReader;
+            Reader<messages::RobotControl> mRobotControlReader;
+            Reader<messages::RobotSensor> mRobotSensorReader;
+            Reader<messages::RobotAlarm> mRobotAlarmReader;
 
-            CmdVelListener mCmdVelListener;
-            RobotControlListener mControlListener;
-            RobotStatusListener mStatusListener;
-            BytesListener mBytesListener;
+            RobotControlListener mRobotControlListener;
+            RobotAlarmListener mRobotAlarmListener;
+            RobotSensorListener mRobotSensorListener;
     };
 }
 #endif //DDSSUBSCRIBER_H

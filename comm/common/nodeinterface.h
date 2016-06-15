@@ -17,10 +17,9 @@ namespace communication
         virtual void subscribe(communication::MessageType type) = 0;
         virtual void unsubscribe(communication::MessageType type) = 0;
 
-        virtual void publishCmdVel(communication::MoveBase cmdVel) = 0;
-        virtual void publishRobotStatus(communication::RobotStatus status) = 0;
         virtual void publishRobotControl(communication::RobotControl control) = 0;
-        virtual void publishByteMessage(int size) = 0;
+        virtual void publishRobotAlarm(communication::RobotAlarm alarm) = 0;
+        virtual void publishRobotSensor(communication::RobotSensor sensor) = 0;
     };
     typedef QSharedPointer<NodeInterface> NodeInterfacePtr;
 }

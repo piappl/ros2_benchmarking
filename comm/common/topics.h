@@ -19,15 +19,13 @@ namespace communication
             {
                 switch (n)
                 {
-                case communication::MessageTypeRobotControl:
-                    return "robot_control";
-                case communication::MessageTypeRobotStatus:
-                    return "robot_status";
-                case communication::MessageTypeBytes:
-                    return "robot_bytes";
-                case communication::MessageTypeCmdVel:
-                default:
-                    return "cmd_vel";
+                    case communication::MessageTypeRobotAlarm:
+                        return "robot_alarm";
+                    case communication::MessageTypeRobotSensor:
+                        return "robot_sensor";
+                    case communication::MessageTypeRobotControl:
+                    default:
+                        return "robot_control";
                 }
             }
 
@@ -36,8 +34,7 @@ namespace communication
                 return QString("robot") + glue;
             }
 
-            static QString fullTopic(communication::MessageType n,
-                                     QString glue = join())
+            static QString fullTopic(communication::MessageType n, QString glue = join())
             {
                 return namespaceString(n, glue) + topic(n);
             }

@@ -2,71 +2,53 @@
 #include "ddsqos.h"
 #include <common/logging.h>
 
-using namespace ddscommunication;
 using namespace communication;
 
 //TODO - remove repetitiveness!
 
-void CmdVelListener::on_data_available(dds::sub::DataReader<MoveBaseDDSType>& dr)
+void RobotControlListener::on_data_available(dds::sub::DataReader<messages::RobotControl>& dr)
 {
     auto samples =  dr.take();
     std::for_each(samples.begin(),
           samples.end(),
-          [](const dds::sub::Sample<MoveBaseDDSType>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED cmd_vel", "id=%d, size=%lu, x=%d, y=%d", s.data().id(), sizeof(s.data()), s.data().x(), s.data().y());
+          [](const dds::sub::Sample<messages::RobotControl>& s) {
+            debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotControl));
           });
 }
 
-void CmdVelListener::on_liveliness_changed(dds::sub::DataReader<MoveBaseDDSType>& dr,
+void RobotControlListener::on_liveliness_changed(dds::sub::DataReader<messages::RobotControl>& dr,
             const dds::core::status::LivelinessChangedStatus& status)
 {
     std::cout << "!!! Liveliness Changed !!!" << std::endl;
 }
 
-void RobotControlListener::on_data_available(dds::sub::DataReader<RobotControlDDSType>& dr)
+void RobotAlarmListener::on_data_available(dds::sub::DataReader<messages::RobotAlarm>& dr)
 {
     auto samples =  dr.take();
     std::for_each(samples.begin(),
           samples.end(),
-          [](const dds::sub::Sample<RobotControlDDSType>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED robot_control", "id=%d, size=%lu", s.data().id(), sizeof(s.data()));
+          [](const dds::sub::Sample<messages::RobotAlarm>& s) {
+            debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotAlarm));
           });
 }
 
-void RobotControlListener::on_liveliness_changed(dds::sub::DataReader<RobotControlDDSType>& dr,
+void RobotAlarmListener::on_liveliness_changed(dds::sub::DataReader<messages::RobotAlarm>& dr,
             const dds::core::status::LivelinessChangedStatus& status)
 {
     std::cout << "!!! Liveliness Changed !!!" << std::endl;
 }
 
-void RobotStatusListener::on_data_available(dds::sub::DataReader<RobotStatusDDSType>& dr)
+void RobotSensorListener::on_data_available(dds::sub::DataReader<messages::RobotSensor>& dr)
 {
     auto samples =  dr.take();
     std::for_each(samples.begin(),
           samples.end(),
-          [](const dds::sub::Sample<RobotStatusDDSType>& s) {
-            std::cout << s.data().id() << std::endl;
-            debug(LOG_BENCHMARK, "RECEIVED robot_status", "id=%d, size=%lu", s.data().id(), sizeof(s.data()));
+          [](const dds::sub::Sample<messages::RobotSensor>& s) {
+            debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu",s.data().id(), s.data().data().size());
           });
 }
 
-void RobotStatusListener::on_liveliness_changed(dds::sub::DataReader<RobotStatusDDSType>& dr,
-            const dds::core::status::LivelinessChangedStatus& status)
-{
-    std::cout << "!!! Liveliness Changed !!!" << std::endl;
-}
-
-void BytesListener::on_data_available(dds::sub::DataReader<BytesDDSType>& dr)
-{
-    auto samples =  dr.take();
-    std::for_each(samples.begin(),
-          samples.end(),
-          [](const dds::sub::Sample<BytesDDSType>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED byte_msg", "id=%d, size=%lu",s.data().id(), sizeof(s.data()));
-          });
-}
-
-void BytesListener::on_liveliness_changed(dds::sub::DataReader<BytesDDSType>& dr,
+void RobotSensorListener::on_liveliness_changed(dds::sub::DataReader<messages::RobotSensor>& dr,
             const dds::core::status::LivelinessChangedStatus& status)
 {
     std::cout << "!!! Liveliness Changed !!!" << std::endl;
@@ -76,10 +58,9 @@ void BytesListener::on_liveliness_changed(dds::sub::DataReader<BytesDDSType>& dr
 DDSSubscriber::DDSSubscriber(const Participant &participant,
                              const DDSTopics &topics, communication::QoSSettings qos)
     : mSubsciber(participant),
-      mCmdVelReader(mSubsciber, topics.topicCmdVel(), getReaderQoS(qos.value(MessageTypeCmdVel))),
-      mBytesReader(mSubsciber, topics.topicBytes(), getReaderQoS(qos.value(MessageTypeBytes))),
-      mControlReader(mSubsciber, topics.topicControl(), getReaderQoS(qos.value(MessageTypeRobotControl))),
-      mStatusReader(mSubsciber, topics.topicStatus(), getReaderQoS(qos.value(MessageTypeRobotStatus)))
+      mRobotControlReader(mSubsciber, topics.topicRobotControl(), getReaderQoS(qos.value(MessageTypeRobotControl))),
+      mRobotSensorReader(mSubsciber, topics.topicRobotSensor(), getReaderQoS(qos.value(MessageTypeRobotSensor))),
+      mRobotAlarmReader(mSubsciber, topics.topicRobotAlarm(), getReaderQoS(qos.value(MessageTypeRobotAlarm)))
 {
     debug(LOG_WARNING, "DDSSubscriber", "ctor");
 }
@@ -91,17 +72,14 @@ void DDSSubscriber::subscribe(communication::MessageType t)
 
     switch (t)
     {
-    case communication::MessageTypeCmdVel:
-        mCmdVelReader.listener(&mCmdVelListener, mask);
-        break;
     case communication::MessageTypeRobotControl:
-        mControlReader.listener(&mControlListener, mask);
+        mRobotControlReader.listener(&mRobotControlListener, mask);
         break;
-    case communication::MessageTypeRobotStatus:
-        mStatusReader.listener(&mStatusListener, mask);
+    case communication::MessageTypeRobotAlarm:
+        mRobotAlarmReader.listener(&mRobotAlarmListener, mask);
         break;
-    case communication::MessageTypeBytes:
-        mBytesReader.listener(&mBytesListener, mask);
+    case communication::MessageTypeRobotSensor:
+        mRobotSensorReader.listener(&mRobotSensorListener, mask);
         break;
     default:
         break;
@@ -115,17 +93,14 @@ void DDSSubscriber::unsubscribe(communication::MessageType t)
 
     switch (t)
     {
-    case communication::MessageTypeCmdVel:
-        mCmdVelReader.listener(nullptr, mask);
-        break;
     case communication::MessageTypeRobotControl:
-        mControlReader.listener(nullptr, mask);
+        mRobotControlReader.listener(nullptr, mask);
         break;
-    case communication::MessageTypeRobotStatus:
-        mStatusReader.listener(nullptr, mask);
+    case communication::MessageTypeRobotAlarm:
+        mRobotAlarmReader.listener(nullptr, mask);
         break;
-    case communication::MessageTypeBytes:
-        mBytesReader.listener(nullptr, mask);
+    case communication::MessageTypeRobotSensor:
+        mRobotSensorReader.listener(nullptr, mask);
         break;
     default:
         break;

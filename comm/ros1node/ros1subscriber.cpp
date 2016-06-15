@@ -18,17 +18,14 @@ void Ros1Subscriber::subscribe(communication::MessageType n, bool sub)
 {
     switch (n)
     {
-    case MessageTypeCmdVel:
-        subscribeToTopic<geometry_msgs::Twist>(n, sub);
-        break;
-    case MessageTypeRobotStatus:
-        subscribeToTopic<piap::RobotStatus>(n, sub);
-        break;
     case MessageTypeRobotControl:
-        subscribeToTopic<piap::RobotControl>(n, sub);
+        subscribeToTopic<messages::RobotControl>(n, sub);
         break;
-    case MessageTypeBytes:
-        subscribeToTopic<std_msgs::ByteMultiArray>(n, sub);
+    case MessageTypeRobotAlarm:
+        subscribeToTopic<messages::RobotAlarm>(n, sub);
+        break;
+    case MessageTypeRobotSensor:
+        subscribeToTopic<messages::RobotSensor>(n, sub);
         break;
     default:
         debug(LOG_ERROR, "Ros1Subscriber", "invalid topic to subscribe!");

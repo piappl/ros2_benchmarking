@@ -1,7 +1,10 @@
 import sys, os, re, datetime
 
 class Logs:
-    logs = {}
+    logs = None
+
+    def __init__(self):
+        self.logs = {}
 
     def parse(self, filename, key, node):
         if not os.path.isfile(filename):
@@ -88,6 +91,28 @@ class Logs:
                     if bytes > 0:
                         fh.write('{} {}\n'.format(key, bytes / period))
                         bytes = 0
+            else:
+                print("Missing data for: {}".format(filename), file=sys.stderr)
+
+    def extractLatency(self, filename, cmd):
+        fh = open(filename, "w")
+        for key in self.logs:
+            if "robot" in self.logs[key] and "console" in self.logs[key]:
+                packets = {}
+                for name in [ "console", "robot" ]:
+                    for line in self.logs[key][name]["Packets"]:
+                        if line['Command'] == cmd:
+                            if not line['Id'] in packets:
+                                packets[line['Id']] = {}
+                            packets[line['Id']][line['Type']] = line['Datetime']
+                count = 0
+                latency = 0
+                for pid in packets:
+                    if 'RECEIVED' in packets[pid] and 'PUBLISHING' in packets[pid]:
+                        count += 1
+                        latency += (packets[pid]['RECEIVED'] - packets[pid]['PUBLISHING']).total_seconds() * 1000 * 1000
+                if count > 0:
+                    fh.write('{} {}\n'.format(key, latency / count))
             else:
                 print("Missing data for: {}".format(filename), file=sys.stderr)
 

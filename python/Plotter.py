@@ -48,6 +48,12 @@ class Plotter:
         params.append("output='graphs/{}.png'".format(filename))
         self.call('throughput.plt', params)
 
+    def latency(self, filename, title):
+        params = [ "title='{}'".format(title) ]
+        params.append("input='data/{}.dat'".format(filename))
+        params.append("output='graphs/{}.png'".format(filename))
+        self.call('latency.plt', params)
+
     def call(self, script, params):
         command = 'gnuplot -e "{}" gnuplot/{}'.format("; ".join(params), script)
         fh = open('graphs/replot.sh', "a")

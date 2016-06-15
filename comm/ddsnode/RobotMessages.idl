@@ -1,55 +1,28 @@
 //http://stackoverflow.com/questions/31548067/what-does-pragma-keylist-keyword-do
 //Note: long - Defines a long integer data type, equivalent to IDL/CDR long. A 32-bit signed long integer value. (RTI)
-module ddscommunication {
-    struct MoveBaseDDSType
+module messages
+{
+    struct RobotControl
     {
         long id; //@key
         long x;
         long y;
         long z;
     };
-#pragma keylist MoveBaseDDSType id
+#pragma keylist RobotControl id
 
-    struct RobotControlDDSType
+    struct RobotAlarm
     {
         long id; //@key
-        long field1;
-        long field2;
-        long field3;
-        long field4;
-        long field5;
-        long field6;
-        long field7;
+        long alarm1;
+        long alarm2;
     };
+#pragma keylist RobotAlarm id
 
-#pragma keylist RobotControlDDSType id
-
-/*
-    struct RobotStatusDDSType : RobotControlDDSType
-    {
-    };
-*
-* Can't use because: *** DDS error in file RobotMessages.idl: Structure inheritance will be supported in a future version. near the token { (line: 28, column: 5)
-*/
-
-    struct RobotStatusDDSType
+    struct RobotSensor
     {
         long id; //@key
-        long field1;
-        long field2;
-        long field3;
-        long field4;
-        long field5;
-        long field6;
-        long field7;
+        string data;
     };
-
-#pragma keylist RobotStatusDDSType id
-
-    struct BytesDDSType
-    {
-        long id; //@key
-        string content;
-    };
-#pragma keylist BytesDDSType id
+#pragma keylist RobotSensor id
 };

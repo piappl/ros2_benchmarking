@@ -24,6 +24,7 @@ if(COMM_ROS2)
 elseif(COMM_ROS)
   include_directories(/opt/ros/jade/include)
   link_directories(/opt/ros/jade/lib) #TODO
+  add_subdirectory(ros1node/messages)
   add_subdirectory(ros1node)
 endif()
 if(COMM_DDS)

@@ -4,6 +4,7 @@ RUN cd /etc && rm localtime && ln -s /usr/share/zoneinfo/Poland localtime
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV OSPL_URI file:///usr/etc/opensplice/config/ospl.xml
+ENV LOCAL_SETUP /ros2_ws/install/local_setup.bash
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
 RUN echo "deb http://packages.ros.org/ros/ubuntu trusty main" > /etc/apt/sources.list.d/ros-latest.list
@@ -27,5 +28,5 @@ RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE
-ADD comm/ros2node/msgs /ros2_ws/src/ros2/common_interfaces/robot_information_msgs
+ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
 RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install

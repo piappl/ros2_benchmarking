@@ -72,24 +72,19 @@ namespace roscommunication
             mMasterChecker.wait();
         }
 
-        void publishCmdVel(MoveBase mobileBase)
-        {
-            mPublisher.publishCmdVel(mobileBase);
-        }
-
-        void publishRobotStatus(RobotStatus status)
-        {
-            mPublisher.publishRobotStatus(status);
-        }
-
-        void publishRobotControl(RobotControl control)
+        void publishRobotControl(communication::RobotControl control)
         {
             mPublisher.publishRobotControl(control);
         }
 
-        void publishByteMessage(int size)
+        void publishRobotAlarm(communication::RobotAlarm alarm)
         {
-            mPublisher.publishByteMessage(size);
+            mPublisher.publishRobotAlarm(alarm);
+        }
+
+        void publishRobotSensor(communication::RobotSensor sensor)
+        {
+            mPublisher.publishRobotSensor(sensor);
         }
 
         void subscribe(MessageType n)
@@ -131,10 +126,9 @@ Ros1Node::~Ros1Node()
     delete d;
 }
 
-void Ros1Node::publishCmdVel(MoveBase cmdVel) { return d->publishCmdVel(cmdVel); }
-void Ros1Node::publishRobotStatus(RobotStatus status) { return d->publishRobotStatus(status); }
-void Ros1Node::publishRobotControl(RobotControl control) { return d->publishRobotControl(control); }
-void Ros1Node::publishByteMessage(int size) { return d->publishByteMessage(size); }
+void Ros1Node::publishRobotControl(communication::RobotControl control) { return d->publishRobotControl(control); }
+void Ros1Node::publishRobotAlarm(communication::RobotAlarm alarm) { return d->publishRobotAlarm(alarm); }
+void Ros1Node::publishRobotSensor(communication::RobotSensor sensor) { return d->publishRobotSensor(sensor); }
 
 void Ros1Node::advertise(MessageType n) { d->advertise(n); }
 

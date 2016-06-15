@@ -11,8 +11,7 @@ namespace communication
         QoSProfileDefault,
         QoSProfileSensor,
         QoSProfileAlarm,
-        QoSProfileControl,
-        QoSProfileStatus
+        QoSProfileControl
     };
 
     struct QoSSetting

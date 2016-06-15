@@ -3,23 +3,21 @@
 
 #include "ddsinclude.h"
 
-namespace ddscommunication
+namespace communication
 {
     class DDSTopics
     {
     public:
         DDSTopics(const Participant& participant);
 
-        const Topic<MoveBaseDDSType> &topicCmdVel() const { return mCmdVelTopic; }
-        const Topic<BytesDDSType> &topicBytes() const { return mBytesTopic; }
-        const Topic<RobotControlDDSType> &topicControl() const { return mControlTopic; }
-        const Topic<RobotStatusDDSType> &topicStatus() const { return mStatusTopic; }
+        const Topic<messages::RobotControl> &topicRobotControl() const { return mRobotControlTopic; }
+        const Topic<messages::RobotSensor> &topicRobotSensor() const { return mRobotSensorTopic; }
+        const Topic<messages::RobotAlarm> &topicRobotAlarm() const { return mRobotAlarmTopic; }
 
     private:
-        Topic<MoveBaseDDSType> mCmdVelTopic;
-        Topic<BytesDDSType> mBytesTopic;
-        Topic<RobotControlDDSType> mControlTopic;
-        Topic<RobotStatusDDSType> mStatusTopic;
+        Topic<messages::RobotControl> mRobotControlTopic;
+        Topic<messages::RobotSensor> mRobotSensorTopic;
+        Topic<messages::RobotAlarm> mRobotAlarmTopic;
     };
 }
 

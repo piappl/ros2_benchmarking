@@ -1,7 +1,6 @@
 #include "ddsnode.h"
 #include <common/topics.h>
 
-using namespace ddscommunication;
 using namespace communication;
 
 DDSNode::DDSNode(Settings settings)
@@ -32,26 +31,20 @@ void DDSNode::unsubscribe(communication::MessageType type)
     debug(LOG_WARNING, "DDSNODE", "unsubscribed %d", type);
 }
 
-void DDSNode::publishCmdVel(communication::MoveBase cmdVel)
-{
-    debug(LOG_WARNING, "DDSNODE", "publishCmdVel");
-    mPublisher.publishCmdVel(cmdVel);
-}
-
-void DDSNode::publishRobotStatus(communication::RobotStatus status)
-{
-    debug(LOG_WARNING, "DDSNODE", "publishRobotStatus");
-    mPublisher.publishRobotStatus(status);
-}
-
 void DDSNode::publishRobotControl(communication::RobotControl control)
 {
-    debug(LOG_WARNING, "DDSNODE", "publishRobotControl");
+    debug(LOG_WARNING, "DDSNODE", "publishCmdVel");
     mPublisher.publishRobotControl(control);
 }
 
-void DDSNode::publishByteMessage(int size)
+void DDSNode::publishRobotAlarm(communication::RobotAlarm alarm)
+{
+    debug(LOG_WARNING, "DDSNODE", "publishRobotControl");
+    mPublisher.publishRobotAlarm(alarm);
+}
+
+void DDSNode::publishRobotSensor(communication::RobotSensor sensor)
 {
     debug(LOG_WARNING, "DDSNODE", "publishByteMessage");
-    mPublisher.publishByteMessage(size);
+    mPublisher.publishRobotSensor(sensor);
 }

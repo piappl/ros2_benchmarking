@@ -138,17 +138,14 @@ namespace roscommunication
             Ros2SubscriptionListenerInterfacePtr listenerPtr;
             switch (n)
             {
-            case MessageTypeCmdVel:
-                listenerPtr.reset(new Ros2SubscriptionListener<geometry_msgs::msg::Transform>(n, mNode, qos));
-                break;
             case MessageTypeRobotControl:
-                listenerPtr.reset(new Ros2SubscriptionListener<robot_information_msgs::msg::RobotControl>(n, mNode, qos));
+                listenerPtr.reset(new Ros2SubscriptionListener<messages::msg::RobotControl>(n, mNode, qos));
                 break;
-            case MessageTypeRobotStatus:
-                listenerPtr.reset(new Ros2SubscriptionListener<robot_information_msgs::msg::RobotStatus>(n, mNode, qos));
+            case MessageTypeRobotAlarm:
+                listenerPtr.reset(new Ros2SubscriptionListener<messages::msg::RobotAlarm>(n, mNode, qos));
                 break;
-            case MessageTypeBytes:
-                listenerPtr.reset(new Ros2SubscriptionListener<std_msgs::msg::ByteMultiArray>(n, mNode, qos));
+            case MessageTypeRobotSensor:
+                listenerPtr.reset(new Ros2SubscriptionListener<messages::msg::RobotSensor>(n, mNode, qos));
                 break;
             default:
                 debug(LOG_ERROR, "Ros2Subscriber", "Invalid type");
@@ -271,14 +268,12 @@ namespace roscommunication
         {
             switch (n)
             {
-                case MessageTypeCmdVel:
-                    return advertise<geometry_msgs::msg::Transform>(n);
                 case MessageTypeRobotControl:
-                    return advertise<robot_information_msgs::msg::RobotControl>(n);
-                case MessageTypeRobotStatus:
-                    return advertise<robot_information_msgs::msg::RobotStatus>(n);
-                case MessageTypeBytes:
-                    return advertise<std_msgs::msg::ByteMultiArray>(n);
+                    return advertise<messages::msg::RobotControl>(n);
+                case MessageTypeRobotAlarm:
+                    return advertise<messages::msg::RobotAlarm>(n);
+                case MessageTypeRobotSensor:
+                    return advertise<messages::msg::RobotSensor>(n);
                 default:
                     debug(LOG_ERROR, "Ros2Publisher", "advertise: not implemented topic for %d", n);
                     break;
@@ -290,116 +285,76 @@ namespace roscommunication
             mStarted = true;
         }
 
-        void publishByteMessage(QVariant content)
+        void publishRobotSensor(QVariant content)
         {
-            static int count = 0;
             if (!mStarted)
+            {
                 return;
-
-            //debug(LOG_DEBUG, "Ros2Publisher", "publish testMessage");
-
+            }
             if (!mNode)
             {
                 debug(LOG_ERROR, "Ros2Publisher", "ERROR! No node - cannot publish");
                 return;
             }
-            MessageType n = MessageTypeBytes;
+
+            MessageType n = MessageTypeRobotSensor;
             advertise(n);
-            int size = content.value<int>();
-
-            if (size < 1)
-            {
-                debug(LOG_ERROR, "Ros2Publisher::publishTestMessage", "invalid size %d", size);
-                return;
-            }
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<std_msgs::msg::ByteMultiArray> >(mPublishers.value(n));
-            std_msgs::msg::ByteMultiArray msg;
-            CommunicationUtils::fillRandomVector(size, msg.data);
-            debug(LOG_BENCHMARK, "PUBLISHING byte_msg", "id=%d, size=%lu", count++, msg.data.size());
-            pub->publish(msg);
-        }
-
-        void publishCmdVel(QVariant content)
-        {
-            if (!mStarted)
-                return;
-
-            //debug(LOG_DEBUG, "Ros2Publisher", "publish cmdVel");
-
-            if (!mNode)
-            {
-                debug(LOG_ERROR, "Ros2Publisher", "ERROR! No node - cannot publish");
-                return;
-            }
-            MessageType n = MessageTypeCmdVel;
-            advertise(n);
-            MoveBase mobileBase = content.value<MoveBase>();
-
-            geometry_msgs::msg::Transform cmdVel;
-            cmdVel.translation.x = mobileBase.x;
-            cmdVel.rotation.z = mobileBase.z;
-            cmdVel.translation.z = mobileBase.id;
-
-            debug(LOG_BENCHMARK, "PUBLISHING cmd_vel", "id=%d, size=%lu, x=%lf, turn=%lf",
-                  mobileBase.id, sizeof(geometry_msgs::msg::Transform), cmdVel.translation.x, cmdVel.rotation.z);
-
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<geometry_msgs::msg::Transform> >(mPublishers.value(n));
-            pub->publish(cmdVel);
+            communication::RobotSensor msg = content.value<communication::RobotSensor>();
+            messages::msg::RobotSensor sensor;
+            sensor.id = msg.id;
+            sensor.data = msg.data;
+            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotSensor>>(mPublishers.value(n));
+            debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", msg.id, msg.data.size());
+            pub->publish(sensor);
         }
 
         void publishRobotControl(QVariant content)
         {
             if (!mStarted)
+            {
                 return;
-
-            //debug(LOG_DEBUG, "Ros2Publisher", "publish robotControl");
-
+            }
             if (!mNode)
             {
                 debug(LOG_ERROR, "Ros2Publisher", "ERROR! No node - cannot publish");
                 return;
             }
+
             MessageType n = MessageTypeRobotControl;
             advertise(n);
-            RobotControl control = content.value<RobotControl>();
-            robot_information_msgs::msg::RobotControl c;
-
-            c.emergency_active = control.field2;
-            c.drive_reversed = control.field1;
-            c.turtle = control.id; //TODO
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<robot_information_msgs::msg::RobotControl> >(mPublishers.value(n));
-
-            debug(LOG_BENCHMARK, "PUBLISHING robot_control", "id=%u, size=%lu", c.turtle, sizeof(robot_information_msgs::msg::RobotControl));
-            pub->publish(c);
+            communication::RobotControl msg = content.value<communication::RobotControl>();
+            messages::msg::RobotControl control;
+            control.id = msg.id;
+            control.x = msg.x;
+            control.z = msg.z;
+            control.z = msg.id;
+            debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", msg.id, sizeof(messages::msg::RobotControl));
+            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotControl> >(mPublishers.value(n));
+            pub->publish(control);
         }
 
-        void publishRobotStatus(QVariant content)
+        void publishRobotAlarm(QVariant content)
         {
             if (!mStarted)
+            {
                 return;
-
-            //debug(LOG_WARNING, "Ros2Publisher", "publish robot status");
-
+            }
             if (!mNode)
             {
                 debug(LOG_ERROR, "Ros2Publisher", "ERROR! No node - cannot publish");
                 return;
             }
-            MessageType n = MessageTypeRobotStatus;
+
+            MessageType n = MessageTypeRobotAlarm;
             advertise(n);
-            RobotStatus status = content.value<RobotStatus>();
-            robot_information_msgs::msg::RobotStatus s;
-
-            s.battery = status.field1;
-            s.battery_charging = status.field2;
-            s.brake_active = status.field3;
-            s.emergency_active = status.field5;
-            s.drive_reversed = status.field4;
-            s.turtle_factor = status.id; //TODO
-
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<robot_information_msgs::msg::RobotStatus> >(mPublishers.value(n));
-            debug(LOG_BENCHMARK, "PUBLISHING robot_status", "id=%u, size=%lu", s.turtle_factor, sizeof(robot_information_msgs::msg::RobotStatus));
-            pub->publish(s);
+            communication::RobotAlarm msg = content.value<communication::RobotAlarm>();
+            messages::msg::RobotAlarm alarm;
+            alarm.id = msg.id;
+            alarm.alarm1 = msg.alarm1;
+            alarm.alarm2 = msg.alarm2;
+            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotAlarm> >(mPublishers.value(n));
+            debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%u, size=%lu", alarm.id, sizeof(messages::msg::RobotAlarm));
+            pub->publish(alarm);
         }
 
     private:
@@ -483,24 +438,19 @@ namespace roscommunication
             mSubscriber.unsubscribe(n);
         }
 
-        void publishCmdVel(MoveBase mobileBase)
-        {
-            mPublisher.publishCmdVel(QVariant::fromValue(mobileBase));
-        }
-
-        void publishRobotStatus(RobotStatus status)
-        {
-            mPublisher.publishRobotStatus(QVariant::fromValue(status));
-        }
-
-        void publishRobotControl(RobotControl control)
+        void publishRobotControl(communication::RobotControl control)
         {
             mPublisher.publishRobotControl(QVariant::fromValue(control));
         }
 
-        void publishByteMessage(int size)
+        void publishRobotAlarm(communication::RobotAlarm alarm)
         {
-            mPublisher.publishByteMessage(QVariant::fromValue(size));
+            mPublisher.publishRobotAlarm(QVariant::fromValue(alarm));
+        }
+
+        void publishRobotSensor(communication::RobotSensor sensor)
+        {
+            mPublisher.publishRobotSensor(QVariant::fromValue(sensor));
         }
     };
 }
@@ -523,10 +473,9 @@ Ros2Node::~Ros2Node()
 
 void Ros2Node::start() { d->start(); }
 
-void Ros2Node::publishCmdVel(MoveBase cmdVel) { return d->publishCmdVel(cmdVel); }
-void Ros2Node::publishRobotStatus(RobotStatus status) { return d->publishRobotStatus(status); }
-void Ros2Node::publishRobotControl(RobotControl control) { return d->publishRobotControl(control); }
-void Ros2Node::publishByteMessage(int size) { return d->publishByteMessage(size); }
+void Ros2Node::publishRobotControl(communication::RobotControl control) { return d->publishRobotControl(control); }
+void Ros2Node::publishRobotAlarm(communication::RobotAlarm alarm) { return d->publishRobotAlarm(alarm); }
+void Ros2Node::publishRobotSensor(communication::RobotSensor sensor) { return d->publishRobotSensor(sensor); }
 
 void Ros2Node::subscribe(MessageType n) { return d->subscribe(n); }
 void Ros2Node::unsubscribe(MessageType n) { return d->unsubscribe(n); }
