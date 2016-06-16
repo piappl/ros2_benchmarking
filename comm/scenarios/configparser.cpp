@@ -115,7 +115,7 @@ void ConfigParser::parseQoS()
 void ConfigParser::parseOther()
 {
     bool ok; //TODO add check
-    mSettings.value("other/bytemessagesize", kByteMessageSize).toInt(&ok);
+    mByteMessageSize = mSettings.value("other/bytemessagesize", kByteMessageSize).toInt(&ok);
 }
 
 Settings ConfigParser::nodeConfig() const
