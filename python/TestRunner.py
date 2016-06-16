@@ -17,6 +17,9 @@ class TestRunner:
             subprocess.call("rm -f {}".format(subdir), shell = True)
             subprocess.call("mkdir -p {}/{}".format(directory, subdir), shell = True)
             subprocess.call("ln -s {}/{} {}".format(directory, subdir, subdir), shell = True)
+        for subdir in ["times", "lost-packets", "histograms", "first-received", "throughput", "latency"]:
+            subprocess.call("mkdir -p {}/graphs/{}".format(directory, subdir), shell = True)
+
 
     def remove_containers(self, name):
         containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
@@ -183,7 +186,7 @@ class TestRunner:
         if not skip:
             self.execute(comm, tid, tc)
         else:
-            print("Using results from: {}".format(tid), file=sys.stderr)
+            print("Using results from: {}".format(tid))
         logs.parse("logs/{}-robot.txt".format(tid), value, "robot")
         logs.parse("logs/{}-console.txt".format(tid), value, "console")
         for cmd in self.commands:
@@ -195,7 +198,7 @@ class TestRunner:
             plotter.receivedHistogram(tid, cmd, title)
 
     def execute(self, comm, tid, tc):
-        print("Running test: {}".format(tid), file=sys.stderr)
+        print("Running test: {}".format(tid), flush=True)
         try:
             if comm== "ros1":
                 self.ros1(tid, tc)

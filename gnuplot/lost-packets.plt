@@ -2,7 +2,7 @@ set term png
 set output output
 set title title
 set offset 0, 0, 1, 0
-set yr [0:]
+set yr [0:100]
 set ylabel "Number of packets"
 set xlabel "Impairment value"
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5
