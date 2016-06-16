@@ -17,15 +17,16 @@ quint8 CommunicationUtils::randomByte()
     return static_cast<quint8>((qrand() % 256)); //0-255
 }
 
-QString CommunicationUtils::randomString(int length)
+std::string CommunicationUtils::randomString(int length)
 {
-    const QString possibleCharacters("BENCHMARK");
-    QString randomString;
-    for(int i=0; i<length; ++i)
+    static const char alphanum[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+    std::string string(length, '_');
+    for(int i = 0; i < length; ++i)
     {
-       int index = qrand() % possibleCharacters.length();
-       QChar nextChar = possibleCharacters.at(index);
-       randomString.append(nextChar);
+       string[i] = alphanum[qrand() % (sizeof(alphanum) - 1)];
     }
-    return randomString;
+    return string;
 }

@@ -123,6 +123,6 @@ void TestRunner::publishRobotSensor()
     static int i = 0;
     RobotSensor msg;
     msg.id = i++;
-    CommunicationUtils::fillRandomVector(mConfig->byteMessageSize(), msg.data);
+    msg.data = CommunicationUtils::randomString(mConfig->byteMessageSize());
     mNode->publishRobotSensor(msg);
 }

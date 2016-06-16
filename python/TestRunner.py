@@ -168,7 +168,7 @@ class TestRunner:
                 prefix = "{}-delay-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
                 plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of delay impairment [ms] ({})".format(cmd))
-                plotter.firstReceived("{}-lost-packets".format(prefix), "First packet received as a function of delay impairment [ms] ({})".format(cmd))
+                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of delay impairment [ms] ({})".format(cmd))
                 plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
                 plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
 

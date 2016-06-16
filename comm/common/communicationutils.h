@@ -12,7 +12,7 @@ namespace communication
         static quint8 randomByte();
 
     public:
-        static QString randomString(int length = 12);
+        static std::string randomString(int length = 12);
         static void dumpToHex(const int8_t *v, int size, QString context = "");
 
         template<typename T>

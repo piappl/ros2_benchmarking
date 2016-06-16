@@ -61,7 +61,7 @@ class Logs:
 
     def extractLostPackets(self, filename, cmd):
         fh = open(filename, "w")
-        for key in self.logs:
+        for key in sorted(self.logs):
             if "robot" in self.logs[key] and "console" in self.logs[key]:
                 sent = 0
                 received = 0
@@ -77,7 +77,7 @@ class Logs:
 
     def extractThroughput(self, filename, cmd):
         fh = open(filename, "w")
-        for key in self.logs:
+        for key in sorted(self.logs):
             if "robot" in self.logs[key] and "console" in self.logs[key]:
                 period = None
                 bytes = 0
@@ -96,7 +96,7 @@ class Logs:
 
     def extractLatency(self, filename, cmd):
         fh = open(filename, "w")
-        for key in self.logs:
+        for key in sorted(self.logs):
             if "robot" in self.logs[key] and "console" in self.logs[key]:
                 packets = {}
                 for name in [ "console", "robot" ]:
@@ -118,7 +118,7 @@ class Logs:
 
     def extractFirstReceived(self, filename, cmd):
         fh = open(filename, "w")
-        for key in self.logs:
+        for key in sorted(self.logs):
             if "robot" in self.logs[key] and "console" in self.logs[key]:
                 published = None
                 received = None

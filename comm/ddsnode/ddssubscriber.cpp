@@ -12,7 +12,10 @@ void RobotControlListener::on_data_available(dds::sub::DataReader<messages::Robo
     std::for_each(samples.begin(),
           samples.end(),
           [](const dds::sub::Sample<messages::RobotControl>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotControl));
+            if (s.info().valid())
+            {
+              debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotControl));
+            }
           });
 }
 
@@ -28,7 +31,10 @@ void RobotAlarmListener::on_data_available(dds::sub::DataReader<messages::RobotA
     std::for_each(samples.begin(),
           samples.end(),
           [](const dds::sub::Sample<messages::RobotAlarm>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotAlarm));
+            if (s.info().valid())
+            {
+              debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotAlarm));
+            }
           });
 }
 
@@ -44,7 +50,10 @@ void RobotSensorListener::on_data_available(dds::sub::DataReader<messages::Robot
     std::for_each(samples.begin(),
           samples.end(),
           [](const dds::sub::Sample<messages::RobotSensor>& s) {
-            debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu",s.data().id(), s.data().data().size());
+            if (s.info().valid())
+            {
+              debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu",s.data().id(), s.data().data().size());
+            }
           });
 }
 
