@@ -1,8 +1,5 @@
 comm-build/
-data
-graphs
-logs
-tcpdump
+current
 results/
 python/*.pyc
 python/__pycache__

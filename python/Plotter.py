@@ -12,21 +12,12 @@ class Plotter:
         except:
             pass
 
-    def lostPackets(self, filename, title):
+    def lostPackets(self, filename, cmd, xlabel):
         try:
-            params = [ "title='{}'".format(title) ]
+            params = [ "title='{} message: lost packets'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
             params.append("output='graphs/lost-packets/{}.png'".format(filename))
             self.call('lost-packets.plt', params)
-        except:
-            pass
-
-    def lostPacketsEstablished(self, tid, title):
-        try:
-            params = [ "title='{}'".format(title) ]
-            self.input(params, "input", "data/{}-lost-packets-established.dat".format(tid))
-            params.append("output='graphs/{}-lost-packets-established.png'".format(tid))
-            self.call('lost-packets-established.plt', params)
         except:
             pass
 
@@ -52,27 +43,27 @@ class Plotter:
         except:
             pass
 
-    def firstReceived(self, filename, title):
+    def firstReceived(self, filename, cmd, xlabel):
         try:
-            params = [ "title='{}'".format(title) ]
+            params = [ "title='{} message: first packet received'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
             params.append("output='graphs/first-received/{}.png'".format(filename))
             self.call('first-received.plt', params)
         except:
             pass
 
-    def throughput(self, filename, title):
+    def throughput(self, filename, cmd, xlabel):
         try:
-            params = [ "title='{}'".format(title) ]
+            params = [ "title='{} message: throughput'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
             params.append("output='graphs/throughput/{}.png'".format(filename))
             self.call('throughput.plt', params)
         except:
             pass
 
-    def latency(self, filename, title):
+    def latency(self, filename, cmd, xlabel):
         try:
-            params = [ "title='{}'".format(title) ]
+            params = [ "title='{} message: latency'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
             params.append("output='graphs/latency/{}.png'".format(filename))
             self.call('latency.plt', params)
@@ -87,10 +78,10 @@ class Plotter:
 
     def input(self, params, name, filename):
         if not os.path.isfile(filename):
-            print("File does not exist: {}".format(filename), file=sys.stderr)
+            print("File does not exist: {}".format(filename), flush=True, file=sys.stderr)
             raise RuntimeError
         if os.path.getsize(filename) == 0:
-            print("File is empty: {}".format(filename), file=sys.stderr)
+            print("File is empty: {}".format(filename), flush=True, file=sys.stderr)
             raise RuntimeError
         params.append("{}='{}'".format(name, filename))
 

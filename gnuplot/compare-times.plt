@@ -1,5 +1,6 @@
 set term png
 set output output
+set datafile missing "NA"
 set title title
 set xrange [0:3]
 set ylabel "Time from start [s]"

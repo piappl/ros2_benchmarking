@@ -35,6 +35,7 @@ namespace roscommunication
                 char *argv[] = { name.toLocal8Bit().data() };
                 int argc = sizeof(argv) / sizeof(char*) - 1;
                 rclcpp::utilities::init(argc, argv);
+                qRegisterMetaType<communication::MessageType>("communication::MessageType");
                 mInitialized = true; //TODO - check
                 debug(LOG_WARNING, "RosInitializer", "ros2 initialized");
             }

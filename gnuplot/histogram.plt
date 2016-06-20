@@ -1,5 +1,6 @@
 set term png
 set output output
+set datafile missing "NA"
 set title title
 binwidth=1
 bin(x,width)=width*floor(x/width)

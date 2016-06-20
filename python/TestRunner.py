@@ -13,10 +13,10 @@ class TestRunner:
 
     def dirs(self):
         directory = "results/{}".format(int(time.time()))
+        subprocess.call("rm current".format(directory), shell = True)
+        subprocess.call("ln {} current -s".format(directory), shell = True)
         for subdir in ["logs", "data", "graphs", "tcpdump"]:
-            subprocess.call("rm -f {}".format(subdir), shell = True)
             subprocess.call("mkdir -p {}/{}".format(directory, subdir), shell = True)
-            subprocess.call("ln -s {}/{} {}".format(directory, subdir, subdir), shell = True)
         for subdir in ["times", "lost-packets", "histograms", "first-received", "throughput", "latency"]:
             subprocess.call("mkdir -p {}/graphs/{}".format(directory, subdir), shell = True)
 
@@ -35,7 +35,7 @@ class TestRunner:
         try:
             self.docker.wait(container, timeout)
         except Exception as e:
-            print("Forcing container to stop {}: {}".format(container, str(e)), file=sys.stderr)
+            print("Forcing container to stop {}: {}".format(container, str(e)), flush=True, file=sys.stderr)
             self.docker.stop(container)
 
     def kill(self):
@@ -83,12 +83,13 @@ class TestRunner:
             self.run(comm, tid, tc, title, corruption, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
+                xlabel = "Corruption rate [%]"
                 prefix = "{}-corruption-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of corrupted packets [%] ({})".format(cmd))
-                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of corrupted packets [%] ({})".format(cmd))
-                plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
-                plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
+                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def reorder(self, comm, reorders, skip):
         logs = Logs()
@@ -100,12 +101,13 @@ class TestRunner:
             self.run(comm, tid, tc, title, reorder, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
+                xlabel = "Reordering rate [%]"
                 prefix = "{}-reorder-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of reordered packets [%] ({})".format(cmd))
-                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of reordered packets [%] ({})".format(cmd))
-                plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
-                plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
+                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def duplication(self, comm, dups, skip):
         logs = Logs()
@@ -117,29 +119,31 @@ class TestRunner:
             self.run(comm, tid, tc, title, dup, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
+                xlabel = "Duplication rate [%]"
                 prefix = "{}-duplication-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of duplicated packets [%] ({})".format(cmd))
-                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of duplicated packets [%] ({})".format(cmd))
-                plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
-                plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
+                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def limit(self, comm, limits, skip):
         logs = Logs()
         plotter = Plotter()
         for limit in limits:
             tid = "{}-limit-{:04d}kbit".format(comm, limit)
-            tc = "tbf rate {}kbit burst 10kbit latency 100ms".format(limit)
+            tc = "tbf rate {}kbit burst 32kbit latency 500ms".format(limit)
             title = "Limit {}kbit ({})".format(limit, comm.upper())
             self.run(comm, tid, tc, title, limit, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
+                xlabel = "Throughput limit [kbit]"
                 prefix = "{}-limit-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of throughput impairment [kbit] ({})".format(cmd))
-                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of throughput impairment [kbit] ({})".format(cmd))
-                plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
-                plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
+                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def loss(self, comm, losses, skip):
         logs = Logs()
@@ -151,12 +155,13 @@ class TestRunner:
             self.run(comm, tid, tc, title, loss, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
+                xlabel = "Packet loss rate [%]"
                 prefix = "{}-loss-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of loss impairment [%] ({})".format(cmd))
-                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of loss impairment [%] ({})".format(cmd))
-                plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
-                plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
+                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def delay(self, comm, delays, skip):
         logs = Logs()
@@ -168,12 +173,13 @@ class TestRunner:
             self.run(comm, tid, tc, title, delay, skip, logs)
         if len(logs.keys()) > 1:
             for cmd in self.commands:
+                xlabel = "Packet delay [ms]"
                 prefix = "{}-delay-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), "Lost packets as a function of delay impairment [ms] ({})".format(cmd))
-                plotter.firstReceived("{}-first-received".format(prefix), "First packet received as a function of delay impairment [ms] ({})".format(cmd))
-                plotter.throughput("{}-throughput".format(prefix), "Throughput [bytes/second] ({})".format(cmd))
-                plotter.latency("{}-latency".format(prefix), "Latency [ms] ({})".format(cmd))
+                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def extract(self, logs, prefix, cmd):
         logs.extractLostPackets('data/{}-lost-packets.dat'.format(prefix), cmd)
@@ -186,7 +192,7 @@ class TestRunner:
         if not skip:
             self.execute(comm, tid, tc)
         else:
-            print("Using results from: {}".format(tid))
+            print("Using results from: {}".format(tid), flush=True)
         logs.parse("logs/{}-robot.txt".format(tid), value, "robot")
         logs.parse("logs/{}-console.txt".format(tid), value, "console")
         for cmd in self.commands:
@@ -209,7 +215,7 @@ class TestRunner:
             os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
             os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
         except Exception as e:
-            print('Test {} failed: {}'.format(tid, str(e)), file=sys.stderr)
+            print('Test {} failed: {}'.format(tid, str(e)), flush=True, file=sys.stderr)
             self.kill()
             self.remove_nodes(comm)
 
