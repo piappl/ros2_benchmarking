@@ -13,11 +13,24 @@ The project has additional value of providing an example implementation of a sim
 1. Install dependencies:
 
 ```
-    apt-get install python3-docker docker.io tcpdump gnuplot # ubuntu
-    pacman -S python-docker-py docker tcpdump gnuplot        # arch
+    # Ubuntu 16.04
+    sudo apt-get install python3-docker docker.io tcpdump gnuplot
+    # Ubuntu 14.04
+    sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
+    sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
+    sudo apt-get update
+    sudo apt-get install python3-pip lxc-docker tcpdump gnuplot
+    sudo pip3 install docker-py==1.7.2
+
+    # Arch
+    pacman -S python-docker-py docker tcpdump gnuplot
 ```
 
-2. Add your user to the docker group.
+2. Add your user to the docker group (you need to log out and log in)
+
+```
+   sudo usermod -a -G docker $USER
+```
 
 3. Build all containers (2h+):
 

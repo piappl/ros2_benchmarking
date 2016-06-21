@@ -8,17 +8,17 @@ fi
 
 . scripts/networks.sh
 
-if [ 1 -eq `docker network ls -f name=ros1 | wc -l` ]
+if ! docker network ls | egrep -q "\bros1\b"
 then
     docker network create --subnet=$net_ros1 ros1
 fi
 
-if [ 1 -eq `docker network ls -f name=ros2 | wc -l` ]
+if ! docker network ls | egrep -q "\bros2\b"
 then
     docker network create --subnet=$net_ros2 ros2
 fi
 
-if [ 1 -eq `docker network ls -f name=opensplice | wc -l` ]
+if ! docker network ls | egrep -q "\bopensplice\b"
 then
     docker network create --subnet=$net_opensplice opensplice
 fi

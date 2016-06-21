@@ -29,4 +29,7 @@ RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
+ADD docker/ros2/*.patch /ros2_ws/src/ros2/rcl/
+RUN cd /ros2_ws/src/ros2/rcl && patch -p0 < publisher.c.patch
+RUN cd /ros2_ws/src/ros2/rcl && patch -p0 < subscription.c.patch
 RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install

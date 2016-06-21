@@ -25,8 +25,10 @@ if __name__ == "__main__":
         args = parser.parse_args()
         runner = TestRunner()
         if args.build:
-            for image in args.build:
+            for image in reversed(args.build):
                 runner.remove_containers(image)
+                subprocess.call("./scripts/remove_image.sh {}".format(image), shell = True)
+            for image in args.build:
                 subprocess.call("./scripts/build_image.sh {}".format(image), shell = True)
         elif args.build_all:
             for name in reversed(runner.images):
