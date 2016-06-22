@@ -12,16 +12,9 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys D2486D2DD83DB
 RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list
 
 RUN apt-get update
-RUN sudo apt-get install -y perl git wget build-essential cppcheck cmake libopencv-dev python-empy python3-empy python3-nose python3-pip python3-setuptools python3-vcstool qtcreator
+RUN sudo apt-get install -y perl git wget build-essential cppcheck cmake libopencv-dev python-empy python3-empy python3-nose python3-pip python3-setuptools python3-vcstool qt5-default qtcreator
 RUN sudo apt-get install -y libboost-chrono-dev libboost-date-time-dev libboost-program-options-dev libboost-regex-dev libboost-system-dev libboost-thread-dev libopensplice64 vim
 RUN sudo pip3 install -U setuptools
-RUN apt-get build-dep -y qt5-default
-
-RUN mkdir /src
-RUN wget http://download.qt.io/official_releases/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1.tar.gz -O - | tar -xzC /src
-RUN mv /src/qt-everywhere-opensource-src-5.5.1 /src/qt
-RUN cd /src/qt && ./configure -confirm-license -opensource -nomake examples -nomake tests -no-compile-examples -prefix "/usr/local"
-RUN cd /src/qt && make -j12 all && make install
 
 RUN mkdir -p /ros2_ws/src
 RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -O /ros2_ws/ros2.repos
@@ -29,7 +22,6 @@ RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
-ADD docker/ros2/*.patch /ros2_ws/src/ros2/rcl/
-RUN cd /ros2_ws/src/ros2/rcl && patch -p0 < publisher.c.patch
-RUN cd /ros2_ws/src/ros2/rcl && patch -p0 < subscription.c.patch
+ADD docker/ros2/*.patch /ros2_ws/src/ros2/
+RUN cd /ros2_ws/src/ros2/ && for file in *.patch; do patch -p0 < $file; done
 RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install

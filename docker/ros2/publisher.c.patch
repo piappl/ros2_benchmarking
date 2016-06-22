@@ -1,5 +1,5 @@
---- ./rcl/src/rcl/publisher.c
-+++ ./rcl/src/rcl/publisher.c
+--- ./rcl/rcl/src/rcl/publisher.c
++++ ./rcl/rcl/src/rcl/publisher.c
 @@ -76,7 +76,7 @@ rcl_publisher_init(
      rcl_node_get_rmw_handle(node),
      type_support,
