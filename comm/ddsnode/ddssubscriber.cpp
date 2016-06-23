@@ -4,92 +4,89 @@
 
 using namespace communication;
 
-//TODO - remove repetitiveness!
+template <typename M>
+void ReaderListener<M>::on_requested_deadline_missed(Reader<M>& /*dr*/, const dds::core::status::RequestedDeadlineMissedStatus &status)
+{
+    debug(LOG_BENCHMARK, mName.data(), "Called Reader::on_requested_deadline_missed (total_count: %d)", status.total_count());
+}
 
-void RobotControlListener::on_data_available(dds::sub::DataReader<messages::RobotControl>& dr)
+template <typename M>
+void ReaderListener<M>::on_requested_incompatible_qos(Reader<M>& /*dr*/, const dds::core::status::RequestedIncompatibleQosStatus &status)
+{
+    debug(LOG_BENCHMARK, mName.data(), "Called Reader::on_requested_incompatible_qos (total_count: %d)", status.total_count());
+}
+
+template <typename M>
+void ReaderListener<M>::on_sample_rejected(Reader<M>& /*dr*/, const dds::core::status::SampleRejectedStatus& status)
+{
+    debug(LOG_BENCHMARK, mName.data(), "Called Reader::on_sample_rejected (total_count: %d)", status.total_count());
+}
+
+template <typename M>
+void ReaderListener<M>::on_data_available(Reader<M>& dr)
 {
     auto samples =  dr.take();
-    std::for_each(samples.begin(),
-          samples.end(),
-          [](const dds::sub::Sample<messages::RobotControl>& s) {
-            if (s.info().valid())
-            {
-              debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotControl));
-            }
-          });
+    for (auto& s : samples)
+    {
+        if (s.info().valid())
+        {
+            debug(LOG_BENCHMARK, ("RECEIVED " + mName).data(), "id=%d, size=%lu", s.data().id(), mSize);
+        }
+    }
 }
 
-void RobotControlListener::on_liveliness_changed(dds::sub::DataReader<messages::RobotControl>& dr,
-            const dds::core::status::LivelinessChangedStatus& status)
+template <typename M>
+void ReaderListener<M>::on_liveliness_changed(Reader<M>& /*dr*/, const dds::core::status::LivelinessChangedStatus& status)
 {
-    std::cout << "!!! Liveliness Changed !!!" << std::endl;
+    debug(LOG_BENCHMARK, mName.data(), "Called Reader::on_liveliness_changed (alive: %d, not_alive: %d)", status.alive_count(), status.not_alive_count());
 }
 
-void RobotAlarmListener::on_data_available(dds::sub::DataReader<messages::RobotAlarm>& dr)
+template <typename M>
+void ReaderListener<M>::on_subscription_matched(Reader<M>& /*dr*/, const dds::core::status::SubscriptionMatchedStatus& status)
 {
-    auto samples =  dr.take();
-    std::for_each(samples.begin(),
-          samples.end(),
-          [](const dds::sub::Sample<messages::RobotAlarm>& s) {
-            if (s.info().valid())
-            {
-              debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%d, size=%lu", s.data().id(), sizeof(communication::RobotAlarm));
-            }
-          });
+    debug(LOG_BENCHMARK, mName.data(), "Called Reader::on_subscription_matched (current_count: %d)", status.current_count());
 }
 
-void RobotAlarmListener::on_liveliness_changed(dds::sub::DataReader<messages::RobotAlarm>& dr,
-            const dds::core::status::LivelinessChangedStatus& status)
+template <typename M>
+void ReaderListener<M>::on_sample_lost(Reader<M>& /*dr*/, const dds::core::status::SampleLostStatus& status)
 {
-    std::cout << "!!! Liveliness Changed !!!" << std::endl;
+    debug(LOG_BENCHMARK, mName.data(), "Called Reader::on_sample_lost (total_count: %d)", status.total_count());
 }
 
-void RobotSensorListener::on_data_available(dds::sub::DataReader<messages::RobotSensor>& dr)
-{
-    auto samples =  dr.take();
-    std::for_each(samples.begin(),
-          samples.end(),
-          [](const dds::sub::Sample<messages::RobotSensor>& s) {
-            if (s.info().valid())
-            {
-              debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu",s.data().id(), s.data().data().size());
-            }
-          });
-}
-
-void RobotSensorListener::on_liveliness_changed(dds::sub::DataReader<messages::RobotSensor>& dr,
-            const dds::core::status::LivelinessChangedStatus& status)
-{
-    std::cout << "!!! Liveliness Changed !!!" << std::endl;
-}
-
-
-DDSSubscriber::DDSSubscriber(const Participant &participant,
-                             const DDSTopics &topics, communication::QoSSettings qos)
+DDSSubscriber::DDSSubscriber(const Participant &participant, const DDSTopics &topics, communication::QoSSettings qos)
     : mSubsciber(participant),
-      mRobotControlReader(mSubsciber, topics.topicRobotControl(), getReaderQoS(qos.value(MessageTypeRobotControl))),
-      mRobotSensorReader(mSubsciber, topics.topicRobotSensor(), getReaderQoS(qos.value(MessageTypeRobotSensor))),
-      mRobotAlarmReader(mSubsciber, topics.topicRobotAlarm(), getReaderQoS(qos.value(MessageTypeRobotAlarm)))
+      mTopics(topics),
+      mQos(qos)
 {
-    debug(LOG_WARNING, "DDSSubscriber", "ctor");
 }
 
 void DDSSubscriber::subscribe(communication::MessageType t)
 {
-    debug(LOG_WARNING, "DDSSubscriber", "subscribe %d", t);
-    dds::core::status::StatusMask mask = dds::core::status::StatusMask::data_available();
+    dds::core::status::StatusMask mask = dds::core::status::StatusMask::all();
 
     switch (t)
     {
     case communication::MessageTypeRobotControl:
-        mRobotControlReader.listener(&mRobotControlListener, mask);
+    {
+        debug(LOG_BENCHMARK, "DDSSubscriber", "Subscribing to RobotControl messages");
+        mRobotControlListener.reset(new ReaderListener<messages::RobotControl>("RobotControl", sizeof(communication::RobotControl)));
+        mRobotControlReader = Reader<messages::RobotControl>(mSubsciber, mTopics.topicRobotControl(), getReaderQoS(mQos.value(MessageTypeRobotControl)), mRobotControlListener.get(), mask);
         break;
+    }
     case communication::MessageTypeRobotAlarm:
-        mRobotAlarmReader.listener(&mRobotAlarmListener, mask);
-        break;
+    {
+        debug(LOG_BENCHMARK, "DDSSubscriber", "Subscribing to RobotAlarm messages");
+        mRobotAlarmListener.reset(new ReaderListener<messages::RobotAlarm>("RobotAlarm", sizeof(communication::RobotAlarm)));
+        mRobotAlarmReader = Reader<messages::RobotAlarm>(mSubsciber, mTopics.topicRobotAlarm(), getReaderQoS(mQos.value(MessageTypeRobotAlarm)), mRobotAlarmListener.get(), mask);
+        break;    }
     case communication::MessageTypeRobotSensor:
-        mRobotSensorReader.listener(&mRobotSensorListener, mask);
+    {
+        //TODO: Get string size
+        debug(LOG_BENCHMARK, "DDSSubscriber", "Subscribing to RobotSensor messages");
+        mRobotSensorListener.reset(new ReaderListener<messages::RobotSensor>("RobotSensor", 200));
+        mRobotSensorReader = Reader<messages::RobotSensor>(mSubsciber, mTopics.topicRobotSensor(), getReaderQoS(mQos.value(MessageTypeRobotSensor)), mRobotSensorListener.get(), mask);
         break;
+    }
     default:
         break;
     }

@@ -8,6 +8,21 @@
 
 namespace communication
 {
+    template <typename M>
+    class WriterListener : public Writer<M>::Listener
+    {
+    public:
+        WriterListener() = delete;
+        WriterListener(std::string name, std::size_t size) : mName(name), mSize(size) { }
+        void on_offered_deadline_missed(Writer<M>& writer, const dds::core::status::OfferedDeadlineMissedStatus& status);
+        void on_offered_incompatible_qos(Writer<M>& writer, const dds::core::status::OfferedIncompatibleQosStatus&  status);
+        void on_liveliness_lost(Writer<M>& writer, const dds::core::status::LivelinessLostStatus& status);
+        void on_publication_matched(Writer<M>& writer, const dds::core::status::PublicationMatchedStatus& status);
+    private:
+        std::string mName;
+        std::size_t mSize;
+    };
+
     class DDSPublisher
     {
         public:
@@ -20,11 +35,16 @@ namespace communication
 
         private:
             Publisher mPublisher;
+            DDSTopics mTopics;
+            communication::QoSSettings mQos;
 
-            //TODO - generalize?
-            Writer<messages::RobotControl> mRobotControlWriter;
-            Writer<messages::RobotSensor> mRobotSensorWriter;
-            Writer<messages::RobotAlarm> mRobotAlarmWriter;
+            Writer<messages::RobotControl> mRobotControlWriter{dds::core::null_type()};
+            Writer<messages::RobotSensor> mRobotSensorWriter{dds::core::null_type()};
+            Writer<messages::RobotAlarm> mRobotAlarmWriter{dds::core::null_type()};
+
+            std::unique_ptr<WriterListener<messages::RobotControl>> mRobotControlListener;
+            std::unique_ptr<WriterListener<messages::RobotAlarm>> mRobotAlarmListener;
+            std::unique_ptr<WriterListener<messages::RobotSensor>> mRobotSensorListener;
     };
 }
 #endif //DDSPUBLISHER_H

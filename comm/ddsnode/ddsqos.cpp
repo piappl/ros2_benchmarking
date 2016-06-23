@@ -21,22 +21,24 @@ namespace communication
     T getQoS(communication::QoSSetting s)
     {
         T qos;
+        qos << policy::ResourceLimits(dds::core::LENGTH_UNLIMITED, dds::core::LENGTH_UNLIMITED, dds::core::LENGTH_UNLIMITED);
+        //qos << policy::Liveliness::ManualByTopic(Duration::from_secs(10));
         switch (s.profile)
         {
             case QoSProfileAlarm:
-                debug(LOG_WARNING, "QoS", "Setting QosProfileAlarm");
+                debug(LOG_BENCHMARK, "QoS", "Setting QosProfileAlarm");
                 qos << policy::Reliability::Reliable();
                 qos << policy::Durability::TransientLocal();
                 qos << policy::History::KeepAll();
                 break;
             case QoSProfileControl:
-                debug(LOG_WARNING, "QoS", "Setting QosProfileControl");
+                debug(LOG_BENCHMARK, "QoS", "Setting QosProfileControl");
                 qos << policy::Reliability::Reliable();
                 qos << policy::Durability::Volatile();
                 qos << policy::History::KeepLast(10);
                 break;
             case QoSProfileSensor:
-                debug(LOG_WARNING, "QoS", "Setting QosProfileStatus|Sensor");
+                debug(LOG_BENCHMARK, "QoS", "Setting QosProfileSensor");
                 qos << policy::Reliability::BestEffort();
                 qos << policy::Durability::Volatile();
                 break;

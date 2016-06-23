@@ -22,14 +22,6 @@ namespace
         RMW_QOS_POLICY_VOLATILE_DURABILITY
     };
 
-    static const rmw_qos_profile_t rmw_qos_profile_status =
-    {
-        RMW_QOS_POLICY_KEEP_LAST_HISTORY,
-        0,
-        RMW_QOS_POLICY_BEST_EFFORT,
-        RMW_QOS_POLICY_VOLATILE_DURABILITY
-    };
-
     static const rmw_qos_profile_t rmw_qos_profile_sensor =
     {
         RMW_QOS_POLICY_KEEP_LAST_HISTORY,

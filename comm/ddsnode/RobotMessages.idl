@@ -8,6 +8,7 @@ module messages
         long x;
         long y;
         long z;
+        long key;
     };
 #pragma keylist RobotControl id
 
@@ -16,6 +17,7 @@ module messages
         long id; //@key
         long alarm1;
         long alarm2;
+        long key;
     };
 #pragma keylist RobotAlarm id
 
@@ -23,6 +25,7 @@ module messages
     {
         long id; //@key
         string data;
+        long key;
     };
 #pragma keylist RobotSensor id
 };
