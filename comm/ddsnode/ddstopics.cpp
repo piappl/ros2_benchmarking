@@ -1,4 +1,5 @@
 #include "ddstopics.h"
+#include "ddsqos.h"
 #include <common/topics.h>
 
 using namespace communication;
@@ -10,9 +11,9 @@ namespace
     std::string robotAlarmTopic() { return Topics::fullTopic(MessageTypeRobotAlarm, "_").toStdString(); }
 }
 
-DDSTopics::DDSTopics(const Participant &participant)
-   : mRobotControlTopic(participant, robotControlTopic()),
-     mRobotSensorTopic(participant, robotSensorTopic()),
-     mRobotAlarmTopic(participant, robotAlarmTopic())
+DDSTopics::DDSTopics(const Participant &participant, communication::QoSSettings qos)
+   : mRobotControlTopic(participant, robotControlTopic(), getTopicQoS(qos.value(MessageTypeRobotControl))),
+     mRobotSensorTopic(participant, robotSensorTopic(), getTopicQoS(qos.value(MessageTypeRobotSensor))),
+     mRobotAlarmTopic(participant, robotAlarmTopic(), getTopicQoS(qos.value(MessageTypeRobotAlarm)))
 {
 }

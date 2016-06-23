@@ -17,6 +17,11 @@ namespace communication
         return getQoS<dds::sub::qos::DataReaderQos>(s);
     }
 
+    dds::topic::qos::TopicQos getTopicQoS(communication::QoSSetting s)
+    {
+        return getQoS<dds::topic::qos::TopicQos>(s);
+    }
+
     template <class T>
     T getQoS(communication::QoSSetting s)
     {
@@ -28,8 +33,8 @@ namespace communication
             case QoSProfileAlarm:
                 debug(LOG_BENCHMARK, "QoS", "Setting QosProfileAlarm");
                 qos << policy::Reliability::Reliable();
-                qos << policy::Durability::TransientLocal();
-                qos << policy::History::KeepAll();
+                qos << policy::Durability::Transient();
+                qos << policy::History::KeepLast(1000000);
                 break;
             case QoSProfileControl:
                 debug(LOG_BENCHMARK, "QoS", "Setting QosProfileControl");

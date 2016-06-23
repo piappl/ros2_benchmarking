@@ -5,7 +5,7 @@ using namespace communication;
 
 DDSNode::DDSNode(Settings settings)
     : mDomainParticipant(settings.domainID),
-      mTopics(mDomainParticipant),
+      mTopics(mDomainParticipant, settings.qos),
       mPublisher(mDomainParticipant, mTopics, settings.qos),
       mSubscriber(mDomainParticipant, mTopics, settings.qos)
 {

@@ -4,28 +4,28 @@ module messages
 {
     struct RobotControl
     {
-        long id; //@key
+        long id;
         long x;
         long y;
         long z;
-        long key;
+        long key; //@key
     };
-#pragma keylist RobotControl id
+#pragma keylist RobotControl key
 
     struct RobotAlarm
     {
-        long id; //@key
+        long id;
         long alarm1;
         long alarm2;
-        long key;
+        long key; //@key
     };
-#pragma keylist RobotAlarm id
+#pragma keylist RobotAlarm key
 
     struct RobotSensor
     {
-        long id; //@key
+        long id;
         string data;
-        long key;
+        long key; //@key
     };
-#pragma keylist RobotSensor id
+#pragma keylist RobotSensor key
 };

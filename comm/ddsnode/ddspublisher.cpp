@@ -66,6 +66,7 @@ void DDSPublisher::publishRobotSensor(communication::RobotSensor sensor)
 
 void DDSPublisher::publishRobotAlarm(RobotAlarm alarm)
 {
+    //static int count = 0;
     messages::RobotAlarm message(alarm.id, alarm.alarm1, alarm.alarm2, 3);
     debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%d, size=%lu", message.id(), sizeof(communication::RobotAlarm));
     try

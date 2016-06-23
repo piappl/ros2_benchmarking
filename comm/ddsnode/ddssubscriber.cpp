@@ -32,6 +32,10 @@ void ReaderListener<M>::on_data_available(Reader<M>& dr)
         {
             debug(LOG_BENCHMARK, ("RECEIVED " + mName).data(), "id=%d, size=%lu", s.data().id(), mSize);
         }
+        else
+        {
+            debug(LOG_BENCHMARK, ("INVALID " + mName).data(), "id=%d, size=%lu", s.data().id(), mSize);
+        }
     }
 }
 
