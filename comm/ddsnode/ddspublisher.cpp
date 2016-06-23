@@ -38,7 +38,7 @@ DDSPublisher::DDSPublisher(const Participant& participant, const DDSTopics &topi
 
 void DDSPublisher::publishRobotControl(communication::RobotControl control)
 {
-    messages::RobotControl message(control.id, control.x, control.y, control.z, 1);
+    messages::RobotControl message(control.id, control.x, control.y, control.z);
     debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", message.id(), sizeof(communication::RobotControl));
     try
     {
@@ -52,7 +52,7 @@ void DDSPublisher::publishRobotControl(communication::RobotControl control)
 
 void DDSPublisher::publishRobotSensor(communication::RobotSensor sensor)
 {
-    messages::RobotSensor message(sensor.id, sensor.data, 2);
+    messages::RobotSensor message(sensor.id, sensor.data);
     debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", message.id(), message.data().size());
     try
     {
@@ -66,8 +66,7 @@ void DDSPublisher::publishRobotSensor(communication::RobotSensor sensor)
 
 void DDSPublisher::publishRobotAlarm(RobotAlarm alarm)
 {
-    //static int count = 0;
-    messages::RobotAlarm message(alarm.id, alarm.alarm1, alarm.alarm2, 3);
+    messages::RobotAlarm message(alarm.id, alarm.alarm1, alarm.alarm2);
     debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%d, size=%lu", message.id(), sizeof(communication::RobotAlarm));
     try
     {

@@ -27,7 +27,6 @@ namespace communication
     {
         T qos;
         qos << policy::ResourceLimits(dds::core::LENGTH_UNLIMITED, dds::core::LENGTH_UNLIMITED, dds::core::LENGTH_UNLIMITED);
-        //qos << policy::Liveliness::ManualByTopic(Duration::from_secs(10));
         switch (s.profile)
         {
             case QoSProfileAlarm:
