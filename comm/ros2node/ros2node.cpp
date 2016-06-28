@@ -36,6 +36,7 @@ namespace roscommunication
                 int argc = sizeof(argv) / sizeof(char*) - 1;
                 rclcpp::utilities::init(argc, argv);
                 qRegisterMetaType<communication::MessageType>("communication::MessageType");
+                debug(LOG_WARNING, "RosInitializer", "DDS: %s", rmw_get_implementation_identifier());
                 mInitialized = true; //TODO - check
                 debug(LOG_WARNING, "RosInitializer", "ros2 initialized");
             }
@@ -208,7 +209,7 @@ namespace roscommunication
             mListener.subscribe(n, mQoS.value(n));
         }
 
-        void unsubscribe(communication::MessageType n)
+        void unsubscribe(communication::MessageType /*n*/)
         {
             //TODO - implement
             debug(LOG_ERROR, "Ros2Subscriber", "Unsubscribe: not implemented (yet)!");
@@ -376,10 +377,10 @@ namespace roscommunication
             }
         }
 
+        QoSSettings mQoS;
         rclcpp::Node::SharedPtr mNode;
         bool mStarted;
         QMap<MessageType, rclcpp::publisher::PublisherBase::SharedPtr> mPublishers;
-        QoSSettings mQoS;
     };
 
 /*--------------------ROS2NodeImpl----------------------*/
@@ -394,9 +395,8 @@ namespace roscommunication
         Q_OBJECT
     private:
         RosInitializer mInitializer;
-
-        rclcpp::Node::SharedPtr mNode;
         QString mName;
+        rclcpp::Node::SharedPtr mNode;
         Ros2Subscriber mSubscriber;
         Ros2Publisher mPublisher;
 

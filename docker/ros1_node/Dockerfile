@@ -1,4 +1,4 @@
-FROM test:ros1
+FROM ros1:base
 
 ENV top /ros2_benchmarking
 ENV comm $top/comm

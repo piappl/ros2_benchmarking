@@ -27,8 +27,8 @@ private:
     void subscribe();
     void unsubscribe();
 
-    communication::NodeInterfacePtr mNode;
     ConfigParser *mConfig;
+    communication::NodeInterfacePtr mNode;
 
     QTimer mRobotAlarmTimer;
     QTimer mRobotControlTimer;

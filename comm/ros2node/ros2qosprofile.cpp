@@ -59,6 +59,9 @@ std::string Ros2QoSProfile::profileDescription(QoSProfile p)
         case RMW_QOS_POLICY_KEEP_LAST_HISTORY:
             description.append("H: KEEP_LAST=" + std::to_string(profile.depth)+ ", ");
             break;
+        case RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT:
+            description.append("H: DEFAULT, ");
+            break;
     }
     switch (profile.reliability)
     {
@@ -68,14 +71,20 @@ std::string Ros2QoSProfile::profileDescription(QoSProfile p)
         case RMW_QOS_POLICY_BEST_EFFORT:
             description.append("R: BEST_EFFORT, ");
             break;
+        case RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT:
+            description.append("R: DEFAULT, ");
+            break;
     };
     switch (profile.durability)
     {
         case RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY:
-            description.append("V: TRANSIENT");
+            description.append("D: TRANSIENT");
             break;
         case RMW_QOS_POLICY_VOLATILE_DURABILITY:
-            description.append("V: VOLATILE");
+            description.append("D: VOLATILE");
+            break;
+        case RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT:
+            description.append("D: DEFAULT");
             break;
     };
     return description;

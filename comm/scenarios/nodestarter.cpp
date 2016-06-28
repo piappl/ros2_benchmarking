@@ -36,7 +36,8 @@ namespace nodestarter
         TestRunner runner(&p, node);
         QObject::connect(&runner, SIGNAL(quit()), &a, SLOT(quit()));
 
-        a.exec();
+        auto retval = a.exec();
         debug(LOG_BENCHMARK, "startNode", "Exiting");
+        return retval;
     }
 }

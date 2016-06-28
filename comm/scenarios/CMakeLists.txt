@@ -8,12 +8,17 @@ if(COMM_ROS)
   target_link_libraries(ros1runner ros1node)
 endif()
 
-if(COMM_ROS2)
+if(COMM_ROS2_OPENSPLICE)
   add_executable(ros2runner ros2runner.cpp ${COMMON_SRC})
   target_link_libraries(ros2runner ros2node)
 endif()
 
-if(COMM_DDS)
+if(COMM_ROS2_FASTRTPS)
+  add_executable(ros2runner ros2runner.cpp ${COMMON_SRC})
+  target_link_libraries(ros2runner ros2node)
+endif()
+
+if(COMM_OPENSPLICE)
   include_directories(${CMAKE_BINARY_DIR}/ddsnode)   #TODO
   add_executable(ddsrunner ddsrunner.cpp ${COMMON_SRC})
   target_link_libraries(ddsrunner ddsnode)

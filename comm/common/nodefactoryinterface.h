@@ -18,6 +18,7 @@ public:
     };
 
     virtual communication::NodeInterfacePtr makeNode(communication::Settings s) = 0;
+    virtual ~NodeFactoryInterface() { }
 };
 typedef QSharedPointer<NodeFactoryInterface> NodeFactoryInterfacePtr;
 

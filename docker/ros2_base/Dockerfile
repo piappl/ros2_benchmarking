@@ -18,10 +18,11 @@ RUN sudo pip3 install -U setuptools
 
 RUN mkdir -p /ros2_ws/src
 RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -O /ros2_ws/ros2.repos
+RUN sed -i s/2fefcf42d30da417ed5abdb6b02d4668df232b54/834f01c5b295f23e38dbc4241e3ead66199cc0d8/ /ros2_ws/ros2.repos
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
-ADD docker/ros2/*.patch /ros2_ws/src/ros2/
-RUN cd /ros2_ws/src/ros2/ && for file in *.patch; do patch -p0 < $file; done
-RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --build-tests --symlink-install
+ADD docker/ros2_base/*.patch /ros2_ws/src/
+RUN cd /ros2_ws/src/ && for file in *.patch; do patch -p0 < $file; done
+RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install

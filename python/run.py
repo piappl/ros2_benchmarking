@@ -12,14 +12,16 @@ if __name__ == "__main__":
     testing.add_argument("--duplication", type=int, nargs='+', help="run duplication tests for given values [%%]")
     testing.add_argument("--corruption", type=int, nargs='+', help="run corruption tests for given values [%%]")
     testing.add_argument("--reorder", type=int, nargs='+', help="run reorder tests for given values [%%]")
-    testing.add_argument("--test", choices=[ 'ros1', 'ros2', 'opensplice' ], nargs='+', help="Transport layer to be tested")
+    testing.add_argument("--test", choices=[ 'ros1', 'ros2opensplice', 'ros2fastrtps', 'opensplice' ], nargs='+', help="Transport layer to be tested")
     testing.add_argument("--skip-execution", action='store_true', help ="parse and plot existing data")
     tools = parser.add_argument_group('tools', '')
     tools.add_argument("--build-all", action='store_true', help ="build all images")
     tools.add_argument("--build", choices=TestRunner.images, nargs='+', help="delete an existing image and build a new one")
     tools.add_argument("--clean", action='store_true', help ="stop and remove all containers")
     tools.add_argument("--qtcreator", choices=[ 'ros1', 'ros2', 'opensplice' ], help="Run QT Creator in the development environment")
-    if len(sys.argv) == 1:
+    if not os.path.isdir("comm"):
+        print("Run this script from the project root directory, e.g.: ./python/run.py")
+    elif len(sys.argv) == 1:
         parser.print_help()
     else:
         args = parser.parse_args()

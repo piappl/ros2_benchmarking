@@ -4,7 +4,7 @@ from Plotter import Plotter
 
 
 class TestRunner:
-    images = [ "ros1", "ros1node", "ros2", "ros2node", "opensplice", "opensplicenode" ]
+    images = [ "ros1:base", "ros1:node", "ros2:base", "ros2:opensplice", "ros2:fastrtps", "opensplice:base", "opensplice:node" ]
     commands = [ "RobotControl", "RobotAlarm", "RobotSensor" ]
     workers = []
 
@@ -22,7 +22,7 @@ class TestRunner:
 
 
     def remove_containers(self, name):
-        containers = self.docker.containers(filters = { 'ancestor': 'test:{}'.format(name) })
+        containers = self.docker.containers(filters = { 'ancestor': '{}'.format(name) })
         for container in containers:
             self.docker.stop(container)
             self.docker.wait(container)
@@ -208,8 +208,10 @@ class TestRunner:
         try:
             if comm== "ros1":
                 self.ros1(tid, tc)
-            elif comm == "ros2":
-                self.ros2(tid, tc)
+            elif comm == "ros2opensplice":
+                self.ros2opensplice(tid, tc)
+            elif comm == "ros2fastrtps":
+                self.ros2fastrtps(tid, tc)
             elif comm == "opensplice":
                 self.opensplice(tid, tc)
             os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
@@ -237,10 +239,23 @@ class TestRunner:
         self.docker.remove_container(robot_id)
         self.docker.remove_container(master_id)
 
-    def ros2(self, tid, tc):
-        robot_id = subprocess.Popen("./scripts/start_ros2_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
-        console_id = subprocess.Popen("./scripts/start_ros2_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
-        interfaces = self.interfaces("ros2", 2)
+    def ros2opensplice(self, tid, tc):
+        robot_id = subprocess.Popen("./scripts/start_ros2opensplice_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        console_id = subprocess.Popen("./scripts/start_ros2opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        interfaces = self.interfaces("ros2opensplice", 2)
+        for interface in interfaces:
+            self.tc(interface, tc)
+            self.tcpdump(interface, tid)
+        self.wait(console_id)
+        self.wait(robot_id)
+        self.kill()
+        self.docker.remove_container(console_id)
+        self.docker.remove_container(robot_id)
+
+    def ros2fastrtps(self, tid, tc):
+        robot_id = subprocess.Popen("./scripts/start_ros2fastrtps_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        console_id = subprocess.Popen("./scripts/start_ros2fastrtps_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        interfaces = self.interfaces("ros2fastrtps", 2)
         for interface in interfaces:
             self.tc(interface, tc)
             self.tcpdump(interface, tid)

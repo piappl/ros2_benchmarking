@@ -2,7 +2,10 @@
 #define DDSINCLUDE_H
 
 #include <QSharedPointer>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "gen/RobotMessages_DCPS.hpp"
+#pragma GCC diagnostic pop
 
 namespace communication
 {

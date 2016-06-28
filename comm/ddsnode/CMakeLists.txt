@@ -55,6 +55,7 @@ set(HEADERS
     ddsnodefactory.h
     ddsnode.h)
 
+set_source_files_properties(${OpenSplice_DATAMODEL} PROPERTIES COMPILE_FLAGS "-Wno-unused-parameter")
 add_definitions(${OpenSplice_DEFINITIONS} ${DEFINITIONS})
 add_library(ddsnode SHARED ${SOURCES} ${HEADERS} ${OpenSplice_DATAMODEL})
 target_link_libraries(ddsnode common Qt5::Core ${OpenSplice_LIBRARIES})

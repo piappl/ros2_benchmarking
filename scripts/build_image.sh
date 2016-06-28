@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ ! -e comm ]
-then
-    echo "Run this script from the top directory of r5cop_banchmarking project"
-    exit 1
-fi
-
 . scripts/networks.sh
 
 if ! docker network ls | egrep -q "\bros1\b"
@@ -13,9 +7,14 @@ then
     docker network create --subnet=$net_ros1 ros1
 fi
 
-if ! docker network ls | egrep -q "\bros2\b"
+if ! docker network ls | egrep -q "\bros2opensplice\b"
 then
-    docker network create --subnet=$net_ros2 ros2
+    docker network create --subnet=$net_ros2opensplice ros2opensplice
+fi
+
+if ! docker network ls | egrep -q "\bros2fastrtps\b"
+then
+    docker network create --subnet=$net_ros2fastrtps ros2fastrtps
 fi
 
 if ! docker network ls | egrep -q "\bopensplice\b"
@@ -25,4 +24,4 @@ fi
 
 ./scripts/remove_image.sh $1
 
-docker build -t test:$1 -f docker/$1/Dockerfile .
+docker build -t $1 -f docker/`echo -n $1 | sed s/:/_/`/Dockerfile .

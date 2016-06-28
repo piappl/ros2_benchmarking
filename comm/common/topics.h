@@ -29,14 +29,14 @@ namespace communication
                 }
             }
 
-            static QString namespaceString(communication::MessageType n, QString glue = join())
+            static QString namespaceString(QString glue = join())
             {
                 return QString("robot") + glue;
             }
 
             static QString fullTopic(communication::MessageType n, QString glue = join())
             {
-                return namespaceString(n, glue) + topic(n);
+                return namespaceString(glue) + topic(n);
             }
     };
 }
