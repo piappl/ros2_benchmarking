@@ -1,0 +1,11 @@
+--- ./eProsima/ROS-RMW-Fast-RTPS-cpp/rmw_fastrtps_cpp/src/functions.cpp
++++ ./eProsima/ROS-RMW-Fast-RTPS-cpp/rmw_fastrtps_cpp/src/functions.cpp
+@@ -578,8 +578,6 @@ extern "C"
+             return NULL;
+         }
+ 
+-        eprosima::Log::setVerbosity(eprosima::VERB_ERROR);
+-
+         ParticipantAttributes participantParam;
+         participantParam.rtps.builtin.domainId = static_cast<uint32_t>(domain_id);
+         participantParam.rtps.setName(name);

@@ -4,9 +4,6 @@ project(ros2node)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(${DDS} REQUIRED)
-find_package(messages REQUIRED)
-
 set(SOURCES
     ros2node.cpp
     ros2qosprofile.cpp)
@@ -24,7 +21,21 @@ set(INSTALL_HEADERS
     ros2nodefactory.h)
 
 add_library(ros2node SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(ros2node common rcl rclcpp rclcpp__${DDS} ${${DDS}_LIBRARIES} ${messages_LIBRARIES} fastrtps)
+
+if(COMM_ROS2_FASTRTPS)
+  set(DDS rmw_fastrtps_cpp)
+  add_definitions(-DFASTRTPS)
+  target_link_libraries(ros2node fastrtps)
+endif()
+if(COMM_ROS2_OPENSPLICE)
+  set(DDS rmw_opensplice_cpp)
+  add_definitions(-DOPENSPLICE)
+endif()
+
+find_package(${DDS} REQUIRED)
+find_package(messages REQUIRED)
+
+target_link_libraries(ros2node common rcl rclcpp rclcpp__${DDS} ${${DDS}_LIBRARIES} ${messages_LIBRARIES})
 include_directories(${${DDS}_INCLUDE_DIRS} ${rcl_INCLUDE_DIRS})
-INSTALL(FILES ${INSTALL_HEADERS} DESTINATION /include/ros2node)
+install(FILES ${INSTALL_HEADERS} DESTINATION /include/ros2node)
 

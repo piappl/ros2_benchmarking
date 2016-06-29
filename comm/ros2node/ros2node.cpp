@@ -18,6 +18,9 @@
 #include "ros2messagetovariant.h"
 #include "ros2subscriptionlistenerinterface.h"
 #include "ros2qosprofile.h"
+#ifdef FASTRTPS
+#include "fastrtps/utils/RTPSLog.h"
+#endif
 
 //TODO - redesign subscriber
 
@@ -37,6 +40,9 @@ namespace roscommunication
                 rclcpp::utilities::init(argc, argv);
                 qRegisterMetaType<communication::MessageType>("communication::MessageType");
                 debug(LOG_WARNING, "RosInitializer", "DDS: %s", rmw_get_implementation_identifier());
+#ifdef FASTRTPS
+                eprosima::Log::setVerbosity(eprosima::VERB_WARNING);
+#endif
                 mInitialized = true; //TODO - check
                 debug(LOG_WARNING, "RosInitializer", "ros2 initialized");
             }
@@ -307,7 +313,14 @@ namespace roscommunication
             sensor.data = msg.data;
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotSensor>>(mPublishers.value(n));
             debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", msg.id, msg.data.size());
-            pub->publish(sensor);
+            try
+            {
+                pub->publish(sensor);
+            }
+            catch (std::exception& e)
+            {
+                debug(LOG_ERROR, "Ros2Publisher", "%s", e.what());
+            }
         }
 
         void publishRobotControl(QVariant content)
@@ -332,7 +345,14 @@ namespace roscommunication
             control.z = msg.id;
             debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", msg.id, sizeof(messages::msg::RobotControl));
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotControl> >(mPublishers.value(n));
-            pub->publish(control);
+            try
+            {
+                pub->publish(control);
+            }
+            catch (std::exception& e)
+            {
+                debug(LOG_ERROR, "Ros2Publisher", "%s", e.what());
+            }
         }
 
         void publishRobotAlarm(QVariant content)
@@ -356,7 +376,14 @@ namespace roscommunication
             alarm.alarm2 = msg.alarm2;
             auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotAlarm> >(mPublishers.value(n));
             debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%u, size=%lu", alarm.id, sizeof(messages::msg::RobotAlarm));
-            pub->publish(alarm);
+            try
+            {
+                pub->publish(alarm);
+            }
+            catch (std::exception& e)
+            {
+                debug(LOG_ERROR, "Ros2Publisher", "%s", e.what());
+            }
         }
 
     private:

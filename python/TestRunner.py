@@ -28,8 +28,18 @@ class TestRunner:
             self.docker.wait(container)
             self.docker.remove_container(container)
 
-    def remove_nodes(self, name):
-        self.remove_containers(name + "node")
+    def kill_stop_remove(self, containers):
+        self.kill()
+        for container in containers:
+            self.docker.stop(container)
+            self.docker.remove_container(container)
+
+    def wait_kill_remove(self, containers):
+        for container in containers:
+            self.docker.wait(container)
+        self.kill()
+        for container in containers:
+            self.docker.remove_container(container)
 
     def wait(self, container, timeout = 360):
         try:
@@ -57,7 +67,7 @@ class TestRunner:
         except Exception as e:
             raise RuntimeError("Unable to find bridge for network {}: {}".format(network, str(e)))
         if len(interfaces) != expected:
-            raise RuntimeError("Expected {} interface(s) for network {}".format(expected, network))
+            raise RuntimeError("Expected {} interface(s) for network {} got {}".format(expected, network, len(interfaces)))
         return interfaces
 
     def tcpdump(self, interface, filename):
@@ -190,7 +200,11 @@ class TestRunner:
     def run(self, comm, tid, tc, prefix, value, skip, logs):
         plotter = Plotter()
         if not skip:
-            self.execute(comm, tid, tc)
+            try:
+                self.execute(comm, tid, tc)
+            except Exception as e:
+                print('Test {} failed: {}'.format(tid, str(e)), flush=True, file=sys.stderr)
+                return
         else:
             print("Using results from: {}".format(tid), flush=True)
         logs.parse("logs/{}-robot.txt".format(tid), value, "robot")
@@ -205,76 +219,71 @@ class TestRunner:
 
     def execute(self, comm, tid, tc):
         print("Running test: {}".format(tid), flush=True)
-        try:
-            if comm== "ros1":
-                self.ros1(tid, tc)
-            elif comm == "ros2opensplice":
-                self.ros2opensplice(tid, tc)
-            elif comm == "ros2fastrtps":
-                self.ros2fastrtps(tid, tc)
-            elif comm == "opensplice":
-                self.opensplice(tid, tc)
-            os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
-            os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
-        except Exception as e:
-            print('Test {} failed: {}'.format(tid, str(e)), flush=True, file=sys.stderr)
-            self.kill()
-            self.remove_nodes(comm)
+        if comm== "ros1":
+            self.ros1(tid, tc)
+        elif comm == "ros2opensplice":
+            self.ros2opensplice(tid, tc)
+        elif comm == "ros2fastrtps":
+            self.ros2fastrtps(tid, tc)
+        elif comm == "opensplice":
+            self.opensplice(tid, tc)
+        os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
+        os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
 
     def ros1(self, tid, tc):
         master_id = subprocess.Popen("./scripts/start_ros1_master.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         master_if = self.interfaces("ros1", 1)[0]
         robot_id = subprocess.Popen("./scripts/start_ros1_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         console_id = subprocess.Popen("./scripts/start_ros1_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
-        interfaces = self.interfaces("ros1", 3)
-        for interface in interfaces:
-            if interface != master_if:
-                self.tc(interface, tc)
-                self.tcpdump(interface, tid)
-        self.wait(console_id)
-        self.wait(robot_id)
+        try:
+            interfaces = self.interfaces("ros1", 3)
+            for interface in interfaces:
+                if interface != master_if:
+                    self.tc(interface, tc)
+                    self.tcpdump(interface, tid)
+        except Exception as e:
+            self.kill_stop_remove([robot_id, console_id, master_id])
+            raise e
+        self.wait_kill_remove([robot_id, console_id])
         self.docker.stop(master_id)
-        self.kill()
-        self.docker.remove_container(console_id)
-        self.docker.remove_container(robot_id)
         self.docker.remove_container(master_id)
 
     def ros2opensplice(self, tid, tc):
         robot_id = subprocess.Popen("./scripts/start_ros2opensplice_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         console_id = subprocess.Popen("./scripts/start_ros2opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
-        interfaces = self.interfaces("ros2opensplice", 2)
-        for interface in interfaces:
-            self.tc(interface, tc)
-            self.tcpdump(interface, tid)
-        self.wait(console_id)
-        self.wait(robot_id)
-        self.kill()
-        self.docker.remove_container(console_id)
-        self.docker.remove_container(robot_id)
+        try:
+            interfaces = self.interfaces("ros2opensplice", 2)
+            for interface in interfaces:
+                self.tc(interface, tc)
+                self.tcpdump(interface, tid)
+        except Exception as e:
+            self.kill_stop_remove([robot_id, console_id])
+            raise e
+        self.wait_kill_remove([robot_id, console_id])
 
     def ros2fastrtps(self, tid, tc):
         robot_id = subprocess.Popen("./scripts/start_ros2fastrtps_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         console_id = subprocess.Popen("./scripts/start_ros2fastrtps_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
-        interfaces = self.interfaces("ros2fastrtps", 2)
-        for interface in interfaces:
-            self.tc(interface, tc)
-            self.tcpdump(interface, tid)
-        self.wait(console_id)
-        self.wait(robot_id)
-        self.kill()
-        self.docker.remove_container(console_id)
-        self.docker.remove_container(robot_id)
+        try:
+            interfaces = self.interfaces("ros2fastrtps", 2)
+            for interface in interfaces:
+                self.tc(interface, tc)
+                self.tcpdump(interface, tid)
+        except Exception as e:
+            self.kill_stop_remove([robot_id, console_id])
+            raise e
+        self.wait_kill_remove([robot_id, console_id])
 
     def opensplice(self, tid, tc):
         robot_id = subprocess.Popen("./scripts/start_opensplice_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         console_id = subprocess.Popen("./scripts/start_opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
-        interfaces = self.interfaces("opensplice", 2)
-        for interface in interfaces:
-            self.tc(interface, tc)
-            self.tcpdump(interface, tid)
-        self.wait(console_id)
-        self.wait(robot_id)
-        self.kill()
-        self.docker.remove_container(console_id)
-        self.docker.remove_container(robot_id)
+        try:
+            interfaces = self.interfaces("opensplice", 2)
+            for interface in interfaces:
+                self.tc(interface, tc)
+                self.tcpdump(interface, tid)
+        except Exception as e:
+            self.kill_stop_remove([robot_id, console_id])
+            raise e
+        self.wait_kill_remove([robot_id, console_id])
 

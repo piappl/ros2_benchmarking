@@ -62,4 +62,3 @@ if __name__ == "__main__":
                 if args.delay:
                     runner.delay(comm, args.delay, args.skip_execution)
                 runner.kill()
-                runner.remove_nodes(comm)

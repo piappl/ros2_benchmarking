@@ -17,7 +17,7 @@ namespace
     static const rmw_qos_profile_t rmw_qos_profile_control =
     {
         RMW_QOS_POLICY_KEEP_LAST_HISTORY,
-        10,
+        15,
         RMW_QOS_POLICY_RELIABLE,
         RMW_QOS_POLICY_VOLATILE_DURABILITY
     };
