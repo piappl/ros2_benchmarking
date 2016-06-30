@@ -25,7 +25,7 @@ class TestRunner:
         containers = self.docker.containers(filters = { 'ancestor': '{}'.format(name) })
         for container in containers:
             self.docker.stop(container)
-            self.docker.wait(container)
+            self.wait(container, 10)
             self.docker.remove_container(container)
 
     def kill_stop_remove(self, containers):
@@ -36,7 +36,7 @@ class TestRunner:
 
     def wait_kill_remove(self, containers):
         for container in containers:
-            self.docker.wait(container)
+            self.wait(container)
         self.kill()
         for container in containers:
             self.docker.remove_container(container)

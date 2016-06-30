@@ -2,6 +2,7 @@ FROM ros2:base
 
 ENV top /ros2_benchmarking
 ENV comm $top/comm
+ENV OSPL_URI file:///ros2_benchmarking/comm/ros2node/ospl.xml
 
 RUN mkdir $top
 ADD comm $comm

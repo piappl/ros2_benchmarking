@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(common)
 
 set(SOURCES
-    logging.c
+    logging.cpp
     communicationutils.cpp)
 
 set(HEADERS
