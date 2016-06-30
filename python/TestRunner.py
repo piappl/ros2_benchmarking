@@ -57,7 +57,7 @@ class TestRunner:
     def interfaces(self, network, expected):
         interfaces = []
         try:
-            bridge = 'br-' + str(self.docker.networks(names=[network])[0].get('Id')[:12])
+            bridge = 'br-' + str(self.docker.networks(names=["^{}$".format(network)])[0].get('Id')[:12])
             brctl = subprocess.Popen("brctl show {}".format(bridge), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
             result = re.search("{}\s+(?P<id>\S+)\s+(?P<stp>\S+)\s+(?P<ifs>.+)".format(bridge), brctl, re.S)
             if result:

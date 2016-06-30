@@ -18,8 +18,8 @@ RUN sudo pip3 install -U setuptools
 
 RUN mkdir -p /ros2_ws/src
 RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -O /ros2_ws/ros2.repos
-RUN sed -i s/2fefcf42d30da417ed5abdb6b02d4668df232b54/834f01c5b295f23e38dbc4241e3ead66199cc0d8/ /ros2_ws/ros2.repos
-RUN sed -i s/c683f60c271c3e6b4ffbbd04d010e1035ef1e987/v1.2.0/ /ros2_ws/ros2.repos
+RUN C=2fefcf42d30da417ed5abdb6b02d4668df232b54 && grep -q $C /ros2_ws/ros2.repos && sed s/$C/834f01c5b295f23e38dbc4241e3ead66199cc0d8/ /ros2_ws/ros2.repos
+RUN C=c683f60c271c3e6b4ffbbd04d010e1035ef1e987 && grep -q $C /ros2_ws/ros2.repos && sed s/$C/v1.2.0/ /ros2_ws/ros2.repos
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE

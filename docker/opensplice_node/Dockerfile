@@ -10,4 +10,4 @@ RUN mkdir $comm/build
 
 RUN cd $comm/build && /bin/bash -c "source $release && source $envs && cmake -DCMAKE_PREFIX_PATH=$qt5cmake -DCOMM_OPENSPLICE=true .. && make"
 
-CMD cd $comm/build/scenarios && sleep 2 && /bin/bash -c "source $release && ./ddsrunner ros${HOSTNAME}.ini >/logs/$HOSTNAME.txt 2>&1"
+CMD cd $comm/build/scenarios && sleep 2 && /bin/bash -c "source $release && OSPL_ERRORFILE='<stderr>' OSPL_INFOFILE='<stderr>' OSPL_VERBOSITY=WARNING ./ddsrunner ros${HOSTNAME}.ini >/logs/$HOSTNAME.txt 2>&1"
