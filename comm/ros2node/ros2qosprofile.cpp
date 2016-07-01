@@ -9,7 +9,7 @@ namespace
     static const rmw_qos_profile_t rmw_qos_profile_alarm =
     {
         RMW_QOS_POLICY_KEEP_ALL_HISTORY,
-        100,
+        0,
         RMW_QOS_POLICY_RELIABLE,
         RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY
     };
@@ -17,7 +17,7 @@ namespace
     static const rmw_qos_profile_t rmw_qos_profile_control =
     {
         RMW_QOS_POLICY_KEEP_LAST_HISTORY,
-        15,
+        1,
         RMW_QOS_POLICY_RELIABLE,
         RMW_QOS_POLICY_VOLATILE_DURABILITY
     };

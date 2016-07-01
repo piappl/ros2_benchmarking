@@ -1,4 +1,5 @@
 comm-build/
+build-comm-Desktop-Default/
 current
 results/
 python/*.pyc

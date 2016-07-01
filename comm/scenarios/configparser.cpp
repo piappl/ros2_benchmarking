@@ -11,6 +11,7 @@ namespace
     const int kRobotControlInterval = 250;
     const int kRobotAlarmInterval = 500;
     const int kRobotSensorInterval = 100;
+    const int kLaunchDelay = 500;
     const int kStartDelay = 2000;
     const int kTestingTime = 20000;
     const int kQuitDelay = 5000;
@@ -65,6 +66,7 @@ void ConfigParser::parseIDsSection()
 void ConfigParser::parseTimersSection()
 {
     bool ok;    //add type checking!
+    mTimersIntervals[TimerLaunchDelay] = mSettings.value("timers/launchdelay", kLaunchDelay).toInt(&ok);
     mTimersIntervals[TimerStartDelay] = mSettings.value("timers/startdelay", kStartDelay).toInt(&ok);
     mTimersIntervals[TimerQuitDelay] = mSettings.value("timers/quitdelay", kQuitDelay).toInt(&ok);
     mTimersIntervals[TimerTestingTime] = mSettings.value("timers/testingtime", kTestingTime).toInt(&ok);

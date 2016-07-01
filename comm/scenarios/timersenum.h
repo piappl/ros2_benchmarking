@@ -3,6 +3,7 @@
 
 enum TimerType
 {
+    TimerLaunchDelay,
     TimerStartDelay,
     TimerQuitDelay,
     TimerTestingTime,

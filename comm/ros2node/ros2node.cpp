@@ -41,7 +41,7 @@ namespace roscommunication
                 qRegisterMetaType<communication::MessageType>("communication::MessageType");
                 debug(LOG_WARNING, "RosInitializer", "DDS: %s", rmw_get_implementation_identifier());
 #ifdef FASTRTPS
-                eprosima::Log::setVerbosity(eprosima::VERB_WARNING);
+                eprosima::Log::setVerbosity(eprosima::VERB_INFO);
 #endif
                 mInitialized = true; //TODO - check
                 debug(LOG_WARNING, "RosInitializer", "ros2 initialized");

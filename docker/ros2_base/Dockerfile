@@ -24,7 +24,7 @@ RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN touch /ros2_ws/src/ros2/ros1_bridge/AMENT_IGNORE
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
-RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install
+RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug
 ADD docker/ros2_base/*.patch /ros2_ws/src/
 RUN cd /ros2_ws/src/ && cat *.patch | patch -p0
-RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install
+RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug

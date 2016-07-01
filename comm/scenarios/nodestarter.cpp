@@ -1,6 +1,8 @@
 #include <QtCore/QCoreApplication>
 #include <QFileInfo>
 #include <common/logging.h>
+#include <chrono>
+#include <thread>
 #include "testrunner.h"
 #include "nodestarter.h"
 #include "configparser.h"
@@ -32,6 +34,7 @@ namespace nodestarter
               argv[0], qPrintable(configFile));
 
         ConfigParser p(configFile);
+        std::this_thread::sleep_for(std::chrono::milliseconds(p.timerInterval(TimerLaunchDelay)));
         communication::NodeInterfacePtr node = factory->makeNode(p.nodeConfig());
         TestRunner runner(&p, node);
         QObject::connect(&runner, SIGNAL(quit()), &a, SLOT(quit()));
