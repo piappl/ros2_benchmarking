@@ -4,7 +4,7 @@ from Plotter import Plotter
 
 
 class TestRunner:
-    images = [ "ros1:base", "ros1:node", "ros2:base", "ros2:opensplice", "ros2:fastrtps", "opensplice:base", "opensplice:node" ]
+    images = [ "ros1:base", "ros1:node", "ros2:base", "ros2:opensplice", "ros2:fastrtps", "ros2:connext", "opensplice:base", "opensplice:node" ]
     commands = [ "RobotControl", "RobotAlarm", "RobotSensor" ]
     workers = []
 
@@ -225,6 +225,8 @@ class TestRunner:
             self.ros2opensplice(tid, tc)
         elif comm == "ros2fastrtps":
             self.ros2fastrtps(tid, tc)
+        elif comm == "ros2connext":
+            self.ros2connext(tid, tc)
         elif comm == "opensplice":
             self.opensplice(tid, tc)
         os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
@@ -266,6 +268,19 @@ class TestRunner:
         console_id = subprocess.Popen("./scripts/start_ros2fastrtps_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         try:
             interfaces = self.interfaces("ros2fastrtps", 2)
+            for interface in interfaces:
+                self.tc(interface, tc)
+                self.tcpdump(interface, tid)
+        except Exception as e:
+            self.kill_stop_remove([robot_id, console_id])
+            raise e
+        self.wait_kill_remove([robot_id, console_id])
+
+    def ros2connext(self, tid, tc):
+        robot_id = subprocess.Popen("./scripts/start_ros2connext_robot.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        console_id = subprocess.Popen("./scripts/start_ros2connext_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        try:
+            interfaces = self.interfaces("ros2connext", 2)
             for interface in interfaces:
                 self.tc(interface, tc)
                 self.tcpdump(interface, tid)

@@ -14,6 +14,10 @@ net_ros2fastrtps="172.20.0.0/16"
 net_ros2fastrtps_console="172.20.0.2"
 net_ros2fastrtps_robot="172.20.0.3"
 
+net_ros2connext="172.22.0.0/16"
+net_ros2connext_console="172.22.0.2"
+net_ros2connext_robot="172.22.0.3"
+
 net_opensplice="172.21.0.0/16"
 net_opensplice_console="172.21.0.2"
 net_opensplice_robot="172.21.0.3"

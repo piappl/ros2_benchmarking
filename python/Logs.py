@@ -87,7 +87,7 @@ class Logs:
                     node = self.logs[key][name]
                     period = (node["Testfinished"] - node["Teststart"]).total_seconds()
                     for line in node["Packets"]:
-                        if line['Command'] == cmd and line["Published"]:
+                        if line['Command'] == cmd and line["Received"]:
                             if line["Datetime"] > node["Teststart"] and line["Datetime"] < node["Testfinished"]:
                                 bytes += int(line["Size"])
                     if bytes > 0:

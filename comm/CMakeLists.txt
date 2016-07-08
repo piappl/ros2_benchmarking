@@ -11,7 +11,7 @@ include_directories(.)
 add_definitions(-std=c++11 -Wall -Wextra)
 
 add_subdirectory(common)
-if(COMM_ROS2_FASTRTPS OR COMM_ROS2_OPENSPLICE)
+if(COMM_ROS2_FASTRTPS OR COMM_ROS2_OPENSPLICE OR COMM_ROS2_CONNEXT)
   link_directories("/ros2_ws/install/lib")
   add_subdirectory(ros2node)
 endif()

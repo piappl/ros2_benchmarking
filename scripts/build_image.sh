@@ -17,6 +17,11 @@ then
     docker network create --subnet=$net_ros2fastrtps ros2fastrtps
 fi
 
+if ! docker network ls | egrep -q "\bros2connext\b"
+then
+    docker network create --subnet=$net_ros2connext ros2connext
+fi
+
 if ! docker network ls | egrep -q "\bopensplice\b"
 then
     docker network create --subnet=$net_opensplice opensplice

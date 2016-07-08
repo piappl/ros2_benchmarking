@@ -1,4 +1,5 @@
 comm-build/
+comm/rti_connext_dds/
 build-comm-Desktop-Default/
 current
 results/

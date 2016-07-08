@@ -5,7 +5,11 @@ ENV comm $top/comm
 
 RUN mkdir $top
 ADD comm $comm
+ADD docker/ros2_fastrtps/*.patch /ros2_ws/src/
 RUN mkdir $comm/build
-RUN cd $comm/build && /bin/bash -c "source $LOCAL_SETUP && cmake -DCOMM_ROS2_FASTRTPS=true .. && make"
+
+RUN cd /ros2_ws/src/ && cat *.patch | patch -p0 && mv *.patch applied
+RUN cd /ros2_ws && ./src/ament/ament_tools/scripts/ament.py build $AMENT_ARGS
+RUN cd $comm/build && /bin/bash -c "source $ROS2_SETUP && cmake -DCOMM_ROS2_FASTRTPS=true .. && make"
 
 CMD cd $comm/build/scenarios && ./ros2runner ros${HOSTNAME}.ini >/logs/$HOSTNAME.txt 2>&1

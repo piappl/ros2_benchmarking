@@ -8,7 +8,7 @@ if(COMM_ROS)
   target_link_libraries(ros1runner ros1node)
 endif()
 
-if(COMM_ROS2_FASTRTPS OR COMM_ROS2_OPENSPLICE)
+if(COMM_ROS2_FASTRTPS OR COMM_ROS2_OPENSPLICE OR COMM_ROS2_CONNEXT)
   add_executable(ros2runner ros2runner.cpp ${COMMON_SRC})
   target_link_libraries(ros2runner ros2node)
 endif()

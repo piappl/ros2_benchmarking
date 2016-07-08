@@ -15,6 +15,7 @@ The project has additional value of providing an example implementation of a sim
 ```
     # Ubuntu 16.04
     sudo apt-get install python3-docker docker.io tcpdump gnuplot
+
     # Ubuntu 14.04
     sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
     sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
@@ -32,10 +33,23 @@ The project has additional value of providing an example implementation of a sim
    sudo usermod -a -G docker $USER
 ```
 
-3. Build all containers (2h+):
+3. Install RTI Connext DDS (optional)
+
+You need to obtain a license from RTI and get libraries from https://www.rti.com/. After installation copy the license file to the home directory (e.g. ~/rti_connext_dds-5.2.3) and then copy the home directory to the comm/rti_connext_dds directory, e.g.:
 
 ```
+    cp rti_license.dat ~/rti_connext_dds-5.2.3
+    cp -R ~/rti_connext_dds-5.2.3 ~/ros2_benchmarking/comm/rti_connext_dds
+```
+
+3. Build containers:
+
+```
+    # If you have RTI Connext DDS
     ./python/run.py --build-all
+
+    # Otherwise
+    ./python/run.py --build ros1:base ros1:node ros2:base ros2:opensplice ros2:fastrtps opensplice:base opensplice:node
 ```
 
 4. Get more help on running tests:
