@@ -10,7 +10,7 @@ The project has additional value of providing an example implementation of a sim
 
 ## Installation
 
-1. Install dependencies:
+#### Install dependencies:
 
 ```
     # Ubuntu 16.04
@@ -27,13 +27,13 @@ The project has additional value of providing an example implementation of a sim
     pacman -S python-docker-py docker tcpdump gnuplot
 ```
 
-2. Add your user to the docker group (you need to log out and log in)
+#### Add your user to the docker group (you need to log out and log in)
 
 ```
    sudo usermod -a -G docker $USER
 ```
 
-3. Install RTI Connext DDS (optional)
+#### Install RTI Connext DDS (optional)
 
 You need to obtain a license from RTI and get libraries from https://www.rti.com/. After installation copy the license file to the home directory (e.g. ~/rti_connext_dds-5.2.3) and then copy the home directory to the comm/rti_connext_dds directory, e.g.:
 
@@ -42,7 +42,7 @@ You need to obtain a license from RTI and get libraries from https://www.rti.com
     cp -R ~/rti_connext_dds-5.2.3 ~/ros2_benchmarking/comm/rti_connext_dds
 ```
 
-3. Build containers:
+#### Build containers:
 
 ```
     # If you have RTI Connext DDS
@@ -52,11 +52,24 @@ You need to obtain a license from RTI and get libraries from https://www.rti.com
     ./python/run.py --build ros1:base ros1:node ros2:base ros2:opensplice ros2:fastrtps opensplice:base opensplice:node
 ```
 
-4. Get more help on running tests:
+#### Get more help on running tests:
 
 ```
     ./python/run.py --help
 ```
+## Sample output
+
+#### Lost packets for RobotAlarm message
+
+![](http://drive.google.com/uc?export=view&id=0B4lGVIrJkQaCYm9ySmRWZWRENlU)
+
+#### Lost packets for RobotControl message
+
+![](http://drive.google.com/uc?export=view&id=0B4lGVIrJkQaCamtwclB1TVNUV2M)
+
+#### Lost packets for RobotSensor message
+
+![](http://drive.google.com/uc?export=view&id=0B4lGVIrJkQaCT2poUEw3MC1wUWc)
 
 ## Authors
 
