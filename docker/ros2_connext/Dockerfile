@@ -8,10 +8,10 @@ ENV comm $top/comm
 RUN mkdir $top
 ADD comm $comm
 ADD comm/rti_connext_dds /opt/rti_connext_dds
+ADD docker/ros2_connext/*.patch /ros2_ws/src/
 RUN mkdir $comm/build
 
 RUN touch /ros2_ws/src/ros2/rmw_connext/*/CMakeLists.txt
+RUN cd /ros2_ws/src/ && cat *.patch | patch -p0 && mv *.patch applied
 RUN cd /ros2_ws && bash -c "source $CONNEXT_SETUP && ./src/ament/ament_tools/scripts/ament.py build $AMENT_ARGS"
 RUN cd $comm/build && /bin/bash -c "source $ROS2_SETUP && source $CONNEXT_SETUP && cmake -DCOMM_ROS2_CONNEXT=true .. && make"
-
-CMD cd $comm/build/scenarios && ./ros2runner ros${HOSTNAME}.ini >/logs/$HOSTNAME.txt 2>&1

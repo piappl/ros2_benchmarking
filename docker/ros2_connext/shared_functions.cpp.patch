@@ -1,0 +1,15 @@
+--- ./ros2/rmw_connext/rmw_connext_shared_cpp/src/shared_functions.cpp
++++ ./ros2/rmw_connext/rmw_connext_shared_cpp/src/shared_functions.cpp
+@@ -262,6 +262,12 @@ create_node(const char * implementation_identifier, const char * name, size_t do
+     RMW_SET_ERROR_MSG("failed to get default participant qos");
+     return NULL;
+   }
++
++  participant_qos.discovery_config.participant_liveliness_assert_period.sec = 5;
++  participant_qos.discovery_config.participant_liveliness_assert_period.nanosec = 0;
++  participant_qos.discovery_config.participant_liveliness_lease_duration.sec = 120;
++  participant_qos.discovery_config.participant_liveliness_lease_duration.nanosec = 0;
++
+   // forces local traffic to be sent over loopback,
+   // even if a more efficient transport (such as shared memory) is installed
+   // (in which case traffic will be sent over both transports)

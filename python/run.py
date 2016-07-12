@@ -18,7 +18,7 @@ if __name__ == "__main__":
     tools.add_argument("--build-all", action='store_true', help ="build all images")
     tools.add_argument("--build", choices=TestRunner.images, nargs='+', help="delete an existing image and build a new one")
     tools.add_argument("--clean", action='store_true', help ="stop and remove all containers")
-    tools.add_argument("--qtcreator", choices=[ 'ros1', 'ros2', 'opensplice' ], help="Run QT Creator in the development environment")
+    tools.add_argument("--qtcreator", help="Run QT Creator in the specified image")
     if not os.path.isdir("comm"):
         print("Run this script from the project root directory, e.g.: ./python/run.py")
     elif len(sys.argv) == 1:

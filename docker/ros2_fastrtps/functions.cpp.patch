@@ -1,4 +1,5 @@
 --- ./eProsima/ROS-RMW-Fast-RTPS-cpp/rmw_fastrtps_cpp/src/functions.cpp
++++ ./eProsima/ROS-RMW-Fast-RTPS-cpp/rmw_fastrtps_cpp/src/functions.cpp
 @@ -490,6 +490,21 @@ extern "C"
                  return false;
          }

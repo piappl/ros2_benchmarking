@@ -1,0 +1,16 @@
+--- ./ros2/rmw_connext/rmw_connext_cpp/src/functions.cpp
++++ ./ros2/rmw_connext/rmw_connext_cpp/src/functions.cpp
+@@ -242,6 +242,13 @@ rmw_create_publisher(
+     goto fail;
+   }
+ 
++  datawriter_qos.protocol.rtps_reliable_writer.heartbeat_period.sec = 2;
++  datawriter_qos.protocol.rtps_reliable_writer.heartbeat_period.nanosec = 0;
++  datawriter_qos.protocol.rtps_reliable_writer.fast_heartbeat_period.sec = 1;
++  datawriter_qos.protocol.rtps_reliable_writer.fast_heartbeat_period.nanosec = 0;
++  datawriter_qos.protocol.rtps_reliable_writer.late_joiner_heartbeat_period.sec = 0;
++  datawriter_qos.protocol.rtps_reliable_writer.late_joiner_heartbeat_period.nanosec = 500000000;
++
+   topic_writer = dds_publisher->create_datawriter(
+     topic, datawriter_qos, NULL, DDS_STATUS_MASK_NONE);
+   if (!topic_writer) {
