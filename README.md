@@ -61,15 +61,15 @@ You need to obtain a license from RTI and get libraries from https://www.rti.com
 
 #### Lost packets for RobotAlarm message
 
-![](http://drive.google.com/uc?export=view&id=0B4lGVIrJkQaCYm9ySmRWZWRENlU)
+![](screenshots/RobotAlarm.png)
 
 #### Lost packets for RobotControl message
 
-![](http://drive.google.com/uc?export=view&id=0B4lGVIrJkQaCamtwclB1TVNUV2M)
+![](screenshots/RobotControl.png)
 
 #### Lost packets for RobotSensor message
 
-![](http://drive.google.com/uc?export=view&id=0B4lGVIrJkQaCT2poUEw3MC1wUWc)
+![](screenshots/RobotSensor.png)
 
 ## Authors
 
