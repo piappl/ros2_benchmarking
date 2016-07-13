@@ -12,9 +12,9 @@
       <Service enabled="false" name="cmsoap">
          <Command>cmsoap</Command>
       </Service>
-      <Lease>
-        <ExpiryTime>5</ExpiryTime>
-      </Lease>
+      <!--<Lease>
+        <ExpiryTime>20</ExpiryTime>
+      </Lease>-->
    </Domain>
    <DDSI2Service name="ddsi2">
       <General>

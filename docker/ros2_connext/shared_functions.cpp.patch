@@ -5,10 +5,10 @@
      return NULL;
    }
 +
-+  participant_qos.discovery_config.participant_liveliness_assert_period.sec = 5;
-+  participant_qos.discovery_config.participant_liveliness_assert_period.nanosec = 0;
-+  participant_qos.discovery_config.participant_liveliness_lease_duration.sec = 120;
-+  participant_qos.discovery_config.participant_liveliness_lease_duration.nanosec = 0;
++  //participant_qos.discovery_config.participant_liveliness_assert_period.sec = 5;
++  //participant_qos.discovery_config.participant_liveliness_assert_period.nanosec = 0;
++  //participant_qos.discovery_config.participant_liveliness_lease_duration.sec = 100;
++  //participant_qos.discovery_config.participant_liveliness_lease_duration.nanosec = 0;
 +
    // forces local traffic to be sent over loopback,
    // even if a more efficient transport (such as shared memory) is installed

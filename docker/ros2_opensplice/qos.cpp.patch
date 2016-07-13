@@ -5,7 +5,7 @@
    switch (qos_profile.durability) {
      case RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY:
 -      entity_qos.durability.kind = DDS::TRANSIENT_LOCAL_DURABILITY_QOS;
-+      entity_qos.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
++      entity_qos.durability.kind = DDS::TRANSIENT_LOCAL_DURABILITY_QOS;
        break;
      case RMW_QOS_POLICY_VOLATILE_DURABILITY:
        entity_qos.durability.kind = DDS::VOLATILE_DURABILITY_QOS;

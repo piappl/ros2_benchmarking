@@ -51,14 +51,14 @@ if __name__ == "__main__":
             for comm in args.test:
                 if args.limit:
                     runner.limit(comm, args.limit, args.skip_execution)
-                if args.duplication:
-                    runner.duplication(comm, args.duplication, args.skip_execution)
-                if args.corruption:
-                    runner.corruption(comm, args.corruption, args.skip_execution)
-                if args.reorder:
-                    runner.reorder(comm, args.reorder, args.skip_execution)
                 if args.loss:
                     runner.loss(comm, args.loss, args.skip_execution)
                 if args.delay:
                     runner.delay(comm, args.delay, args.skip_execution)
+                if args.corruption:
+                    runner.corruption(comm, args.corruption, args.skip_execution)
+                if args.duplication:
+                    runner.duplication(comm, args.duplication, args.skip_execution)
+                if args.reorder:
+                    runner.reorder(comm, args.reorder, args.skip_execution)
                 runner.kill()

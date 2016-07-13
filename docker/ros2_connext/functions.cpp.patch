@@ -4,12 +4,12 @@
      goto fail;
    }
  
-+  datawriter_qos.protocol.rtps_reliable_writer.heartbeat_period.sec = 2;
-+  datawriter_qos.protocol.rtps_reliable_writer.heartbeat_period.nanosec = 0;
-+  datawriter_qos.protocol.rtps_reliable_writer.fast_heartbeat_period.sec = 1;
-+  datawriter_qos.protocol.rtps_reliable_writer.fast_heartbeat_period.nanosec = 0;
-+  datawriter_qos.protocol.rtps_reliable_writer.late_joiner_heartbeat_period.sec = 0;
-+  datawriter_qos.protocol.rtps_reliable_writer.late_joiner_heartbeat_period.nanosec = 500000000;
++  //datawriter_qos.protocol.rtps_reliable_writer.heartbeat_period.sec = 3;
++  //datawriter_qos.protocol.rtps_reliable_writer.heartbeat_period.nanosec = 0;
++  //datawriter_qos.protocol.rtps_reliable_writer.fast_heartbeat_period.sec = 1;
++  //datawriter_qos.protocol.rtps_reliable_writer.fast_heartbeat_period.nanosec = 0;
++  //datawriter_qos.protocol.rtps_reliable_writer.late_joiner_heartbeat_period.sec = 1;
++  //datawriter_qos.protocol.rtps_reliable_writer.late_joiner_heartbeat_period.nanosec = 0;
 +
    topic_writer = dds_publisher->create_datawriter(
      topic, datawriter_qos, NULL, DDS_STATUS_MASK_NONE);

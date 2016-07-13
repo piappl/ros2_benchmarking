@@ -9,4 +9,5 @@ set boxwidth binwidth*0.9
 set xrange [0:]
 set xlabel "Time from start [s]"
 set ylabel label
-plot input using (bin($1,binwidth)):(1.0) smooth freq with boxes title legend
+set style fill solid 1.0 noborder
+plot input using (bin($1,binwidth)):(1.0) linecolor rgb "#0060ad" smooth freq with boxes title legend
