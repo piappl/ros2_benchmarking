@@ -20,7 +20,7 @@ RUN mkdir -p /ros2_ws/src/applied
 RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -O /ros2_ws/ros2.repos
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
-RUN for dir in demos examples rclpy realtime_support ros1_bridge system_tests tlsf; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
+RUN for dir in demos examples rclpy realtime_support ros1_bridge rmw_connext system_tests tlsf; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
 RUN /ros2_ws/src/ament/ament_tools/scripts/ament.py build $AMENT_ARGS
 

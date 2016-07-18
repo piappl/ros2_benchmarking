@@ -4,7 +4,7 @@ from Plotter import Plotter
 
 
 class TestRunner:
-    images = [ "ros1:base", "ros1:node", "ros2:base", "ros2:opensplice", "ros2:fastrtps", "ros2:connext", "opensplice:base", "opensplice:node" ]
+    images = [ "ros1:base", "ros1:node", "ros2:base", "ros2:opensplice", "ros2:fastrtps", "ros2:connext", "opensplice:base", "opensplice:node", "ros2:bridge" ]
     commands = [ "RobotControl", "RobotAlarm", "RobotSensor" ]
     workers = []
 
@@ -229,6 +229,8 @@ class TestRunner:
             self.ros2connext(tid, tc)
         elif comm == "opensplice":
             self.opensplice(tid, tc)
+        elif comm == "ros1bridge":
+            self.ros1bridge(tid, tc)
         os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
         os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
 
@@ -301,4 +303,25 @@ class TestRunner:
             self.kill_stop_remove([robot_id, console_id])
             raise e
         self.wait_kill_remove([robot_id, console_id])
+
+    def ros1bridge(self, tid, tc):
+        master_id = subprocess.Popen("./scripts/start_ros1_master.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        bridge_id = subprocess.Popen("./scripts/start_ros1_bridge.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        skip = self.interfaces("ros1", 2)
+        robot_id = subprocess.Popen("./scripts/start_ros2opensplice_robot_bridge.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        console_id = subprocess.Popen("./scripts/start_ros1_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        try:
+            interfaces = self.interfaces("ros1", 4)
+            for interface in interfaces:
+                if not interface in skip:
+                    self.tc(interface, tc)
+                    self.tcpdump(interface, tid)
+        except Exception as e:
+            self.kill_stop_remove([robot_id, console_id, master_id, bridge_id])
+            raise e
+        self.wait_kill_remove([robot_id, console_id])
+        self.docker.stop(master_id)
+        self.docker.remove_container(master_id)
+        self.docker.stop(bridge_id)
+        self.docker.remove_container(bridge_id)
 
