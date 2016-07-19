@@ -19,13 +19,13 @@ void Ros1Subscriber::subscribe(communication::MessageType n, bool sub)
     switch (n)
     {
     case MessageTypeRobotControl:
-        subscribeToTopic<messages::RobotControl>(n, sub);
+        subscribeToTopic<ros2eval_msgs::RobotControl>(n, sub);
         break;
     case MessageTypeRobotAlarm:
-        subscribeToTopic<messages::RobotAlarm>(n, sub);
+        subscribeToTopic<ros2eval_msgs::RobotAlarm>(n, sub);
         break;
     case MessageTypeRobotSensor:
-        subscribeToTopic<messages::RobotSensor>(n, sub);
+        subscribeToTopic<ros2eval_msgs::RobotSensor>(n, sub);
         break;
     default:
         debug(LOG_ERROR, "Ros1Subscriber", "invalid topic to subscribe!");
@@ -59,7 +59,7 @@ QString Ros1Subscriber::commonSubscribe(MessageType n, bool sub)
      if (processSubscribeRequest(n, sub))
         return QString();
 
-    QString fullTopic = Topics::fullTopic(n);
+    QString fullTopic = Topics::fullTopic(n, "_");
     debug(LOG_WARNING, "Ros1Subscriber", "subscribing for %s", qPrintable(fullTopic));
     return fullTopic;
 }

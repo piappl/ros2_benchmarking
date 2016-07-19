@@ -1,5 +1,5 @@
 <package>
-  <name>messages</name>
+  <name>ros2eval_msgs</name>
   <version>1.0.0</version>
   <description>Messages for ROS2 Benchmarking</description>
   <maintainer email="rkozik@piap.pl">Rafał Kozik</maintainer>

@@ -47,7 +47,7 @@ QString Ros1Publisher::commonAdvertise(MessageType n)
         return QString();
     }
 
-    QString fullTopic = Topics::fullTopic(n);
+    QString fullTopic = Topics::fullTopic(n, "_");
     return fullTopic;
 }
 
@@ -56,11 +56,11 @@ void Ros1Publisher::advertise(MessageType n)
     switch (n)
     {
         case MessageTypeRobotControl:
-            return advertise<messages::RobotControl>(n);
+            return advertise<ros2eval_msgs::RobotControl>(n);
         case MessageTypeRobotAlarm:
-            return advertise<messages::RobotAlarm>(n);
+            return advertise<ros2eval_msgs::RobotAlarm>(n);
         case MessageTypeRobotSensor:
-            return advertise<messages::RobotSensor>(n);
+            return advertise<ros2eval_msgs::RobotSensor>(n);
         default:
             debug(LOG_ERROR, "Ros1Publisher", "Advertise: type %d not supported (need to implement?)", n);
             break;
@@ -76,7 +76,7 @@ void Ros1Publisher::publishRobotControl(communication::RobotControl control)
         debug(LOG_BENCHMARK, "WONTPUBLISH RobotControl", "id=%d, reason=%s", control.id, reason);
         return;
     }
-    messages::RobotControl c;
+    ros2eval_msgs::RobotControl c;
     c.id = control.id;
     c.x = control.x;
     c.y = control.y;
@@ -94,7 +94,7 @@ void Ros1Publisher::publishRobotAlarm(communication::RobotAlarm alarm)
         debug(LOG_BENCHMARK, "WONTPUBLISH Robotalarm", "id=%d, reason=%s", alarm.id, reason);
         return;
     }
-    messages::RobotAlarm c;
+    ros2eval_msgs::RobotAlarm c;
     c.id = alarm.id;
     c.alarm1 = alarm.alarm1;
     c.alarm2 = alarm.alarm2;
@@ -111,7 +111,7 @@ void Ros1Publisher::publishRobotSensor(communication::RobotSensor sensor)
         debug(LOG_BENCHMARK, "WONTPUBLISH RobotSensor", "id=%d, reason=%s", sensor.id, reason);
         return;
     }
-    messages::RobotSensor c;
+    ros2eval_msgs::RobotSensor c;
     c.id = sensor.id;
     c.data = sensor.data;
     debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", c.id, c.data.size());

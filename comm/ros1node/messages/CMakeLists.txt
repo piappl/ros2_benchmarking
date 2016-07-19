@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(messages)
+project(ros2eval_msgs)
 
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation)
 

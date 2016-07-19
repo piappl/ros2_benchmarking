@@ -147,13 +147,13 @@ namespace roscommunication
             switch (n)
             {
             case MessageTypeRobotControl:
-                listenerPtr.reset(new Ros2SubscriptionListener<messages::msg::RobotControl>(n, mNode, qos));
+                listenerPtr.reset(new Ros2SubscriptionListener<ros2eval_msgs::msg::RobotControl>(n, mNode, qos));
                 break;
             case MessageTypeRobotAlarm:
-                listenerPtr.reset(new Ros2SubscriptionListener<messages::msg::RobotAlarm>(n, mNode, qos));
+                listenerPtr.reset(new Ros2SubscriptionListener<ros2eval_msgs::msg::RobotAlarm>(n, mNode, qos));
                 break;
             case MessageTypeRobotSensor:
-                listenerPtr.reset(new Ros2SubscriptionListener<messages::msg::RobotSensor>(n, mNode, qos));
+                listenerPtr.reset(new Ros2SubscriptionListener<ros2eval_msgs::msg::RobotSensor>(n, mNode, qos));
                 break;
             default:
                 debug(LOG_ERROR, "Ros2Subscriber", "Invalid type");
@@ -277,11 +277,11 @@ namespace roscommunication
             switch (n)
             {
                 case MessageTypeRobotControl:
-                    return advertise<messages::msg::RobotControl>(n);
+                    return advertise<ros2eval_msgs::msg::RobotControl>(n);
                 case MessageTypeRobotAlarm:
-                    return advertise<messages::msg::RobotAlarm>(n);
+                    return advertise<ros2eval_msgs::msg::RobotAlarm>(n);
                 case MessageTypeRobotSensor:
-                    return advertise<messages::msg::RobotSensor>(n);
+                    return advertise<ros2eval_msgs::msg::RobotSensor>(n);
                 default:
                     debug(LOG_ERROR, "Ros2Publisher", "advertise: not implemented topic for %d", n);
                     break;
@@ -308,10 +308,10 @@ namespace roscommunication
             MessageType n = MessageTypeRobotSensor;
             advertise(n);
             communication::RobotSensor msg = content.value<communication::RobotSensor>();
-            messages::msg::RobotSensor sensor;
+            ros2eval_msgs::msg::RobotSensor sensor;
             sensor.id = msg.id;
             sensor.data = msg.data;
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotSensor>>(mPublishers.value(n));
+            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<ros2eval_msgs::msg::RobotSensor>>(mPublishers.value(n));
             debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", msg.id, msg.data.size());
             try
             {
@@ -338,13 +338,13 @@ namespace roscommunication
             MessageType n = MessageTypeRobotControl;
             advertise(n);
             communication::RobotControl msg = content.value<communication::RobotControl>();
-            messages::msg::RobotControl control;
+            ros2eval_msgs::msg::RobotControl control;
             control.id = msg.id;
             control.x = msg.x;
             control.z = msg.z;
             control.z = msg.id;
-            debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", msg.id, sizeof(messages::msg::RobotControl));
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotControl> >(mPublishers.value(n));
+            debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", msg.id, sizeof(ros2eval_msgs::msg::RobotControl));
+            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<ros2eval_msgs::msg::RobotControl> >(mPublishers.value(n));
             try
             {
                 pub->publish(control);
@@ -370,12 +370,12 @@ namespace roscommunication
             MessageType n = MessageTypeRobotAlarm;
             advertise(n);
             communication::RobotAlarm msg = content.value<communication::RobotAlarm>();
-            messages::msg::RobotAlarm alarm;
+            ros2eval_msgs::msg::RobotAlarm alarm;
             alarm.id = msg.id;
             alarm.alarm1 = msg.alarm1;
             alarm.alarm2 = msg.alarm2;
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<messages::msg::RobotAlarm> >(mPublishers.value(n));
-            debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%u, size=%lu", alarm.id, sizeof(messages::msg::RobotAlarm));
+            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<ros2eval_msgs::msg::RobotAlarm> >(mPublishers.value(n));
+            debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%u, size=%lu", alarm.id, sizeof(ros2eval_msgs::msg::RobotAlarm));
             try
             {
                 pub->publish(alarm);

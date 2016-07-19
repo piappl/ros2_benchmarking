@@ -17,9 +17,9 @@ namespace roscommunication
     }
 
     template <>
-    QVariant ros2MessageToVariant<messages::msg::RobotControl::SharedPtr>(messages::msg::RobotControl::SharedPtr msg)
+    QVariant ros2MessageToVariant<ros2eval_msgs::msg::RobotControl::SharedPtr>(ros2eval_msgs::msg::RobotControl::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", msg->id, sizeof(messages::msg::RobotControl));
+        debug(LOG_BENCHMARK, "RECEIVED RobotControl", "id=%d, size=%lu", msg->id, sizeof(ros2eval_msgs::msg::RobotControl));
         communication::RobotControl control;
         control.id = msg->id;
         control.x = msg->x;
@@ -29,9 +29,9 @@ namespace roscommunication
     }
 
     template <>
-    QVariant ros2MessageToVariant<messages::msg::RobotAlarm::SharedPtr>(messages::msg::RobotAlarm::SharedPtr msg)
+    QVariant ros2MessageToVariant<ros2eval_msgs::msg::RobotAlarm::SharedPtr>(ros2eval_msgs::msg::RobotAlarm::SharedPtr msg)
     {
-        debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%u, size=%lu", msg->id, sizeof(messages::msg::RobotAlarm));
+        debug(LOG_BENCHMARK, "RECEIVED RobotAlarm", "id=%u, size=%lu", msg->id, sizeof(ros2eval_msgs::msg::RobotAlarm));
         communication::RobotAlarm alarm;
         alarm.id = msg->id;
         alarm.alarm1 = msg->alarm1;
@@ -40,7 +40,7 @@ namespace roscommunication
     }
 
     template <>
-    QVariant ros2MessageToVariant<messages::msg::RobotSensor::SharedPtr>(messages::msg::RobotSensor::SharedPtr msg)
+    QVariant ros2MessageToVariant<ros2eval_msgs::msg::RobotSensor::SharedPtr>(ros2eval_msgs::msg::RobotSensor::SharedPtr msg)
     {
         debug(LOG_BENCHMARK, "RECEIVED RobotSensor", "id=%d, size=%lu", msg->id, msg->data.size());
         communication::RobotSensor sensor;

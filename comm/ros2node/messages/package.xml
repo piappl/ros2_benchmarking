@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>messages</name>
-  <version>0.0.0</version>
+  <name>ros2eval_msgs</name>
+  <version>1.5.3</version>
   <description>Simple messages for testing</description>
   <maintainer email="adabrowski@piap.pl">Adam Dabrowski</maintainer>
   <license>Apache License 2.0</license>
