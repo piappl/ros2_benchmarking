@@ -5,7 +5,7 @@ from Plotter import Plotter
 
 class TestRunner:
     images = [ "ros1:base", "ros1:node", "ros2:base", "ros2:opensplice", "ros2:fastrtps", "ros2:connext", "opensplice:base", "opensplice:node", "ros2:bridge" ]
-    tests = [ 'ros1', 'ros2opensplice', 'ros2fastrtps', 'ros2connext', 'opensplice', 'ros1bridge', 'ros2scalability_opensplice', 'ros2scalability_connext' ]
+    tests = [ 'ros1', 'ros2opensplice', 'ros2fastrtps', 'ros2connext', 'opensplice', 'ros1bridge' ]
     commands = [ "RobotControl", "RobotAlarm", "RobotSensor" ]
     workers = []
 
@@ -83,6 +83,20 @@ class TestRunner:
             subprocess.call('/sbin/tc qdisc replace dev {} root {}'.format(interface, param), shell = True)
         except:
             raise RuntimeError('Failed to set "{}" at interface {}: {}'.format(param, interface, sys.exc_info()[0]))
+
+    def memory(self):
+        try:
+            subprocess.call('echo "# Memory usage [%]" > logs/memory.txt', shell = True)
+            self.workers.append(subprocess.Popen('./scripts/memory_usage.sh >> logs/memory.txt 2>&1', shell=True))
+        except:
+            raise RuntimeError('Failed to start ./scripts/memory_usage.sh')
+
+    def cpu(self):
+        try:
+            subprocess.call('echo "# CPU usage [%]" > logs/cpu.txt', shell = True)
+            self.workers.append(subprocess.Popen('./scripts/cpu_usage.sh >> logs/cpu.txt 2>&1', shell=True))
+        except:
+            raise RuntimeError('Failed to start ./scripts/cpu_usage.sh')
 
     def corruption(self, comm, corruptions, skip):
         logs = Logs()
@@ -198,6 +212,23 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
+    def scalability(self, comm, numbers, skip):
+        logs = Logs()
+        plotter = Plotter()
+        for count in numbers:
+            tid = "{}-scalability-{:02d}".format(comm, count)
+            title = "Scalability - {} nodes ({})".format(count, comm.upper())
+            self.run(comm + "_scalability", tid, count, title, count, skip, logs)
+        if len(logs.keys()) > 0:
+            for cmd in self.commands:
+                xlabel = "Number of nodes"
+                prefix = "{}-scalability-{}".format(comm, cmd)
+                logs.extractThroughput('data/{}-throughput.dat'.format(prefix), cmd)
+                logs.extractLatency('data/{}-latency.dat'.format(prefix), cmd)
+                if len(logs.keys()) > 1:
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+
     def extract(self, logs, prefix, cmd):
         logs.extractLostPackets('data/{}-lost-packets.dat'.format(prefix), cmd)
         logs.extractFirstReceived('data/{}-first-received.dat'.format(prefix), cmd)
@@ -238,10 +269,16 @@ class TestRunner:
             self.opensplice(tid, tc)
         elif comm == "ros1bridge":
             self.ros1bridge(tid, tc)
-        elif comm == "ros2scalability_opensplice":
-            self.ros2scalability_opensplice(tid, tc)
-        elif comm == "ros2scalability_connext":
-            self.ros2scalability_connext(tid, tc)
+        elif comm == "ros1_scalability":
+            self.ros1_scalability(tid, tc)
+        elif comm == "ros2opensplice_scalability":
+            self.ros2opensplice_scalability(tid, tc)
+        elif comm == "ros2connext_scalability":
+            self.ros2connext_scalability(tid, tc)
+        elif comm == "ros2fastrtps_scalability":
+            self.ros2fastrtps_scalability(tid, tc)
+        else:
+            raise RuntimeError("Not implemented: " + comm)
         os.rename('logs/robot.txt', 'logs/{}-robot.txt'.format(tid))
         os.rename('logs/console.txt', 'logs/{}-console.txt'.format(tid))
 
@@ -337,25 +374,46 @@ class TestRunner:
         self.docker.stop(bridge_id)
         self.docker.remove_container(bridge_id)
 
-    def ros2scalability_connext(self, tid, tc):
+    def ros1_scalability(self, tid, count):
         ids = []
-        count = 50
-        self.workers.append(subprocess.Popen('./scripts/memory_usage.sh >logs/memory.txt 2>&1', shell=True))
-        self.workers.append(subprocess.Popen('./scripts/cpu_usage.sh >logs/cpu.txt 2>&1', shell=True))
+        self.cpu()
+        self.memory()
+        master_id = subprocess.Popen("./scripts/start_ros1_master.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        ids.append(subprocess.Popen("./scripts/start_ros1_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
+        for ip in range(10, 10 + count):
+            ids.append(subprocess.Popen("./scripts/start_ros1_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
+        self.wait_kill_remove(ids)
+        self.docker.stop(master_id)
+        self.docker.remove_container(master_id)
+        os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
+
+    def ros2connext_scalability(self, tid, count):
+        ids = []
+        self.cpu()
+        self.memory()
         ids.append(subprocess.Popen("./scripts/start_ros2connext_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2connext_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         self.wait_kill_remove(ids)
         os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
 
-    def ros2scalability_opensplice(self, tid, tc):
+    def ros2opensplice_scalability(self, tid, count):
         ids = []
-        count = 50
-        self.workers.append(subprocess.Popen('./scripts/memory_usage.sh >logs/memory.txt 2>&1', shell=True))
-        self.workers.append(subprocess.Popen('./scripts/cpu_usage.sh >logs/cpu.txt 2>&1', shell=True))
+        self.cpu()
+        self.memory()
         ids.append(subprocess.Popen("./scripts/start_ros2opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
-        for ip in range(10, 1 + count, 1):
+        for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2opensplice_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
+        self.wait_kill_remove(ids)
+        os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
+
+    def ros2fastrtps_scalability(self, tid, count):
+        ids = []
+        self.cpu()
+        self.memory()
+        ids.append(subprocess.Popen("./scripts/start_ros2fastrtps_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
+        for ip in range(10, 10 + count):
+            ids.append(subprocess.Popen("./scripts/start_ros2fastrtps_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         self.wait_kill_remove(ids)
         os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
 

@@ -12,6 +12,7 @@ if __name__ == "__main__":
     testing.add_argument("--duplication", type=int, nargs='+', help="run duplication tests for given values [%%]")
     testing.add_argument("--corruption", type=int, nargs='+', help="run corruption tests for given values [%%]")
     testing.add_argument("--reorder", type=int, nargs='+', help="run reorder tests for given values [%%]")
+    testing.add_argument("--scalability", type=int, nargs='+', help="number of subscribing nodes")
     testing.add_argument("--test", choices=TestRunner.tests, nargs='+', help="Transport layer to be tested")
     testing.add_argument("--skip-execution", action='store_true', help ="parse and plot existing data")
     tools = parser.add_argument_group('tools', '')
@@ -61,4 +62,6 @@ if __name__ == "__main__":
                     runner.duplication(comm, args.duplication, args.skip_execution)
                 if args.reorder:
                     runner.reorder(comm, args.reorder, args.skip_execution)
+                if args.scalability:
+                    runner.scalability(comm, args.scalability, args.skip_execution)
                 runner.kill()

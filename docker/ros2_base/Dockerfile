@@ -8,7 +8,7 @@ ENV comm $top/comm
 ENV RMW_IMPLEMENTATION rmw_opensplice_cpp
 ENV ROS2_SETUP /ros2_ws/install/local_setup.bash
 ENV OSPL_URI file:///usr/etc/opensplice/config/ospl.xml
-ENV AMENT_ARGS --build-space /ros2_ws/build --install-space /ros2_ws/install --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug -- /ros2_ws/src
+ENV AMENT_ARGS --build-space /ros2_ws/build --install-space /ros2_ws/install --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -- /ros2_ws/src
 RUN mkdir $top
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
