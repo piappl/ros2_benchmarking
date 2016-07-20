@@ -92,15 +92,16 @@ class TestRunner:
             tc = "netem corrupt {}%".format(corruption)
             title = "Corruption {}% ({})".format(corruption, comm.upper())
             self.run(comm, tid, tc, title, corruption, skip, logs)
-        if len(logs.keys()) > 1:
+        if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Corruption rate [%]"
                 prefix = "{}-corruption-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
-                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
-                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
-                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+                if len(logs.keys()) > 1:
+                    plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                    plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def reorder(self, comm, reorders, skip):
         logs = Logs()
@@ -110,15 +111,16 @@ class TestRunner:
             tc = "netem reorder {}% delay 25ms".format(reorder)
             title = "Reorders {}% ({})".format(reorder, comm.upper())
             self.run(comm, tid, tc, title, reorder, skip, logs)
-        if len(logs.keys()) > 1:
+        if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Reordering rate [%]"
                 prefix = "{}-reorder-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
-                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
-                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
-                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+                if len(logs.keys()) > 1:
+                    plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                    plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def duplication(self, comm, dups, skip):
         logs = Logs()
@@ -128,15 +130,16 @@ class TestRunner:
             tc = "netem duplicate {}%".format(dup)
             title = "Duplication {}% ({})".format(dup, comm.upper())
             self.run(comm, tid, tc, title, dup, skip, logs)
-        if len(logs.keys()) > 1:
+        if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Duplication rate [%]"
                 prefix = "{}-duplication-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
-                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
-                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
-                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+                if len(logs.keys()) > 1:
+                    plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                    plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def limit(self, comm, limits, skip):
         logs = Logs()
@@ -146,15 +149,16 @@ class TestRunner:
             tc = "tbf rate {}kbit burst 32kbit latency 500ms".format(limit)
             title = "Limit {}kbit ({})".format(limit, comm.upper())
             self.run(comm, tid, tc, title, limit, skip, logs)
-        if len(logs.keys()) > 1:
+        if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Throughput limit [kbit]"
                 prefix = "{}-limit-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
-                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
-                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
-                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+                if len(logs.keys()) > 1:
+                    plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                    plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def loss(self, comm, losses, skip):
         logs = Logs()
@@ -164,15 +168,16 @@ class TestRunner:
             tc = "netem loss {}%".format(loss)
             title = "Loss {}% ({})".format(loss, comm.upper())
             self.run(comm, tid, tc, title, loss, skip, logs)
-        if len(logs.keys()) > 1:
+        if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Packet loss rate [%]"
                 prefix = "{}-loss-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
-                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
-                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
-                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+                if len(logs.keys()) > 1:
+                    plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                    plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def delay(self, comm, delays, skip):
         logs = Logs()
@@ -182,15 +187,16 @@ class TestRunner:
             tc = "netem delay {}ms".format(delay)
             title = "Delay {}ms ({})".format(delay, comm.upper())
             self.run(comm, tid, tc, title, delay, skip, logs)
-        if len(logs.keys()) > 1:
+        if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Packet delay [ms]"
                 prefix = "{}-delay-{}".format(comm, cmd)
                 self.extract(logs, prefix, cmd)
-                plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
-                plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
-                plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
-                plotter.latency("{}-latency".format(prefix), cmd, xlabel)
+                if len(logs.keys()) > 1:
+                    plotter.lostPackets("{}-lost-packets".format(prefix), cmd, xlabel)
+                    plotter.firstReceived("{}-first-received".format(prefix), cmd, xlabel)
+                    plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
+                    plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
     def extract(self, logs, prefix, cmd):
         logs.extractLostPackets('data/{}-lost-packets.dat'.format(prefix), cmd)
@@ -311,6 +317,7 @@ class TestRunner:
 
     def ros1bridge(self, tid, tc):
         master_id = subprocess.Popen("./scripts/start_ros1_master.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
+        time.sleep(5)
         bridge_id = subprocess.Popen("./scripts/start_ros1_bridge.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         skip = self.interfaces("ros1", 2)
         robot_id = subprocess.Popen("./scripts/start_ros2opensplice_robot_bridge.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
