@@ -14,32 +14,34 @@ class Logs:
         f = open(filename, 'r')
         logs = { 'Packets': [] }
         for line in f.readlines():
-            result = re.match("^(.+) BENCHMARK! (\w+) (\w+): id=(\d+), size=(\d+)", line);
-            if result:
-               data = {
-                    'Time': result.group(1),
-                    'Type': result.group(2),
-                    'Command': result.group(3),
-                    'Id': result.group(4),
-                    'Size': result.group(5)
-               }
-               data["Received"] = 1 if result.group(2) == "RECEIVED" else 0
-               data["Published"] = 1 if result.group(2) == "PUBLISHING" else 0
-               data["Datetime"] = datetime.datetime.strptime(data["Time"], '%Y-%m-%d %H:%M:%S.%f')
-               logs["Packets"].append(data);
+            try:
+                result = re.match("^(.+) BENCHMARK! (\w+) (\w+): id=(\d+), size=(\d+)", line);
+                if result:
+                   data = {
+                        'Time': result.group(1),
+                        'Type': result.group(2),
+                        'Command': result.group(3),
+                        'Id': result.group(4),
+                        'Size': result.group(5)
+                   }
+                   data["Received"] = 1 if result.group(2) == "RECEIVED" else 0
+                   data["Published"] = 1 if result.group(2) == "PUBLISHING" else 0
+                   data["Datetime"] = datetime.datetime.strptime(data["Time"], '%Y-%m-%d %H:%M:%S.%f')
+                   logs["Packets"].append(data);
 
-            result = re.match("^(.+) BENCHMARK! startNode: Initializing", line)
-            if result:
-                logs["Nodestart"] = datetime.datetime.strptime(result.group(1), '%Y-%m-%d %H:%M:%S.%f')
+                result = re.match("^(.+) BENCHMARK! startNode: Initializing", line)
+                if result:
+                    logs["Nodestart"] = datetime.datetime.strptime(result.group(1), '%Y-%m-%d %H:%M:%S.%f')
 
-            result = re.match("^(.+) BENCHMARK! TestRunner: Starting test", line)
-            if result:
-                logs["Teststart"] = datetime.datetime.strptime(result.group(1), '%Y-%m-%d %H:%M:%S.%f')
+                result = re.match("^(.+) BENCHMARK! TestRunner: Starting test", line)
+                if result:
+                    logs["Teststart"] = datetime.datetime.strptime(result.group(1), '%Y-%m-%d %H:%M:%S.%f')
 
-            result = re.match("^(.+) BENCHMARK! TestRunner: Test finished", line)
-            if result:
-                logs["Testfinished"] = datetime.datetime.strptime(result.group(1), '%Y-%m-%d %H:%M:%S.%f')
-
+                result = re.match("^(.+) BENCHMARK! TestRunner: Test finished", line)
+                if result:
+                    logs["Testfinished"] = datetime.datetime.strptime(result.group(1), '%Y-%m-%d %H:%M:%S.%f')
+            except:
+                print("Failed to parse: {}".format(line), flush=True, file=sys.stderr)
         if "Nodestart" in logs and "Teststart" in logs and "Testfinished" in logs:
             if not key in self.logs:
                 self.logs[key] = { node: logs }

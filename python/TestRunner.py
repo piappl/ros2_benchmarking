@@ -84,16 +84,16 @@ class TestRunner:
         except:
             raise RuntimeError('Failed to set "{}" at interface {}: {}'.format(param, interface, sys.exc_info()[0]))
 
-    def memory(self):
+    def memory(self, tid):
         try:
-            subprocess.call('echo "# Memory usage [%]" > logs/memory.txt', shell = True)
+            subprocess.call('echo "# Memory usage [%]" > logs/{}-memory.txt'.format(tid), shell = True)
             self.workers.append(subprocess.Popen('./scripts/memory_usage.sh >> logs/memory.txt 2>&1', shell=True))
         except:
             raise RuntimeError('Failed to start ./scripts/memory_usage.sh')
 
-    def cpu(self):
+    def cpu(self, tid):
         try:
-            subprocess.call('echo "# CPU usage [%]" > logs/cpu.txt', shell = True)
+            subprocess.call('echo "# CPU usage [%]" > logs/{}-cpu.txt'.format(tid), shell = True)
             self.workers.append(subprocess.Popen('./scripts/cpu_usage.sh >> logs/cpu.txt 2>&1', shell=True))
         except:
             raise RuntimeError('Failed to start ./scripts/cpu_usage.sh')
@@ -376,8 +376,8 @@ class TestRunner:
 
     def ros1_scalability(self, tid, count):
         ids = []
-        self.cpu()
-        self.memory()
+        self.cpu(tid)
+        self.memory(tid)
         master_id = subprocess.Popen("./scripts/start_ros1_master.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         ids.append(subprocess.Popen("./scripts/start_ros1_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
@@ -389,8 +389,8 @@ class TestRunner:
 
     def ros2connext_scalability(self, tid, count):
         ids = []
-        self.cpu()
-        self.memory()
+        self.cpu(tid)
+        self.memory(tid)
         ids.append(subprocess.Popen("./scripts/start_ros2connext_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2connext_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
@@ -399,8 +399,8 @@ class TestRunner:
 
     def ros2opensplice_scalability(self, tid, count):
         ids = []
-        self.cpu()
-        self.memory()
+        self.cpu(tid)
+        self.memory(tid)
         ids.append(subprocess.Popen("./scripts/start_ros2opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2opensplice_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
@@ -409,8 +409,8 @@ class TestRunner:
 
     def ros2fastrtps_scalability(self, tid, count):
         ids = []
-        self.cpu()
-        self.memory()
+        self.cpu(tid)
+        self.memory(tid)
         ids.append(subprocess.Popen("./scripts/start_ros2fastrtps_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2fastrtps_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
