@@ -87,7 +87,7 @@ void DDSSubscriber::subscribe(communication::MessageType t)
     {
         //TODO: Get string size
         debug(LOG_BENCHMARK, "DDSSubscriber", "Subscribing to RobotSensor messages");
-        mRobotSensorListener.reset(new ReaderListener<messages::RobotSensor>("RobotSensor", 200));
+        mRobotSensorListener.reset(new ReaderListener<messages::RobotSensor>("RobotSensor", 250));
         mRobotSensorReader = Reader<messages::RobotSensor>(mSubsciber, mTopics.topicRobotSensor(), getReaderQoS(mQos.value(MessageTypeRobotSensor)), mRobotSensorListener.get(), mask);
         break;
     }

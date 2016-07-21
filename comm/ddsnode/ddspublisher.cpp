@@ -96,7 +96,7 @@ void DDSPublisher::advertise(communication::MessageType t)
         break;
     case communication::MessageTypeRobotSensor:
         debug(LOG_BENCHMARK, "DDSSubscriber", "Advertising RobotSensor messages");
-        mRobotSensorListener.reset(new WriterListener<messages::RobotSensor>("RobotSensor", 200));
+        mRobotSensorListener.reset(new WriterListener<messages::RobotSensor>("RobotSensor", 250));
         mRobotSensorWriter = Writer<messages::RobotSensor>(mPublisher, mTopics.topicRobotSensor(), getWriterQoS(mQos.value(MessageTypeRobotSensor)), mRobotSensorListener.get(), mask);
         break;
     default:
