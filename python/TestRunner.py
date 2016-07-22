@@ -87,16 +87,20 @@ class TestRunner:
     def memory(self, tid):
         try:
             filename = 'logs/{}-memory.txt'.format(tid)
-            subprocess.call('echo "# Memory usage [%]" > {}'.format(filename), shell = True)
-            self.workers.append(subprocess.Popen('./scripts/memory_usage.sh >> {} 2>&1'.format(filename), shell=True))
+            output = open(filename, 'w')
+            output.write("# Memory usage [%]\n")
+            output.flush()
+            self.workers.append(subprocess.Popen(['./scripts/memory_usage.sh'], stdout=output))
         except:
             raise RuntimeError('Failed to start ./scripts/memory_usage.sh')
 
     def cpu(self, tid):
         try:
             filename = 'logs/{}-cpu.txt'.format(tid)
-            subprocess.call('echo "# CPU usage [%]" > {}'.format(filename), shell = True)
-            self.workers.append(subprocess.Popen('./scripts/cpu_usage.sh >> {} 2>&1'.format(filename), shell=True))
+            output = open(filename, 'w')
+            output.write("# CPU usage [%]\n")
+            output.flush()
+            self.workers.append(subprocess.Popen(['./scripts/cpu_usage.sh'], stdout=output))
         except:
             raise RuntimeError('Failed to start ./scripts/cpu_usage.sh')
 
