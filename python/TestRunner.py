@@ -35,9 +35,10 @@ class TestRunner:
             self.docker.stop(container)
             self.docker.remove_container(container)
 
-    def wait_kill_remove(self, containers):
+    def wait_kill_remove(self, containers, cooldown = 0):
         for container in containers:
             self.wait(container)
+        time.sleep(cooldown)
         self.kill()
         for container in containers:
             self.docker.remove_container(container)
@@ -384,11 +385,12 @@ class TestRunner:
         ids = []
         self.cpu(tid)
         self.memory(tid)
+        time.sleep(30)
         master_id = subprocess.Popen("./scripts/start_ros1_master.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip()
         ids.append(subprocess.Popen("./scripts/start_ros1_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros1_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
-        self.wait_kill_remove(ids)
+        self.wait_kill_remove(ids, 30)
         self.docker.stop(master_id)
         self.docker.remove_container(master_id)
         os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
@@ -397,29 +399,32 @@ class TestRunner:
         ids = []
         self.cpu(tid)
         self.memory(tid)
+        time.sleep(30)
         ids.append(subprocess.Popen("./scripts/start_ros2connext_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2connext_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
-        self.wait_kill_remove(ids)
+        self.wait_kill_remove(ids, 30)
         os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
 
     def ros2opensplice_scalability(self, tid, count):
         ids = []
         self.cpu(tid)
         self.memory(tid)
+        time.sleep(30)
         ids.append(subprocess.Popen("./scripts/start_ros2opensplice_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2opensplice_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
-        self.wait_kill_remove(ids)
+        self.wait_kill_remove(ids, 30)
         os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
 
     def ros2fastrtps_scalability(self, tid, count):
         ids = []
         self.cpu(tid)
         self.memory(tid)
+        time.sleep(30)
         ids.append(subprocess.Popen("./scripts/start_ros2fastrtps_console.sh", shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
         for ip in range(10, 10 + count):
             ids.append(subprocess.Popen("./scripts/start_ros2fastrtps_scalability_robot.sh {}".format(ip), shell = True, stdout=subprocess.PIPE).stdout.read().decode("utf-8").rstrip())
-        self.wait_kill_remove(ids)
+        self.wait_kill_remove(ids, 30)
         os.rename('logs/robot-{}.txt'.format(10 + count - 1), 'logs/robot.txt')
 
