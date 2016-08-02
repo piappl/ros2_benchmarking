@@ -15,6 +15,7 @@ if __name__ == "__main__":
     testing.add_argument("--scalability", type=int, nargs='+', help="number of subscribing nodes")
     testing.add_argument("--test", choices=TestRunner.tests, nargs='+', help="Transport layer to be tested")
     testing.add_argument("--skip-execution", action='store_true', help ="parse and plot existing data")
+    testing.add_argument("--calculate-mean", action='store_true', help ="find all previous results and calculate mean values")
     tools = parser.add_argument_group('tools', '')
     tools.add_argument("--build-all", action='store_true', help ="build all images")
     tools.add_argument("--build", choices=TestRunner.images, nargs='+', help="delete an existing image and build a new one")
@@ -51,17 +52,17 @@ if __name__ == "__main__":
                 runner.dirs()
             for comm in args.test:
                 if args.limit:
-                    runner.limit(comm, args.limit, args.skip_execution)
+                    runner.limit(comm, args.limit, args.skip_execution, args.calculate_mean)
                 if args.loss:
-                    runner.loss(comm, args.loss, args.skip_execution)
+                    runner.loss(comm, args.loss, args.skip_execution, args.calculate_mean)
                 if args.delay:
-                    runner.delay(comm, args.delay, args.skip_execution)
+                    runner.delay(comm, args.delay, args.skip_execution, args.calculate_mean)
                 if args.corruption:
-                    runner.corruption(comm, args.corruption, args.skip_execution)
+                    runner.corruption(comm, args.corruption, args.skip_execution, args.calculate_mean)
                 if args.duplication:
-                    runner.duplication(comm, args.duplication, args.skip_execution)
+                    runner.duplication(comm, args.duplication, args.skip_execution, args.calculate_mean)
                 if args.reorder:
-                    runner.reorder(comm, args.reorder, args.skip_execution)
+                    runner.reorder(comm, args.reorder, args.skip_execution, args.calculate_mean)
                 if args.scalability:
-                    runner.scalability(comm, args.scalability, args.skip_execution)
+                    runner.scalability(comm, args.scalability, args.skip_execution, args.calculate_mean)
                 runner.kill()

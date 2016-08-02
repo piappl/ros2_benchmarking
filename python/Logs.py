@@ -7,7 +7,7 @@ class Logs:
     def __init__(self):
         self.logs = {}
 
-    def parse(self, filename, key, node):
+    def parse(self, filename, key, node, count = 0):
         if not os.path.isfile(filename):
             print("File does not exist: {}".format(filename), flush=True, file=sys.stderr)
             return
@@ -44,9 +44,10 @@ class Logs:
                 print("Failed to parse: {}".format(line), flush=True, file=sys.stderr)
         if "Nodestart" in logs and "Teststart" in logs and "Testfinished" in logs:
             if not key in self.logs:
-                self.logs[key] = { node: logs }
-            else:
-                self.logs[key][node] = logs
+                self.logs[key] = []
+            while len(self.logs[key]) <= count:
+                self.logs[key].append({})
+            self.logs[key][count][node] = logs
         else:
             print("Failed to parse logs: {}".format(filename), flush=True, file=sys.stderr)
 
@@ -54,49 +55,56 @@ class Logs:
         return self.logs.keys()
 
     def extractCommand(self, filename, key, command, direction):
-        if key in self.logs and "robot" in self.logs[key] and "console" in self.logs[key]:
+        if key in self.logs and len(self.logs[key]) == 1 and "robot" in self.logs[key][0] and "console" in self.logs[key][0]:
             fh = open(filename, "a")
-            for line in self.logs[key]["robot"]["Packets"] + self.logs[key]["console"]["Packets"]:
+            for line in self.logs[key][0]["robot"]["Packets"] + self.logs[key][0]["console"]["Packets"]:
                 if (line[direction] and line['Command'] == command):
-                    fh.write("{}\n".format((line['Datetime'] - self.logs[key]["console"]["Teststart"]).total_seconds()))
+                    fh.write("{}\n".format((line['Datetime'] - self.logs[key][0]["console"]["Teststart"]).total_seconds()))
         else:
             print("Missing data for: {}-{}-{}".format(key, command, direction), flush=True, file=sys.stderr)
 
     def extractLostPackets(self, filename, cmd):
         fh = open(filename, "w")
         for key in sorted(self.logs):
-            if "robot" in self.logs[key] and "console" in self.logs[key]:
-                sent = 0
-                received = 0
-                for line in self.logs[key]['console']["Packets"] + self.logs[key]['robot']["Packets"]:
-                    if line['Command'] == cmd:
-                        if line["Published"]:
-                            sent += 1
-                        elif line["Received"]:
-                            received += 1
-                fh.write('{} {} {}\n'.format(key, received, sent))
+            count = 0
+            sent = 0
+            received = 0
+            for sample in self.logs[key]:
+                if "robot" in sample and "console" in sample:
+                    count = count + 1
+                    for line in sample['console']["Packets"] + sample['robot']["Packets"]:
+                        if line['Command'] == cmd:
+                            if line["Published"]:
+                                sent += 1
+                            elif line["Received"]:
+                                received += 1
+            if count > 0:
+                fh.write('{} {} {}\n'.format(key, received / count, sent / count))
             else:
                 print("Missing data for: {}".format(filename), flush=True, file=sys.stderr)
                 fh.write('{} {} {}\n'.format(key, self.missing, self.missing))
 
+
     def extractThroughput(self, filename, cmd):
         fh = open(filename, "w")
         for key in sorted(self.logs):
-            if "robot" in self.logs[key] and "console" in self.logs[key]:
-                period = None
-                bytes = 0
-                for name in [ "console", "robot" ]:
-                    node = self.logs[key][name]
-                    period = (node["Testfinished"] - node["Teststart"]).total_seconds()
-                    for line in node["Packets"]:
-                        if line['Command'] == cmd and line["Received"]:
-                            if line["Datetime"] > node["Teststart"] and line["Datetime"] < node["Testfinished"]:
-                                bytes += int(line["Size"])
-                    if bytes > 0:
-                        fh.write('{} {}\n'.format(key, bytes / period))
-                        bytes = 0
-                    else:
-                        fh.write('{} {}\n'.format(key, self.missing))
+            count = 0
+            total = 0
+            for sample in self.logs[key]:
+                if "robot" in sample and "console" in sample:
+                    period = None
+                    bytes = 0
+                    for name in [ "console", "robot" ]:
+                        node = sample[name]
+                        period = (node["Testfinished"] - node["Teststart"]).total_seconds()
+                        for line in node["Packets"]:
+                            if line['Command'] == cmd and line["Received"]:
+                                if line["Datetime"] > node["Teststart"] and line["Datetime"] < node["Testfinished"]:
+                                    bytes += int(line["Size"])
+                    total = total + (bytes / period)
+                    count = count + 1
+            if count > 0:
+                fh.write('{} {}\n'.format(key, total / count))
             else:
                 print("Missing data for: {}".format(filename), flush=True, file=sys.stderr)
                 fh.write('{} {}\n'.format(key, self.missing))
@@ -104,24 +112,23 @@ class Logs:
     def extractLatency(self, filename, cmd):
         fh = open(filename, "w")
         for key in sorted(self.logs):
-            if "robot" in self.logs[key] and "console" in self.logs[key]:
-                packets = {}
-                for name in [ "console", "robot" ]:
-                    for line in self.logs[key][name]["Packets"]:
-                        if line['Command'] == cmd:
-                            if not line['Id'] in packets:
-                                packets[line['Id']] = {}
-                            packets[line['Id']][line['Type']] = line['Datetime']
-                count = 0
-                latency = 0
-                for pid in packets:
-                    if 'RECEIVED' in packets[pid] and 'PUBLISHING' in packets[pid]:
-                        count += 1
-                        latency += (packets[pid]['RECEIVED'] - packets[pid]['PUBLISHING']).total_seconds() * 1000
-                if count > 0:
-                    fh.write('{} {}\n'.format(key, latency / count))
-                else:
-                    fh.write('{} {}\n'.format(key, self.missing))
+            count = 0
+            latency = 0
+            for sample in self.logs[key]:
+                if "robot" in sample and "console" in sample:
+                    packets = {}
+                    for name in [ "console", "robot" ]:
+                        for line in sample[name]["Packets"]:
+                            if line['Command'] == cmd:
+                                if not line['Id'] in packets:
+                                    packets[line['Id']] = {}
+                                packets[line['Id']][line['Type']] = line['Datetime']
+                    for pid in packets:
+                        if 'RECEIVED' in packets[pid] and 'PUBLISHING' in packets[pid]:
+                            count += 1
+                            latency += (packets[pid]['RECEIVED'] - packets[pid]['PUBLISHING']).total_seconds() * 1000
+            if count > 0:
+                fh.write('{} {}\n'.format(key, latency / count))
             else:
                 print("Missing data for: {}".format(filename), flush=True, file=sys.stderr)
                 fh.write('{} {}\n'.format(key, self.missing))
@@ -129,20 +136,23 @@ class Logs:
     def extractFirstReceived(self, filename, cmd):
         fh = open(filename, "w")
         for key in sorted(self.logs):
-            if "robot" in self.logs[key] and "console" in self.logs[key]:
-                published = None
-                received = None
-                for line in self.logs[key]['console']["Packets"] + self.logs[key]['robot']["Packets"]:
-                    if line['Command'] == cmd:
-                        if line["Published"] and published == None:
-                            published = line["Datetime"]
-                        elif line["Received"] and received == None:
-                            received = line["Datetime"]
-                if received != None and published != None:
-                    fh.write('{} {}\n'.format(key, (received - published).total_seconds()))
-                else:
-                    fh.write('{} {}\n'.format(key, self.missing))
+            count = 0
+            total = 0
+            for sample in self.logs[key]:
+                if "robot" in sample and "console" in sample:
+                    published = None
+                    received = None
+                    for line in sample['console']["Packets"] + sample['robot']["Packets"]:
+                        if line['Command'] == cmd:
+                            if line["Published"] and published == None:
+                                published = line["Datetime"]
+                            elif line["Received"] and received == None:
+                                received = line["Datetime"]
+                    if received != None and published != None:
+                        total = total + (received - published).total_seconds()
+                        count = count + 1
+            if count > 0:
+                fh.write('{} {}\n'.format(key, total / count))
             else:
                 print("Missing data for: {}".format(filename), flush=True, file=sys.stderr)
                 fh.write('{} {}\n'.format(key, self.missing))
-

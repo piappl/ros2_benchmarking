@@ -1,4 +1,4 @@
-import docker, time, os, sys, subprocess, re
+import docker, time, os, sys, subprocess, re, glob
 from Logs import Logs
 from Plotter import Plotter
 
@@ -105,14 +105,14 @@ class TestRunner:
         except:
             raise RuntimeError('Failed to start ./scripts/cpu_usage.sh')
 
-    def corruption(self, comm, corruptions, skip):
+    def corruption(self, comm, corruptions, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for corruption in corruptions:
             tid = "{}-corruption-{:02d}".format(comm, corruption)
             tc = "netem corrupt {}%".format(corruption)
             title = "Corruption {}% ({})".format(corruption, comm.upper())
-            self.run(comm, tid, tc, title, corruption, skip, logs)
+            self.run(comm, tid, tc, title, corruption, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Corruption rate [%]"
@@ -124,14 +124,14 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
-    def reorder(self, comm, reorders, skip):
+    def reorder(self, comm, reorders, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for reorder in reorders:
             tid = "{}-reorder-{:02d}".format(comm, reorder)
             tc = "netem reorder {}% delay 25ms".format(reorder)
             title = "Reorders {}% ({})".format(reorder, comm.upper())
-            self.run(comm, tid, tc, title, reorder, skip, logs)
+            self.run(comm, tid, tc, title, reorder, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Reordering rate [%]"
@@ -143,14 +143,14 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
-    def duplication(self, comm, dups, skip):
+    def duplication(self, comm, dups, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for dup in dups:
             tid = "{}-duplication-{:02d}".format(comm, dup)
             tc = "netem duplicate {}%".format(dup)
             title = "Duplication {}% ({})".format(dup, comm.upper())
-            self.run(comm, tid, tc, title, dup, skip, logs)
+            self.run(comm, tid, tc, title, dup, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Duplication rate [%]"
@@ -162,14 +162,14 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
-    def limit(self, comm, limits, skip):
+    def limit(self, comm, limits, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for limit in limits:
             tid = "{}-limit-{:04d}kbit".format(comm, limit)
             tc = "tbf rate {}kbit burst 32kbit latency 500ms".format(limit)
             title = "Limit {}kbit ({})".format(limit, comm.upper())
-            self.run(comm, tid, tc, title, limit, skip, logs)
+            self.run(comm, tid, tc, title, limit, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Throughput limit [kbit]"
@@ -181,14 +181,14 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
-    def loss(self, comm, losses, skip):
+    def loss(self, comm, losses, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for loss in losses:
             tid = "{}-loss-{:02d}".format(comm, loss)
             tc = "netem loss {}%".format(loss)
             title = "Loss {}% ({})".format(loss, comm.upper())
-            self.run(comm, tid, tc, title, loss, skip, logs)
+            self.run(comm, tid, tc, title, loss, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Packet loss rate [%]"
@@ -200,14 +200,14 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
-    def delay(self, comm, delays, skip):
+    def delay(self, comm, delays, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for delay in delays:
             tid = "{}-delay-{:04d}".format(comm, delay)
             tc = "netem delay {}ms".format(delay)
             title = "Delay {}ms ({})".format(delay, comm.upper())
-            self.run(comm, tid, tc, title, delay, skip, logs)
+            self.run(comm, tid, tc, title, delay, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Packet delay [ms]"
@@ -219,13 +219,13 @@ class TestRunner:
                     plotter.throughput("{}-throughput".format(prefix), cmd, xlabel)
                     plotter.latency("{}-latency".format(prefix), cmd, xlabel)
 
-    def scalability(self, comm, numbers, skip):
+    def scalability(self, comm, numbers, skip, mean):
         logs = Logs()
         plotter = Plotter()
         for count in numbers:
             tid = "{}-scalability-{:02d}".format(comm, count)
             title = "Scalability - {} nodes ({})".format(count, comm.upper())
-            self.run(comm + "_scalability", tid, count, title, count, skip, logs)
+            self.run(comm + "_scalability", tid, count, title, count, skip, logs, mean)
         if len(logs.keys()) > 0:
             for cmd in self.commands:
                 xlabel = "Number of nodes"
@@ -242,16 +242,27 @@ class TestRunner:
         logs.extractThroughput('data/{}-throughput.dat'.format(prefix), cmd)
         logs.extractLatency('data/{}-latency.dat'.format(prefix), cmd)
 
-    def run(self, comm, tid, tc, prefix, value, skip, logs):
+    def run(self, comm, tid, tc, prefix, value, skip, logs, mean):
         plotter = Plotter()
-        if not skip:
+        if mean:
+            console = glob.glob("results/*/logs/{}-console.txt".format(tid))
+            robot = glob.glob("results/*/logs/{}-robot.txt".format(tid))
+            if len(console) != len(robot):
+                print('Missing logs for {}'.format(tid), flush=True, file=sys.stderr)
+                return
+            for i in range(len(console)):
+                logs.parse(robot[i], value, "robot", i)
+                logs.parse(console[i], value, "console", i)
+            print("Found {} samples for {}".format(len(console), tid), flush=True)
+            return
+        elif skip:
+            print("Using results from: {}".format(tid), flush=True)
+        else:
             try:
                 self.execute(comm, tid, tc)
             except Exception as e:
                 print('Test {} failed: {}'.format(tid, str(e)), flush=True, file=sys.stderr)
                 return
-        else:
-            print("Using results from: {}".format(tid), flush=True)
         logs.parse("logs/{}-robot.txt".format(tid), value, "robot")
         logs.parse("logs/{}-console.txt".format(tid), value, "console")
         for cmd in self.commands:
