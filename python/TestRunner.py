@@ -14,7 +14,7 @@ class TestRunner:
 
     def dirs(self):
         directory = "results/{}".format(int(time.time()))
-        subprocess.call("rm -f current".format(directory), shell = True)
+        subprocess.call("rm -f current", shell = True)
         subprocess.call("ln {} current -s".format(directory), shell = True)
         for subdir in ["logs", "data", "graphs", "tcpdump"]:
             subprocess.call("mkdir -p {}/{}".format(directory, subdir), shell = True)

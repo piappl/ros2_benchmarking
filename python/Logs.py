@@ -1,4 +1,4 @@
-import sys, os, re, datetime
+import sys, os, re, datetime, statistics, math
 
 class Logs:
     logs = None
@@ -66,20 +66,24 @@ class Logs:
     def extractLostPackets(self, filename, cmd):
         fh = open(filename, "w")
         for key in sorted(self.logs):
-            count = 0
-            sent = 0
-            received = 0
+            results = []
             for sample in self.logs[key]:
                 if "robot" in sample and "console" in sample:
-                    count = count + 1
+                    sent = 0
+                    received = 0
                     for line in sample['console']["Packets"] + sample['robot']["Packets"]:
                         if line['Command'] == cmd:
                             if line["Published"]:
                                 sent += 1
                             elif line["Received"]:
                                 received += 1
-            if count > 0:
-                fh.write('{} {} {}\n'.format(key, received / count, sent / count))
+                    if sent > 0:
+                        results.append(100 * received / sent)
+            if len(results) > 0:
+                mean = statistics.mean(results)
+                stdev = statistics.stdev(results, mean) if len(results) > 1 else 0
+                stderr = stdev / math.sqrt(len(results))
+                fh.write('{} {} {}\n'.format(key, mean, stderr))
             else:
                 print("Missing data for: {}".format(filename), flush=True, file=sys.stderr)
                 fh.write('{} {} {}\n'.format(key, self.missing, self.missing))
@@ -112,10 +116,11 @@ class Logs:
     def extractLatency(self, filename, cmd):
         fh = open(filename, "w")
         for key in sorted(self.logs):
-            count = 0
-            latency = 0
+            results = []
             for sample in self.logs[key]:
                 if "robot" in sample and "console" in sample:
+                    count = 0
+                    latency = 0
                     packets = {}
                     for name in [ "console", "robot" ]:
                         for line in sample[name]["Packets"]:
@@ -127,8 +132,13 @@ class Logs:
                         if 'RECEIVED' in packets[pid] and 'PUBLISHING' in packets[pid]:
                             count += 1
                             latency += (packets[pid]['RECEIVED'] - packets[pid]['PUBLISHING']).total_seconds() * 1000
-            if count > 0:
-                fh.write('{} {}\n'.format(key, latency / count))
+                    if count > 0:
+                        results.append(latency / count)
+            if len(results) > 0:
+                mean = statistics.mean(results)
+                stdev = statistics.stdev(results, mean) if len(results) > 1 else 0
+                stderr = stdev / math.sqrt(len(results))
+                fh.write('{} {} {}\n'.format(key, mean, stderr))
             else:
                 print("Missing data for: {}".format(filename), flush=True, file=sys.stderr)
                 fh.write('{} {}\n'.format(key, self.missing))
