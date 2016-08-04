@@ -12,7 +12,7 @@ class TestRunner:
     def __init__(self):
         self.docker = docker.Client(base_url='unix://var/run/docker.sock')
 
-    def dirs(self):
+    def dirs(self, tid):
         directory = "results/{}".format(int(time.time()))
         subprocess.call("rm -f current", shell = True)
         subprocess.call("ln {} current -s".format(directory), shell = True)
@@ -20,7 +20,8 @@ class TestRunner:
             subprocess.call("mkdir -p {}/{}".format(directory, subdir), shell = True)
         for subdir in ["times", "lost-packets", "histograms", "first-received", "throughput", "latency"]:
             subprocess.call("mkdir -p {}/graphs/{}".format(directory, subdir), shell = True)
-
+        if tid:
+            subprocess.call("echo '{}' > current/id".format(tid), shell = True)
 
     def remove_containers(self, name):
         containers = self.docker.containers(filters = { 'ancestor': '{}'.format(name) })

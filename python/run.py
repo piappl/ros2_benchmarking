@@ -14,8 +14,9 @@ if __name__ == "__main__":
     testing.add_argument("--reorder", type=int, nargs='+', help="run reorder tests for given values [%%]")
     testing.add_argument("--scalability", type=int, nargs='+', help="number of subscribing nodes")
     testing.add_argument("--test", choices=TestRunner.tests, nargs='+', help="Transport layer to be tested")
-    testing.add_argument("--skip-execution", action='store_true', help ="parse and plot existing data")
-    testing.add_argument("--calculate-mean", action='store_true', help ="find all previous results and calculate mean values")
+    testing.add_argument("--skip-execution", action='store_true', help="parse and plot existing data")
+    testing.add_argument("--calculate-mean", action='store_true', help="find all previous results and calculate mean values")
+    testing.add_argument("--test-id", help="store this test id with results for later reference")
     tools = parser.add_argument_group('tools', '')
     tools.add_argument("--build-all", action='store_true', help ="build all images")
     tools.add_argument("--build", choices=TestRunner.images, nargs='+', help="delete an existing image and build a new one")
@@ -49,7 +50,7 @@ if __name__ == "__main__":
             if not os.geteuid() == 0:
                 sys.exit("Only root can run tests")
             if not args.skip_execution:
-                runner.dirs()
+                runner.dirs(args.test_id)
             for comm in args.test:
                 if args.limit:
                     runner.limit(comm, args.limit, args.skip_execution, args.calculate_mean)
