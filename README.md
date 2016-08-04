@@ -61,15 +61,27 @@ You need to obtain a license from RTI and get libraries from https://www.rti.com
 
 #### Lost packets for RobotAlarm message
 
-![](screenshots/RobotAlarm.png)
+![](screenshots/RobotAlarm-lost-packets.png)
 
 #### Lost packets for RobotControl message
 
-![](screenshots/RobotControl.png)
+![](screenshots/RobotControl-lost-packets.png)
 
 #### Lost packets for RobotSensor message
 
-![](screenshots/RobotSensor.png)
+![](screenshots/RobotSensor-lost-packets.png)
+
+#### Latency for RobotAlarm message
+
+![](screenshots/RobotAlarm-latency.png)
+
+#### Latency for RobotControl message
+
+![](screenshots/RobotControl-latency.png)
+
+#### Latency for RobotSensor message
+
+![](screenshots/RobotSensor-latency.png)
 
 ## Authors
 
