@@ -7,7 +7,7 @@ class Plotter:
             params = [ "title='{}'".format(title) ]
             self.input(params, "input1", "data/{}-{}-pub.dat".format(tid, cmd))
             self.input(params, "input2", "data/{}-{}-rec.dat".format(tid, cmd))
-            params.append("output='graphs/times/{}-{}.png'".format(tid, cmd))
+            params.append("output='graphs/times/{}-{}.eps'".format(tid, cmd))
             self.call('compare-times.plt', params)
         except:
             pass
@@ -16,7 +16,7 @@ class Plotter:
         try:
             params = [ "title='{} message: lost packets'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
-            params.append("output='graphs/lost-packets/{}.png'".format(filename))
+            params.append("output='graphs/lost-packets/{}.eps'".format(filename))
             self.call('lost-packets.plt', params)
         except:
             pass
@@ -25,7 +25,7 @@ class Plotter:
         try:
             params = [ "title='{}'".format(title) ]
             self.input(params, "input", "data/{}-{}-pub.dat".format(tid, cmd))
-            params.append("output='graphs/histograms/{}-{}-pub.png'".format(tid, cmd))
+            params.append("output='graphs/histograms/{}-{}-pub.eps'".format(tid, cmd))
             params.append("label='Packets published'")
             params.append("legend='Packets published by console'")
             self.call('histogram.plt', params)
@@ -36,7 +36,7 @@ class Plotter:
         try:
             params = [ "title='{}'".format(title) ]
             self.input(params, "input", "data/{}-{}-rec.dat".format(tid, cmd))
-            params.append("output='graphs/histograms/{}-{}-rec.png'".format(tid, cmd))
+            params.append("output='graphs/histograms/{}-{}-rec.eps'".format(tid, cmd))
             params.append("label='Packets received'")
             params.append("legend='Packets received by robot'")
             self.call('histogram.plt', params)
@@ -47,7 +47,7 @@ class Plotter:
         try:
             params = [ "title='{} message: first packet received'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
-            params.append("output='graphs/first-received/{}.png'".format(filename))
+            params.append("output='graphs/first-received/{}.eps'".format(filename))
             self.call('first-received.plt', params)
         except:
             pass
@@ -56,7 +56,7 @@ class Plotter:
         try:
             params = [ "title='{} message: throughput'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
-            params.append("output='graphs/throughput/{}.png'".format(filename))
+            params.append("output='graphs/throughput/{}.eps'".format(filename))
             self.call('throughput.plt', params)
         except:
             pass
@@ -65,7 +65,7 @@ class Plotter:
         try:
             params = [ "title='{} message: latency'".format(cmd), "xlabel='{}'".format(xlabel) ]
             self.input(params, "input", "data/{}.dat".format(filename))
-            params.append("output='graphs/latency/{}.png'".format(filename))
+            params.append("output='graphs/latency/{}.eps'".format(filename))
             self.call('latency.plt', params)
         except:
             pass

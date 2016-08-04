@@ -1,4 +1,4 @@
-set term png
+set terminal postscript eps size 3.5,2.62 enhanced color
 set output output
 set datafile missing "NA"
 set title title
