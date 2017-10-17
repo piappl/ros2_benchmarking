@@ -1,6 +1,8 @@
 FROM ubuntu:xenial
 
 RUN cd /etc && rm localtime && ln -s /usr/share/zoneinfo/Poland localtime
+RUN apt-get update 
+RUN apt-get install -y locales
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV top /ros2_benchmarking
@@ -22,7 +24,7 @@ RUN apt-get install -y libboost-chrono-dev libboost-date-time-dev libboost-progr
 RUN pip3 install -U setuptools
 
 RUN mkdir -p /ros2_ws/src/applied
-RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -O /ros2_ws/ros2.repos
+RUN wget https://raw.githubusercontent.com/ros2/ros2/release-alpha7/ros2.repos -O /ros2_ws/ros2.repos
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
 RUN for dir in demos examples rclpy realtime_support ros1_bridge rmw_connext system_tests tlsf ../eProsima; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
