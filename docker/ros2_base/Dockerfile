@@ -7,6 +7,7 @@ RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV top /ros2_benchmarking
 ENV comm $top/comm
+
 ENV RMW_IMPLEMENTATION rmw_opensplice_cpp
 ENV ROS2_SETUP /ros2_ws/install/local_setup.bash
 ENV OSPL_URI file:///usr/etc/opensplice/config/ospl.xml
@@ -19,15 +20,31 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys D2486D2DD83DB
 RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu xenial main" > /etc/apt/sources.list.d/gazebo-latest.list
 
 RUN apt-get update
-RUN apt-get install -y perl git wget build-essential cppcheck cmake libopencv-dev python-empy python3-empy python3-nose python3-pip python3-setuptools python3-vcstool qt5-default qtcreator
-RUN apt-get install -y libboost-chrono-dev libboost-date-time-dev libboost-program-options-dev libboost-regex-dev libboost-system-dev libboost-thread-dev libopensplice64 vim openjdk-9-jre
-RUN pip3 install -U setuptools
+#build essentials
+RUN apt-get install -y cmake gcc wget git
+RUN apt-get install -y wget build-essential cppcheck libopencv-dev libpoco-dev libpocofoundation9v5 libpocofoundation9v5-dbg
+
+RUN apt-get install -y qt5-default qtcreator
+RUN apt-get install -y libtinyxml-dev libeigen3-dev
+RUN apt-get install -y clang-format pydocstyle pyflakes  qtbase5-dev
+
+#pyhton requirements
+RUN apt-get install -y python-empy python3-empy python3-nose python3-pip python3-setuptools python3-vcstool python3-yaml python3-coverage python3-mock python3-pep8
+RUN pip3 install -U argcomplete
+RUN pip3 install -U flake8 flake8-blind-except flake8-builtins flake8-class-newline flake8-comprehensions flake8-deprecated flake8-docstrings flake8-import-order flake8-quotes
+
+#Fastrtps and opensplice requirements
+RUN apt-get install -y libasio-dev libtinyxml2-dev libopensplice67
+
+
+RUN apt-get install -y vim openjdk-9-jre
+
 
 RUN mkdir -p /ros2_ws/src/applied
-RUN wget https://raw.githubusercontent.com/ros2/ros2/release-alpha7/ros2.repos -O /ros2_ws/ros2.repos
+RUN wget https://raw.githubusercontent.com/ros2/ros2/release-beta3/ros2.repos -O /ros2_ws/ros2.repos
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
-RUN perl -i -p -e "s/#(?=.+\/(Byte|ByteMultiArray|MultiArrayDimension|MultiArrayLayout)\.msg)//" /ros2_ws/src/ros2/common_interfaces/std_msgs/CMakeLists.txt
-RUN for dir in demos examples rclpy realtime_support ros1_bridge rmw_connext system_tests tlsf ../eProsima; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
+
+RUN for dir in demos examples rclpy realtime_support ros1_bridge rmw_connext system_tests tlsf; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
 RUN /ros2_ws/src/ament/ament_tools/scripts/ament.py build $AMENT_ARGS
 
