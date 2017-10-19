@@ -19,7 +19,9 @@
 #include "ros2subscriptionlistenerinterface.h"
 #include "ros2qosprofile.h"
 #ifdef FASTRTPS
-#include "fastrtps/utils/RTPSLog.h"
+#include "fastrtps/log/Log.h"
+#include "fastrtps/Domain.h"
+#include "fastrtps/rtps/rtps_all.h"
 #endif
 
 //TODO - redesign subscriber
@@ -41,7 +43,8 @@ namespace roscommunication
                 qRegisterMetaType<communication::MessageType>("communication::MessageType");
                 debug(LOG_WARNING, "RosInitializer", "DDS: %s", rmw_get_implementation_identifier());
 #ifdef FASTRTPS
-                eprosima::Log::setVerbosity(eprosima::VERB_INFO);
+                eprosima::fastrtps::Log::ReportFilenames(false);
+                eprosima::fastrtps::Log::SetVerbosity(eprosima::fastrtps::Log::Info);
 #endif
                 mInitialized = true; //TODO - check
                 debug(LOG_WARNING, "RosInitializer", "ros2 initialized");
