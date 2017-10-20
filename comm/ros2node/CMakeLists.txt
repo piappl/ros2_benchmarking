@@ -39,7 +39,7 @@ endif()
 find_package(${DDS} REQUIRED)
 find_package(ros2eval_msgs REQUIRED)
 
-target_link_libraries(ros2node common rcl rclcpp rcl_interfaces__rosidl_typesupport_introspection_cpp ${${DDS}_LIBRARIES} ${ros2eval_msgs_LIBRARIES})
+target_link_libraries(ros2node common rcl rclcpp  ${${DDS}_LIBRARIES} ${ros2eval_msgs_LIBRARIES})
 include_directories(${${DDS}_INCLUDE_DIRS} ${rcl_INCLUDE_DIRS})
 install(FILES ${INSTALL_HEADERS} DESTINATION /include/ros2node)
 

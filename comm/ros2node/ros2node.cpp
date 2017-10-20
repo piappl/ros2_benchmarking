@@ -13,7 +13,7 @@
 #include <common/messagetypes.h>
 #include <common/communicationutils.h>
 #include <common/topics.h>
-#include "ros2node.hrcl_interfaces__rosidl_typesupport_introspection_cpp"
+#include "ros2node.h"
 #include "ros2messages.h"
 #include "ros2messagetovariant.h"
 #include "ros2subscriptionlistenerinterface.h"
