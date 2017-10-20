@@ -13,15 +13,13 @@
 #include <common/messagetypes.h>
 #include <common/communicationutils.h>
 #include <common/topics.h>
-#include "ros2node.h"
+#include "ros2node.hrcl_interfaces__rosidl_typesupport_introspection_cpp"
 #include "ros2messages.h"
 #include "ros2messagetovariant.h"
 #include "ros2subscriptionlistenerinterface.h"
 #include "ros2qosprofile.h"
 #ifdef FASTRTPS
 #include "fastrtps/log/Log.h"
-#include "fastrtps/Domain.h"
-#include "fastrtps/rtps/rtps_all.h"
 #endif
 
 //TODO - redesign subscriber
@@ -43,7 +41,6 @@ namespace roscommunication
                 qRegisterMetaType<communication::MessageType>("communication::MessageType");
                 debug(LOG_WARNING, "RosInitializer", "DDS: %s", rmw_get_implementation_identifier());
 #ifdef FASTRTPS
-                eprosima::fastrtps::Log::ReportFilenames(false);
                 eprosima::fastrtps::Log::SetVerbosity(eprosima::fastrtps::Log::Info);
 #endif
                 mInitialized = true; //TODO - check
