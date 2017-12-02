@@ -6,3 +6,4 @@ python/*.pyc
 python/__pycache__
 .*.swp
 comm/CMakeLists.txt.*
+.vscode
