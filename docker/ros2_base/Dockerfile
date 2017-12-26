@@ -28,7 +28,7 @@ RUN apt-get install -y qt5-default qtcreator
 RUN apt-get install -y libtinyxml-dev libeigen3-dev uncrustify
 RUN apt-get install -y clang-format pydocstyle pyflakes  qtbase5-dev
 
-#dependencies for RViz see ros2 install page
+#dependencies for RViz
 RUN apt-get install -y libcurl4-openssl-dev libqt5core5a libqt5gui5 libqt5opengl5 libqt5widgets5 libxaw7-dev libgles2-mesa-dev libglu1-mesa-dev qtbase5-dev
 
 #pyhton requirements
@@ -47,7 +47,7 @@ RUN mkdir -p /ros2_ws/src/applied
 RUN wget https://raw.githubusercontent.com/ros2/ros2/release-latest/ros2.repos -O /ros2_ws/ros2.repos
 RUN vcs import /ros2_ws/src < /ros2_ws/ros2.repos
 
-RUN for dir in demos examples rclpy realtime_support ros1_bridge rmw_connext system_tests tlsf; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
+RUN for dir in demos examples rclpy realtime_support ros1_bridge rviz rmw_connext system_tests tlsf; do touch /ros2_ws/src/ros2/$dir/AMENT_IGNORE; done
 ADD comm/ros2node/messages /ros2_ws/src/ros2/common_interfaces/messages
 RUN /ros2_ws/src/ament/ament_tools/scripts/ament.py build $AMENT_ARGS
 
