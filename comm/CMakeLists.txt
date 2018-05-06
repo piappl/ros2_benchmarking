@@ -16,8 +16,8 @@ if(COMM_ROS2_FASTRTPS OR COMM_ROS2_OPENSPLICE OR COMM_ROS2_CONNEXT)
   add_subdirectory(ros2node)
 endif()
 if(COMM_ROS)
-  include_directories(/opt/ros/lunar/include)
-  link_directories(/opt/ros/lunar/lib) #TODO
+  include_directories(/opt/ros/kinetic/include)
+  link_directories(/opt/ros/kinetic/lib) #TODO
   add_subdirectory(ros1node/messages)
   add_subdirectory(ros1node)
 endif()
