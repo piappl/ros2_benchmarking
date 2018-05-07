@@ -19,7 +19,7 @@
 #include "ros2subscriptionlistenerinterface.h"
 #include "ros2qosprofile.h"
 #ifdef FASTRTPS
-#include "fastrtps/utils/RTPSLog.h"
+#include "fastrtps/log/Log.h"
 #endif
 
 //TODO - redesign subscriber
@@ -37,11 +37,11 @@ namespace roscommunication
             {
                 char *argv[] = { name.toLocal8Bit().data() };
                 int argc = sizeof(argv) / sizeof(char*) - 1;
-                rclcpp::utilities::init(argc, argv);
+                rclcpp::init(argc, argv);
                 qRegisterMetaType<communication::MessageType>("communication::MessageType");
                 debug(LOG_WARNING, "RosInitializer", "DDS: %s", rmw_get_implementation_identifier());
 #ifdef FASTRTPS
-                eprosima::Log::setVerbosity(eprosima::VERB_INFO);
+                eprosima::fastrtps::Log::SetVerbosity(eprosima::fastrtps::Log::Info);
 #endif
                 mInitialized = true; //TODO - check
                 debug(LOG_WARNING, "RosInitializer", "ros2 initialized");
@@ -81,7 +81,7 @@ namespace roscommunication
 
     private:
         rclcpp::Node::SharedPtr mNode;
-        typename rclcpp::subscription::Subscription<T>::SharedPtr mSubscription;
+        typename rclcpp::Subscription<T>::SharedPtr mSubscription;
 
         void subscribe(QoSSetting qos)
         {
@@ -311,7 +311,7 @@ namespace roscommunication
             ros2eval_msgs::msg::RobotSensor sensor;
             sensor.id = msg.id;
             sensor.data = msg.data;
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<ros2eval_msgs::msg::RobotSensor>>(mPublishers.value(n));
+            auto pub = std::static_pointer_cast<rclcpp::Publisher<ros2eval_msgs::msg::RobotSensor>>(mPublishers.value(n));
             debug(LOG_BENCHMARK, "PUBLISHING RobotSensor", "id=%d, size=%lu", msg.id, msg.data.size());
             try
             {
@@ -344,7 +344,7 @@ namespace roscommunication
             control.z = msg.z;
             control.z = msg.id;
             debug(LOG_BENCHMARK, "PUBLISHING RobotControl", "id=%d, size=%lu", msg.id, sizeof(ros2eval_msgs::msg::RobotControl));
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<ros2eval_msgs::msg::RobotControl> >(mPublishers.value(n));
+            auto pub = std::static_pointer_cast<rclcpp::Publisher<ros2eval_msgs::msg::RobotControl> >(mPublishers.value(n));
             try
             {
                 pub->publish(control);
@@ -374,7 +374,7 @@ namespace roscommunication
             alarm.id = msg.id;
             alarm.alarm1 = msg.alarm1;
             alarm.alarm2 = msg.alarm2;
-            auto pub = std::static_pointer_cast<rclcpp::publisher::Publisher<ros2eval_msgs::msg::RobotAlarm> >(mPublishers.value(n));
+            auto pub = std::static_pointer_cast<rclcpp::Publisher<ros2eval_msgs::msg::RobotAlarm> >(mPublishers.value(n));
             debug(LOG_BENCHMARK, "PUBLISHING RobotAlarm", "id=%u, size=%lu", alarm.id, sizeof(ros2eval_msgs::msg::RobotAlarm));
             try
             {
@@ -407,14 +407,14 @@ namespace roscommunication
         QoSSettings mQoS;
         rclcpp::Node::SharedPtr mNode;
         bool mStarted;
-        QMap<MessageType, rclcpp::publisher::PublisherBase::SharedPtr> mPublishers;
+        QMap<MessageType, rclcpp::PublisherBase::SharedPtr> mPublishers;
     };
 
 /*--------------------ROS2NodeImpl----------------------*/
 
     rclcpp::Node::SharedPtr getNode(QString name)
     {
-        return rclcpp::node::Node::make_shared(qPrintable(name));
+        return rclcpp::Node::make_shared(qPrintable(name));
     }
 
     class Ros2NodeImpl : public QObject

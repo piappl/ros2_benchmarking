@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5.1)
 project(ros2node)
 
 set(CMAKE_AUTOMOC ON)
@@ -39,7 +39,7 @@ endif()
 find_package(${DDS} REQUIRED)
 find_package(ros2eval_msgs REQUIRED)
 
-target_link_libraries(ros2node common rcl rclcpp rclcpp__${DDS} ${${DDS}_LIBRARIES} ${ros2eval_msgs_LIBRARIES})
+target_link_libraries(ros2node common rcl rclcpp  ${${DDS}_LIBRARIES} ${ros2eval_msgs_LIBRARIES})
 include_directories(${${DDS}_INCLUDE_DIRS} ${rcl_INCLUDE_DIRS})
 install(FILES ${INSTALL_HEADERS} DESTINATION /include/ros2node)
 

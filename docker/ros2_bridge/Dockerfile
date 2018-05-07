@@ -1,6 +1,7 @@
 FROM ros2:base
 
-RUN apt-get install -y ros-kinetic-roscpp ros-kinetic-rosmsg ros-kinetic-catkin ros-kinetic-std-msgs
+RUN apt-get update
+RUN apt-get install -y ros-kinetic-roscpp ros-kinetic-rosmsg ros-kinetic-catkin ros-kinetic-std-msgs ros-kinetic-roslaunch --fix-missing
 
 ENV ROS_SETUP /opt/ros/kinetic/setup.bash
 ENV build $comm/ros1node/messages/build
